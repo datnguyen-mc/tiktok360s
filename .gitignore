@@ -1,0 +1,13 @@
+.venv/
+output/
+assets/broll/_cache/
+assets/music/*.mp3
+assets/music/*.m4a
+__pycache__/
+*.pyc
+logs/*.log
+.DS_Store
+
+# Bí mật của bản triển khai — chứa APP_KEY và mật khẩu
+deploy/.env
+deploy/.env.docker

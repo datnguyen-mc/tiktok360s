@@ -1,0 +1,26 @@
+# Dây chuyền dựng video: Python + ffmpeg + font tiếng Việt.
+FROM python:3.13-slim
+
+# ffmpeg cho dựng phim; fonts-* để Pillow có chữ dự phòng nếu thiếu font riêng
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ffmpeg ca-certificates fonts-dejavu-core curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY pipeline/ ./pipeline/
+COPY config.json Makefile ./
+COPY assets/fonts/ ./assets/fonts/
+COPY deploy/docker/pipeline-scheduler.sh /usr/local/bin/scheduler
+RUN chmod +x /usr/local/bin/scheduler
+
+# Video và ảnh bìa ghi ra đây; trong k8s đây là ổ đĩa dùng chung với CMS
+VOLUME ["/app/output"]
+ENV PYTHONUNBUFFERED=1
+
+# Mặc định: chạy thường trực, tự dựng video mỗi ngày đúng giờ.
+# Muốn chạy một lần rồi thoát:  docker compose run --rm pipeline python -m pipeline.run_daily
+CMD ["scheduler"]

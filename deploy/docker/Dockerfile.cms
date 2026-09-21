@@ -1,0 +1,48 @@
+# ── Tầng 1: build tài nguyên frontend ─────────────────────────────────────────
+FROM node:20-alpine AS assets
+WORKDIR /build
+COPY cms/package*.json ./
+RUN npm ci
+COPY cms/vite.config.js cms/tailwind.config.js* ./
+COPY cms/resources ./resources
+RUN npm run build
+
+# ── Tầng 2: cài thư viện PHP ──────────────────────────────────────────────────
+FROM composer:2 AS vendor
+WORKDIR /build
+COPY cms/composer.json cms/composer.lock ./
+# Bỏ script vì artisan chưa có ở bước này
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+COPY cms/ ./
+# --no-scripts vì package:discover cần biến môi trường, mà lúc build chưa có.
+# Nó được chạy lại trong entrypoint, khi env đã đầy đủ.
+RUN composer dump-autoload --optimize --no-dev --no-scripts
+
+# ── Tầng 3: bản chạy thật ─────────────────────────────────────────────────────
+FROM php:8.3-fpm-alpine
+
+RUN apk add --no-cache nginx supervisor mysql-client icu-dev oniguruma-dev \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql bcmath opcache intl \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /var/www/html
+
+COPY --from=vendor  /build          /var/www/html
+COPY --from=assets  /build/public/build /var/www/html/public/build
+
+COPY deploy/docker/nginx.conf       /etc/nginx/nginx.conf
+COPY deploy/docker/php.ini          /usr/local/etc/php/conf.d/app.ini
+COPY deploy/docker/supervisord.conf /etc/supervisord.conf
+COPY deploy/docker/entrypoint.sh    /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+# storage và cache phải ghi được; PHP-FPM chạy dưới user www-data
+RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s \
+    CMD wget -qO- http://127.0.0.1:8080/up || exit 1
+
+ENTRYPOINT ["entrypoint"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

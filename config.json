@@ -1,0 +1,61 @@
+{
+  "topic": "showbiz",
+  "video": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "target_min_sec": 90,
+    "target_max_sec": 120,
+    "crf": 20,
+    "preset": "medium",
+    "audio_bitrate": "192k",
+    "min_scene_sec": 6.0
+  },
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+25%",
+    "pitch": "+0Hz",
+    "volume": "+0%",
+    "rate_min_pct": 12,
+    "rate_max_pct": 38
+  },
+  "script": {
+    "items_per_video": 10,
+    "max_age_hours": 30,
+    "headline_max_chars": 72,
+    "min_items_per_video": 10,
+    "max_detail_sentences": 2,
+    "reaction_every": 1
+  },
+  "captions": {
+    "font": "assets/fonts/BeVietnamPro-ExtraBold.ttf",
+    "font_size": 74,
+    "max_words_per_card": 4,
+    "stroke": 10,
+    "highlight": "#FFD60A",
+    "base_color": "#FFFFFF",
+    "y_ratio": 0.62,
+    "gap_break_sec": 0.32
+  },
+  "music": {
+    "file": "",
+    "gain_db": -22,
+    "duck_db": -10
+  },
+  "cms": {
+    "enabled": true,
+    "url": "http://127.0.0.1:8000"
+  },
+  "website": {
+    "enabled": true,
+    "url": "http://127.0.0.1:8001"
+  },
+  "r2": {
+    "enabled": false,
+    "bucket": "",
+    "endpoint": "",
+    "public_url": "",
+    "prefix": "videos"
+  }
+}

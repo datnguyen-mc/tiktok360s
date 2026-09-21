@@ -1,0 +1,31 @@
+<!-- Logo tạm cho TikTok360s.
+     Thay bằng file thật: đặt ảnh vào cms/public/brand/logo.png là giao diện tự dùng. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="TikTok360s">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#25F4EE"/>
+      <stop offset="55%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#FE2C55"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="#0A0A0F"/>
+  <!-- vòng quỹ đạo 360 -->
+  <ellipse cx="256" cy="196" rx="150" ry="86" fill="none" stroke="url(#g)" stroke-width="22"
+           stroke-linecap="round" transform="rotate(-18 256 196)" stroke-dasharray="560 150"/>
+  <path d="M372 150l44 26-46 24z" fill="#FE2C55"/>
+  <!-- nốt nhạc cách điệu, có lệch màu như hiệu ứng glitch -->
+  <g transform="translate(-8 -6)">
+    <path d="M232 128h40c6 34 28 56 62 60v40c-24 0-46-8-62-21v78c0 42-34 76-76 76s-76-34-76-76 34-76 76-76c5 0 9 0 14 1v42c-4-2-9-3-14-3-20 0-36 16-36 36s16 36 36 36 36-16 36-36z"
+          fill="#25F4EE"/>
+  </g>
+  <g transform="translate(8 6)">
+    <path d="M232 128h40c6 34 28 56 62 60v40c-24 0-46-8-62-21v78c0 42-34 76-76 76s-76-34-76-76 34-76 76-76c5 0 9 0 14 1v42c-4-2-9-3-14-3-20 0-36 16-36 36s16 36 36 36 36-16 36-36z"
+          fill="#FE2C55"/>
+  </g>
+  <path d="M232 128h40c6 34 28 56 62 60v40c-24 0-46-8-62-21v78c0 42-34 76-76 76s-76-34-76-76 34-76 76-76c5 0 9 0 14 1v42c-4-2-9-3-14-3-20 0-36 16-36 36s16 36 36 36 36-16 36-36z"
+        fill="#fff"/>
+  <text x="256" y="452" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif"
+        font-size="76" font-weight="800" letter-spacing="-2">
+    <tspan fill="#fff">TikTok</tspan><tspan fill="url(#g)">360s</tspan>
+  </text>
+</svg>

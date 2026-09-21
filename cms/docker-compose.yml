@@ -1,0 +1,27 @@
+# MySQL riêng cho CMS — cổng 3316 để không đụng MySQL/MAMP sẵn có trên máy.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: showbiz-cms-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: showbiz_root
+      MYSQL_DATABASE: showbiz_cms
+      MYSQL_USER: showbiz
+      MYSQL_PASSWORD: showbiz_pass
+    ports:
+      - "3316:3306"
+    volumes:
+      - showbiz_mysql:/var/lib/mysql
+    command: >-
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pshowbiz_root"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  showbiz_mysql:

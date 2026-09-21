@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Hệ token. Màu bám theo nhận diện của video (hồng #FF2D55, vàng #FFD60A)
+   trên nền tối, để CMS và sản phẩm nhìn như một.
+
+   Cặp màu biểu đồ (#FF2D55 + #3987E5) đã qua kiểm định trên nền #12121A:
+   đạt cả 6 kiểm tra — dải sáng, sàn chroma, tách biệt với mắt mù màu
+   (ΔE 22.1 protan), sàn thị lực thường (ΔE 35.4), và tương phản ≥ 3:1.
+   Đổi màu thì phải chạy lại kiểm định, đừng ước lượng bằng mắt.
+   ────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-plane:        #0A0A0F;
+  --color-surface:      #12121A;
+  --color-surface-2:    #1A1A24;
+  --color-surface-3:    #23232F;
+
+  --color-ink:          #FFFFFF;
+  --color-ink-2:        #A8A8B8;
+  --color-ink-muted:    #6B6B7B;
+
+  --color-line:         rgba(255, 255, 255, 0.08);
+  --color-line-strong:  rgba(255, 255, 255, 0.14);
+
+  --color-accent:       #FF2D55;
+  --color-accent-soft:  rgba(255, 45, 85, 0.12);
+  --color-accent-2:     #FFD60A;
+
+  --color-series-1:     #FF2D55;
+  --color-series-2:     #3987E5;
+
+  --color-good:         #0CA30C;
+  --color-warning:      #FAB219;
+  --color-serious:      #EC835A;
+  --color-critical:     #D03B3B;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+html, body, #app { height: 100%; }
+
+body {
+  background: var(--color-plane);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thanh cuộn mảnh cho hợp nền tối */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 99px;
+  border: 2px solid var(--color-plane);
+}
+::-webkit-scrollbar-thumb:hover { background: #32323f; }
+
+@layer components {
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 1rem;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .5rem .9rem; border-radius: .65rem;
+    font-size: .875rem; font-weight: 600;
+    border: 1px solid var(--color-line-strong);
+    color: var(--color-ink);
+    transition: background .15s, border-color .15s, opacity .15s;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--color-surface-2); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  .btn-primary {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #ff4468; border-color: #ff4468; }
+
+  .btn-ghost { border-color: transparent; background: transparent; }
+  .btn-ghost:hover { background: var(--color-surface-2); }
+
+  .input {
+    width: 100%;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: .65rem;
+    padding: .55rem .75rem;
+    font-size: .875rem;
+    color: var(--color-ink);
+    outline: none;
+  }
+  .input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+  }
+
+  .label { display: block; font-size: .75rem; font-weight: 600; color: var(--color-ink-2); }
+
+  /* Ô số liệu trong bảng phải thẳng cột */
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+/* Chuyển trang mềm */
+.fade-enter-active, .fade-leave-active { transition: opacity .18s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }

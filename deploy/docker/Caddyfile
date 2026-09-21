@@ -1,0 +1,29 @@
+# HTTPS tự động qua Let's Encrypt. Caddy tự xin và gia hạn chứng chỉ,
+# không cần certbot, không cần cron gia hạn.
+#
+# DOMAIN và ADMIN_EMAIL lấy từ biến môi trường (install-vps.sh điền vào .env).
+
+{
+    email {$ADMIN_EMAIL}
+    # Chạy thử ở máy cá nhân thì bỏ comment dòng dưới để không bị Let's Encrypt chặn
+    # acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+{$DOMAIN} {
+    encode zstd gzip
+
+    # Chặn /metrics từ Internet — chỉ Prometheus trong mạng nội bộ được đọc.
+    # Không có dữ liệu nhạy cảm, nhưng cũng không việc gì phải phơi ra.
+    @metrics path /metrics
+    respond @metrics 404
+
+    reverse_proxy cms:8080 {
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+
+# Grafana ở tên miền con. Không khai GRAFANA_DOMAIN thì khối này không hoạt động.
+{$GRAFANA_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy grafana:3000
+}

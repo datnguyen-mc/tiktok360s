@@ -1,0 +1,30 @@
+# Không bao giờ đưa những thứ này vào image.
+
+# Bí mật — nếu lọt vào image thì ai pull được image là đọc được khoá
+**/.env
+**/.env.*
+!**/.env.example
+!deploy/.env.docker.example
+
+# Thư viện: cài lại trong image, không copy từ máy
+**/vendor/
+**/node_modules/
+**/.venv/
+**/__pycache__/
+
+# Sản phẩm và dữ liệu tạm
+output/
+logs/
+assets/broll/_cache/
+cms/storage/logs/*
+cms/storage/framework/cache/*
+cms/storage/framework/sessions/*
+cms/storage/framework/views/*
+cms/bootstrap/cache/*
+cms/public/build/
+cms/tests/browser/
+
+.git/
+.DS_Store
+*.mp4
+*.mp3

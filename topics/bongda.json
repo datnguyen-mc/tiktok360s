@@ -1,0 +1,500 @@
+{
+  "name": "Bóng đá",
+  "description": "Tin bóng đá Việt Nam và quốc tế",
+  "brand": {
+    "name": "BÓNG ĐÁ MỖI NGÀY",
+    "handle": "@bongdamoingay",
+    "tagline": "Tin sân cỏ mỗi ngày",
+    "accent": "#00A650",
+    "accent2": "#FFD60A",
+    "bg": "#07110C"
+  },
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+42%",
+    "pitch": "+28Hz",
+    "volume": "+0%",
+    "rate_min_pct": 32,
+    "rate_max_pct": 55
+  },
+  "sources": [
+    {
+      "name": "VnExpress",
+      "url": "https://vnexpress.net/rss/the-thao.rss",
+      "weight": 1
+    },
+    {
+      "name": "Dân Trí",
+      "url": "https://dantri.com.vn/rss/the-thao.rss",
+      "weight": 1
+    },
+    {
+      "name": "ZNews",
+      "url": "https://znews.vn/rss/the-thao.rss",
+      "weight": 1
+    },
+    {
+      "name": "Thanh Niên",
+      "url": "https://thanhnien.vn/rss/the-thao.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Tuổi Trẻ",
+      "url": "https://tuoitre.vn/rss/the-thao.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Kenh14",
+      "url": "https://kenh14.vn/sport.rss",
+      "weight": 0.8
+    }
+  ],
+  "ranking": {
+    "require_keywords": [
+      "bóng đá",
+      "cầu thủ",
+      "hlv",
+      "huấn luyện viên",
+      "đội tuyển",
+      "v-league",
+      "vleague",
+      "ngoại hạng",
+      "premier league",
+      "champions league",
+      "world cup",
+      "euro",
+      "copa",
+      "ghi bàn",
+      "bàn thắng",
+      "hat-trick",
+      "chuyển nhượng",
+      "thủ môn",
+      "tiền đạo",
+      "hậu vệ",
+      "tiền vệ",
+      "trọng tài",
+      "vòng loại",
+      "clb",
+      "sân cỏ",
+      "futsal",
+      "man utd",
+      "man city",
+      "real madrid",
+      "barcelona",
+      "arsenal",
+      "liverpool",
+      "chelsea",
+      "tottenham",
+      "psg",
+      "bayern",
+      "juventus",
+      "inter milan",
+      "ac milan",
+      "messi",
+      "ronaldo",
+      "mbappe",
+      "haaland",
+      "afc",
+      "fifa",
+      "aff cup",
+      "sea games",
+      "hà nội fc",
+      "hoàng anh gia lai",
+      "hagl",
+      "viettel",
+      "bình dương",
+      "nam định"
+    ],
+    "exclude_keywords": [
+      "bóng chuyền",
+      "bóng rổ",
+      "bóng bàn",
+      "cầu lông",
+      "điền kinh",
+      "bơi lội",
+      "cờ vua",
+      "quần vợt",
+      "tennis",
+      "đua xe",
+      "f1",
+      "golf",
+      "boxing",
+      "võ thuật",
+      "thể hình",
+      "esports",
+      "liên minh huyền thoại",
+      "pickleball"
+    ],
+    "hot_keywords": [
+      "ngược dòng",
+      "phút bù giờ",
+      "hat-trick",
+      "siêu phẩm",
+      "kỷ lục",
+      "lịch sử",
+      "vô địch",
+      "bom tấn",
+      "chính thức",
+      "gây sốc",
+      "sa thải",
+      "chia tay",
+      "tranh cãi",
+      "thẻ đỏ",
+      "penalty",
+      "var",
+      "lập công",
+      "toả sáng",
+      "đại thắng",
+      "thua đau",
+      "loại",
+      "chung kết",
+      "derby",
+      "kịch tính",
+      "tuyển việt nam",
+      "u23",
+      "triệu tập",
+      "ra mắt",
+      "trở lại"
+    ],
+    "block_keywords": [
+      "qua đời",
+      "tử vong",
+      "tai nạn thương tâm",
+      "bạo loạn",
+      "ẩu đả",
+      "hành hung",
+      "doping",
+      "bán độ",
+      "cá độ",
+      "dàn xếp tỉ số",
+      "khởi tố"
+    ],
+    "max_per_source": 3
+  },
+  "hashtags": [
+    "#bongda",
+    "#bongdaviet",
+    "#tinbongda",
+    "#vleague",
+    "#ngoaihanganh",
+    "#tuyenvietnam",
+    "#bongdaquocte",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#fyp"
+  ],
+  "script": {
+    "style": "lem_linh"
+  },
+  "khong_pha_tro": [
+    "qua doi",
+    "tu vong",
+    "tang le",
+    "tai nan",
+    "bao loan",
+    "au da",
+    "hanh hung",
+    "doping",
+    "ban do",
+    "ca do",
+    "dan xep",
+    "khoi to",
+    "dieu tra",
+    "an phat nang",
+    "chan thuong nang",
+    "giai nghe vi chan thuong"
+  ],
+  "nhom_tu_khoa": [
+    [
+      "chan_thuong",
+      [
+        "chan thuong",
+        "nghi thi dau",
+        "phau thuat",
+        "day chang",
+        "gay xuong",
+        "vang mat vi chan thuong"
+      ]
+    ],
+    [
+      "tranh_cai",
+      [
+        "trong tai",
+        "the do",
+        "var",
+        "tranh cai",
+        "phan nan",
+        "an phat",
+        "phat den gay tranh cai",
+        "chi trich",
+        "buc xuc"
+      ]
+    ],
+    [
+      "chuyen_nhuong",
+      [
+        "chuyen nhuong",
+        "gia nhap",
+        "ky hop dong",
+        "roi clb",
+        "bom tan",
+        "ban hop dong",
+        "chia tay clb",
+        "muc tieu chuyen nhuong",
+        "gia hop dong"
+      ]
+    ],
+    [
+      "ky_luc",
+      [
+        "ky luc",
+        "lich su",
+        "cot moc",
+        "ban thang thu",
+        "lan dau tien",
+        "vo dich",
+        "doat cup",
+        "dang quang"
+      ]
+    ],
+    [
+      "hlv",
+      [
+        "hlv",
+        "huan luyen vien",
+        "sa thai",
+        "dan dat",
+        "ghe nong",
+        "tro ly",
+        "bo nhiem"
+      ]
+    ],
+    [
+      "doi_tuyen",
+      [
+        "tuyen viet nam",
+        "doi tuyen viet nam",
+        "u23",
+        "u22",
+        "sea games",
+        "aff cup",
+        "vong loai world cup",
+        "trieu tap"
+      ]
+    ],
+    [
+      "ket_qua",
+      [
+        "thang",
+        "thua",
+        "hoa",
+        "ty so",
+        "ghi ban",
+        "hat-trick",
+        "tran dau",
+        "vong dau",
+        "sieu pham",
+        "lap cong",
+        "toa sang",
+        "nguoc dong"
+      ]
+    ]
+  ],
+  "styles": {
+    "chuan": {
+      "ten": "chuẩn",
+      "hooks": [
+        "Bóng đá ngày {day} tháng {month}, {n} tin đáng chú ý nhất, gói gọn {dur}.",
+        "{n} tin bóng đá được nói tới nhiều nhất hôm nay, lướt nhanh cùng mình.",
+        "Bạn bỏ lỡ gì ở sân cỏ hôm nay? Đây là {n} tin đáng xem nhất.",
+        "Ngày {day} tháng {month}, làng bóng đá có {n} diễn biến mới.",
+        "Tin bóng đá hôm nay có gì? {n} tin nóng {dur}, xem hết đừng lướt nha."
+      ],
+      "connectors": [
+        "Đầu tiên",
+        "Tin thứ hai",
+        "Tiếp theo",
+        "Chuyện thứ tư",
+        "Tin thứ năm"
+      ],
+      "connector_cuoi": "Và cuối cùng",
+      "reactions": [],
+      "outros": [
+        "Bạn quan tâm tin nào nhất? Bình luận cho mình biết nhé. Theo dõi để cập nhật bóng đá mỗi ngày.",
+        "Trận nào bạn mong chờ nhất? Để lại bình luận, và nhớ theo dõi để không bỏ lỡ tin sân cỏ.",
+        "Đó là bóng đá hôm nay. Thả tim nếu bạn thấy hữu ích, theo dõi để nghe tiếp vào ngày mai."
+      ],
+      "tieu_de_intro": "{n} TIN BÓNG ĐÁ NÓNG NHẤT HÔM NAY",
+      "tieu_de_outro": "THEO DÕI ĐỂ XEM TIN SÂN CỎ MỖI NGÀY"
+    },
+    "binh_luan": {
+      "ten": "bình luận sân cỏ (nam trầm, pha hài)",
+      "hooks": [
+        "Bà con ơi, {n} tin bóng đá nóng hổi bữa nay nè!",
+        "Đêm qua sân cỏ có gì? {n} tin gói gọn {dur}, coi liền nghen.",
+        "Rồi rồi, điểm tin bóng đá bữa nay, {n} chuyện đáng bàn.",
+        "Ngày {day} tháng {month}, làng bóng đá có {n} chuyện, ngồi xuống nghe chơi nghen.",
+        "Bóng đá bữa nay có gì hay? {n} tin, coi hết đừng lướt nghen mấy cưng.",
+        "Mèn ơi, {n} tin bóng đá bữa nay, tin cuối căng nhất.",
+        "Bà con ơi, bóng lăn rồi nè! {n} tin nóng bữa nay.",
+        "Đêm qua ai thức coi bóng đá giơ tay coi! {n} tin đây nè.",
+        "Rồi, {n} tin bóng đá bữa nay. Ai buồn ngủ thì làm miếng cà phê nghen."
+      ],
+      "connectors": [
+        "Đầu tiên nè",
+        "Tin thứ hai nghen",
+        "Tới luôn tin thứ ba",
+        "Chuyện thứ tư nè",
+        "Rồi tới tin thứ năm"
+      ],
+      "connector_cuoi": "Và chốt hạ",
+      "reactions": {
+        "chan_thuong": [
+          "Mong hồi phục sớm nghen.",
+          "Mất quân kiểu này là căng à nha."
+        ],
+        "tranh_cai": [
+          "Vụ này chắc cãi nhau dài nghen.",
+          "Bà con thấy sao, còm men cái coi.",
+          "Coi bộ căng à nha.",
+          "Trọng tài ơi là trọng tài.",
+          "Chuyện này chắc tranh luận tới mùa sau."
+        ],
+        "chuyen_nhuong": [
+          "Vụ này đáng tiền à nghen.",
+          "Chờ coi ra sân thế nào.",
+          "Chuyển nhượng kiểu này ai mà đỡ nổi.",
+          "Tiền nhiều để làm gì? Để mua cầu thủ nè.",
+          "Đội nhà lại thêm một miệng ăn rồi."
+        ],
+        "ky_luc": [
+          "Đỉnh quá xá luôn á!",
+          "Số liệu nói thay lời rồi.",
+          "Khó ai phá nổi nghen.",
+          "Con số này nghe mà choáng.",
+          "Đỉnh tới mức khỏi bàn luôn."
+        ],
+        "hlv": [
+          "Ghế nóng dữ à nha.",
+          "Coi bộ còn nhiều chuyện phía sau.",
+          "Ghế nóng tới mức luộc trứng được luôn.",
+          "Làm huấn luyện viên khổ thiệt chớ."
+        ],
+        "doi_tuyen": [
+          "Cổ vũ hết mình nghen bà con!",
+          "Đợi trận tới coi sao.",
+          "Mừng cho tuyển nhà quá xá.",
+          "Tuyển nhà ra sân là tui bỏ hết việc nghen."
+        ],
+        "ket_qua": [
+          "Trận này đã con mắt luôn!",
+          "Coi mà nín thở nghen.",
+          "Kết quả này khỏi bàn.",
+          "Coi mà tim đập thình thịch luôn á.",
+          "Trận này đáng đồng tiền bát gạo."
+        ],
+        "chung": [
+          "Ngộ dữ hen.",
+          "Chuyện bóng đá mà, nói hoài không hết.",
+          "Bà con thấy sao chớ tui thấy hay à nghen.",
+          "Úi trời, vậy mới nói.",
+          "Bóng đá mà, có gì đâu mà không xảy ra.",
+          "Nghe xong muốn ra sân đá liền."
+        ]
+      },
+      "outros": [
+        "Bà con thấy tin nào đáng bàn nhất? Còm men cho tui hay nghen. Theo dõi để mai coi tiếp.",
+        "Trận nào bà con mong nhất? Để lại còm men nghen. Nhớ bấm theo dõi cho vui.",
+        "Vậy đó, bóng đá bữa nay bao nhiêu đó thôi. Thả tim với theo dõi giùm tui nghen bà con."
+      ],
+      "tieu_de_intro": "{n} TIN BÓNG ĐÁ NÓNG HỔI BỮA NAY",
+      "tieu_de_outro": "THEO DÕI ĐẶNG MAI COI TIẾP NGHEN"
+    },
+    "lem_linh": {
+      "ten": "lém lỉnh (nhí nhố, nhanh, pha trò)",
+      "hooks": [
+        "Ê ê ê, {n} tin bóng đá nóng hổi vừa thổi vừa coi nè!",
+        "Bóng lăn rồi! {n} tin gói gọn {dur} thôi, lướt là tiếc á nha.",
+        "Trời ơi tin nóng! {n} chuyện sân cỏ bữa nay, coi liền đi!",
+        "Ngày {day} tháng {month}, bóng đá có {n} chuyện. Ngồi im nghe kể nè!",
+        "{n} tin bóng đá bữa nay, tin cuối đỉnh nóc kịch trần luôn á!",
+        "Alo alo! {n} tin bóng đá siêu nóng, {dur} thôi à!",
+        "Đêm qua ai thức coi bóng đá giơ tay coi! {n} tin đây nè!",
+        "Nóng nóng nóng! {n} tin bóng đá bữa nay, coi hết đừng lướt nha!"
+      ],
+      "connectors": [
+        "Đầu tiên nè",
+        "Tin thứ hai",
+        "Tới luôn",
+        "Chuyện thứ tư",
+        "Tin thứ năm nè"
+      ],
+      "connector_cuoi": "Chốt hạ nha",
+      "reactions": {
+        "chan_thuong": [
+          "Á đau! Mau khoẻ lại nha.",
+          "Mất quân kiểu này là tiêu rồi!",
+          "Thôi nghỉ ngơi cho lành nha."
+        ],
+        "tranh_cai": [
+          "Ui trời, cãi tới sáng luôn!",
+          "Trọng tài ơi là trọng tài!",
+          "Căng hơn dây đàn luôn á!",
+          "Bà con thấy sao? Còm men đi!",
+          "Vụ này khó đỡ à nha."
+        ],
+        "chuyen_nhuong": [
+          "Tiền nhiều dữ thần luôn!",
+          "Bom tấn đây rồi!",
+          "Đội nhà thêm một miệng ăn.",
+          "Chờ ra sân coi có xịn hông!",
+          "Chốt đơn nhanh hơn mua hàng online."
+        ],
+        "ky_luc": [
+          "Đỉnh nóc kịch trần luôn á!",
+          "Con số này nghe mà xỉu ngang!",
+          "Khỏi bàn, đỉnh quá đỉnh!",
+          "Kỷ lục này ai phá nổi trời."
+        ],
+        "hlv": [
+          "Ghế nóng luộc trứng được luôn!",
+          "Bay ghế cái vèo!",
+          "Làm huấn luyện viên khổ ghê!",
+          "Coi bộ còn chuyện dài dài."
+        ],
+        "doi_tuyen": [
+          "Tuyển nhà cố lên nha!",
+          "Tui bỏ hết việc coi trận này!",
+          "Việt Nam vô địch!",
+          "Mừng muốn khóc luôn á!"
+        ],
+        "ket_qua": [
+          "Trời ơi trận này đã quá!",
+          "Coi mà tim đập thình thịch!",
+          "Vào rồi! Vào rồi!",
+          "Nín thở luôn á nha!",
+          "Đã con mắt thiệt chớ!"
+        ],
+        "chung": [
+          "Ngộ dữ hen!",
+          "Ủa gì kỳ vậy ta?",
+          "U là trời!",
+          "Nghe xong muốn ra sân đá liền!",
+          "Hết hồn luôn á!",
+          "Bóng đá mà, gì cũng xảy ra được."
+        ]
+      },
+      "outros": [
+        "Tin nào đã nhất? Còm men cho tui hay nha! Theo dõi để mai coi tiếp.",
+        "Thả tim với theo dõi giùm tui cái nha, mai có tin mới liền!",
+        "Hết rồi đó! Bấm theo dõi kẻo mai lạc mất tui nghen!"
+      ],
+      "tieu_de_intro": "{n} TIN BÓNG ĐÁ NÓNG HỔI BỮA NAY",
+      "tieu_de_outro": "THEO DÕI ĐI, MAI CÓ TIN MỚI!"
+    }
+  },
+  "video": {
+    "min_scene_sec": 4.0
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "name": "Chó Mèo Yêu Nhau",
+  "description": "Phim hoạt hình nhiều tập: chuyện tình chó Bơ và mèo Miu, từ lúc quen nhau tới khi cưới và sinh con",
+  "brand": {
+    "name": "CHUYỆN NHÀ BƠ & MIU",
+    "handle": "@chomeoyeunhau",
+    "tagline": "Mỗi ngày một tập",
+    "accent": "#FF7A59",
+    "accent2": "#FFD166",
+    "bg": "#1A1114"
+  },
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+8%",
+    "pitch": "+6Hz",
+    "volume": "+0%",
+    "rate_min_pct": -5,
+    "rate_max_pct": 20
+  },
+  "video": {
+    "target_min_sec": 55,
+    "target_max_sec": 80,
+    "min_scene_sec": 5.0
+  },
+  "captions": {
+    "chip_label": "CẢNH",
+    "font_size": 68,
+    "max_words_per_card": 3,
+    "y_ratio": 0.7
+  },
+  "sources": [],
+  "ranking": {
+    "require_keywords": [],
+    "exclude_keywords": [],
+    "hot_keywords": [],
+    "block_keywords": [],
+    "max_per_source": 0
+  },
+  "hashtags": [
+    "#chomeo",
+    "#hoathinh",
+    "#phimhoathinh",
+    "#chuyennhabomiu",
+    "#seriestiktok",
+    "#tapmoi",
+    "#chuyentinh",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#fyp"
+  ],
+  "script": {
+    "style": "ke_chuyen",
+    "items_per_video": 8,
+    "min_items_per_video": 6,
+    "max_detail_sentences": 1,
+    "headline_max_chars": 60,
+    "reaction_every": 3
+  },
+  "series": {
+    "tong_so_tap": 40,
+    "nhan_vat": {
+      "bo": "Bơ — chó golden retriever đực, lông vàng mật, tai cụp, đeo vòng cổ da nâu có thẻ hình xương. Hiền, hậu đậu, chăm chỉ, hay lo. Mặc áo thun xanh dương bạc màu.",
+      "miu": "Miu — mèo tam thể cái, lông trắng đốm cam đen, mắt xanh lá, đuôi dài cong. Lanh lợi, sạch sẽ, hay dỗi nhưng thương người. Đeo khăn quàng cổ màu đỏ.",
+      "sua": "Bé Sữa — con của Bơ và Miu, xuất hiện từ tập 34. Lông trắng kem, tai cụp như bố, mắt xanh như mẹ."
+    },
+    "phong_cach": "Hoạt hình 3D kiểu Pixar, nhân vật thú đi hai chân, bo tròn mềm mại. Bối cảnh xóm nhỏ Việt Nam: nhà cấp bốn mái tôn, hẻm có dây điện chằng chịt, quán cà phê vỉa hè, cây bàng già. Ánh sáng ấm giờ vàng, tông cam - vàng - xanh lá. Khung dọc 9:16.",
+    "prompt_bible": "3D Pixar-style animation, vertical 9:16, warm golden-hour lighting, Vietnamese small-town alley setting with tin-roof houses and a big old banyan tree. CHARACTERS (keep exactly identical in every shot): BO is a male golden retriever, honey-gold fur, floppy ears, brown leather collar with a bone-shaped tag, faded blue t-shirt, walks upright. MIU is a female calico cat, white fur with orange and black patches, green eyes, long curved tail, red neck scarf, walks upright. No text, no subtitles, no watermark. Scene: {tieu_de}",
+    "negative_prompt": "text, subtitles, watermark, logo, extra characters, deformed paws, human faces, photorealistic, horror, blood",
+    "quy_trinh": [
+      "1. Viết kịch bản tập: output/chomeo/<ngày>/script.json (xem content/05-series-cho-meo-40-tap.md).",
+      "2. Mỗi cảnh dùng kind='news', headline = mô tả hành động cho AI vẽ, vo = lời kể.",
+      "3. Chạy: .venv/bin/python -m pipeline.run_daily --topic chomeo --script <đường dẫn script.json>",
+      "4. Bật engine Veo/Kling trong CMS và dán prompt_bible vào ô prompt của kênh."
+    ]
+  },
+  "khong_pha_tro": [],
+  "nhom_tu_khoa": [],
+  "styles": {
+    "ke_chuyen": {
+      "ten": "kể chuyện (ấm áp, chậm, có nhịp)",
+      "hooks": [
+        "Chuyện nhà Bơ và Miu, tập mới đây.",
+        "Ai theo dõi từ tập một giơ tay coi.",
+        "Còn nhớ tập trước không? Coi tiếp nghen."
+      ],
+      "connectors": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "connector_cuoi": "",
+      "reactions": {
+        "chung": [
+          "Thương ghê.",
+          "Ai mà không mềm lòng.",
+          "Chuyện nhỏ thôi mà nhớ hoài."
+        ]
+      },
+      "outros": [
+        "Tập sau sẽ ra sao? Theo dõi để coi tiếp nghen.",
+        "Bạn nghĩ chuyện gì sẽ xảy ra? Còm men cho mình biết. Theo dõi để xem tập tới.",
+        "Hết tập rồi. Bấm theo dõi kẻo lạc mất Bơ với Miu."
+      ],
+      "tieu_de_intro": "CHUYỆN NHÀ BƠ & MIU",
+      "tieu_de_outro": "THEO DÕI ĐỂ XEM TẬP TIẾP THEO"
+    }
+  }
+}

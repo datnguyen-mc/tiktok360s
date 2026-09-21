@@ -1,0 +1,331 @@
+{
+  "name": "Showbiz",
+  "description": "Tin giải trí, sao Việt và quốc tế",
+  "brand": {
+    "name": "SHOWBIZ MỖI NGÀY",
+    "handle": "@showbiz60s",
+    "tagline": "Tin sao mỗi ngày",
+    "accent": "#FF2D55",
+    "accent2": "#FFD60A",
+    "bg": "#0B0B10"
+  },
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+25%",
+    "pitch": "+2Hz",
+    "volume": "+0%"
+  },
+  "sources": [
+    {
+      "name": "VnExpress",
+      "url": "https://vnexpress.net/rss/giai-tri.rss",
+      "weight": 1.0
+    },
+    {
+      "name": "Kenh14",
+      "url": "https://kenh14.vn/star.rss",
+      "weight": 1.0
+    },
+    {
+      "name": "Thanh Niên",
+      "url": "https://thanhnien.vn/rss/giai-tri.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Dân Trí",
+      "url": "https://dantri.com.vn/rss/giai-tri.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "ZNews",
+      "url": "https://znews.vn/rss/giai-tri.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Tuổi Trẻ",
+      "url": "https://tuoitre.vn/rss/giai-tri.rss",
+      "weight": 0.8
+    }
+  ],
+  "ranking": {
+    "hot_keywords": [
+      "concert",
+      "lộ ảnh",
+      "gây sốt",
+      "hẹn hò",
+      "chia tay",
+      "ly hôn",
+      "kết hôn",
+      "đám cưới",
+      "drama",
+      "ồn ào",
+      "xin lỗi",
+      "phản hồi",
+      "đáp trả",
+      "bị tố",
+      "nghi vấn",
+      "lộ diện",
+      "comeback",
+      "ra mắt",
+      "đạt top",
+      "kỷ lục",
+      "triệu view",
+      "gây tranh cãi",
+      "nóng",
+      "hội ngộ",
+      "tái xuất",
+      "thông báo",
+      "chính thức",
+      "gây bão",
+      "viral",
+      "sốc"
+    ],
+    "block_keywords": [
+      "qua đời",
+      "tử vong",
+      "tai nạn thương tâm",
+      "tự tử",
+      "án mạng",
+      "xâm hại"
+    ],
+    "max_per_source": 3
+  },
+  "hashtags": [
+    "#showbiz",
+    "#showbizvietnam",
+    "#tingiaitri",
+    "#tinsao",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#giaitri",
+    "#saoviet",
+    "#news",
+    "#fyp"
+  ],
+  "script": {
+    "style": "mien_tay"
+  },
+  "khong_pha_tro": [
+    "qua doi",
+    "tu vong",
+    "tang le",
+    "benh",
+    "ung thu",
+    "nhap vien",
+    "tai nan",
+    "bat khan cap",
+    "bat giu",
+    "khoi to",
+    "dieu tra",
+    "khoi kien",
+    "toa an",
+    "xam hai",
+    "bao hanh",
+    "hanh hung",
+    "ma tuy",
+    "lua dao",
+    "xin loi",
+    "bi to"
+  ],
+  "nhom_tu_khoa": [
+    [
+      "chia_tay",
+      [
+        "ly hon",
+        "chia tay",
+        "duong ai nay di",
+        "ran nut",
+        "tan vo"
+      ]
+    ],
+    [
+      "tranh_cai",
+      [
+        "tranh cai",
+        "buc xuc",
+        "on ao",
+        "bi to",
+        "dap tra",
+        "gay soc",
+        "chi trich",
+        "phan no",
+        "gach da",
+        "ghe lanh",
+        "tranh luan",
+        "dinh phot"
+      ]
+    ],
+    [
+      "cuoi_hen_ho",
+      [
+        "ket hon",
+        "dam cuoi",
+        "le cuoi",
+        "hen ho",
+        "cau hon",
+        "ve chung mot nha",
+        "dang ky ket hon",
+        "cong khai tinh yeu",
+        "ban gai",
+        "ban trai"
+      ]
+    ],
+    [
+      "thanh_tich",
+      [
+        "ky luc",
+        "top 1",
+        "trieu view",
+        "chay ve",
+        "dung dau",
+        "thang giai",
+        "dat giai",
+        "quan quan",
+        "ban het ve",
+        "gay sot",
+        "gay bao"
+      ]
+    ],
+    [
+      "nhan_sac",
+      [
+        "hoa hau",
+        "nam vuong",
+        "a hau",
+        "dang quang",
+        "thi sinh",
+        "chung ket",
+        "sac dep",
+        "hoa khoi"
+      ]
+    ],
+    [
+      "phim",
+      [
+        "phim",
+        "dao dien",
+        "dien vien",
+        "anime",
+        "rap chieu",
+        "cong chieu",
+        "tap cuoi",
+        "series",
+        "vai dien",
+        "man anh"
+      ]
+    ],
+    [
+      "am_nhac",
+      [
+        "concert",
+        "liveshow",
+        "album",
+        "ca khuc",
+        "san khau",
+        "jazz",
+        "dem nhac",
+        "hat",
+        "ca si",
+        "rapper",
+        "nhac"
+      ]
+    ]
+  ],
+  "styles": {
+    "chuan": {
+      "ten": "chuẩn",
+      "hooks": [
+        "Showbiz ngày {day} tháng {month}, {n} tin nóng nhất, gói gọn {dur}.",
+        "{n} tin giải trí đang được nói tới nhiều nhất hôm nay, lướt nhanh cùng mình.",
+        "Bạn bỏ lỡ gì ở showbiz hôm nay? Đây là {n} tin đáng chú ý nhất.",
+        "Ngày {day} tháng {month}, làng giải trí có {n} chuyện khiến dân mạng bàn tán.",
+        "Tin sao hôm nay có gì? {n} tin nóng {dur}, xem hết đừng lướt nha."
+      ],
+      "connectors": [
+        "Đầu tiên",
+        "Tin thứ hai",
+        "Tiếp theo",
+        "Chuyện thứ tư",
+        "Tin thứ năm"
+      ],
+      "connector_cuoi": "Và cuối cùng",
+      "reactions": {},
+      "outros": [
+        "Bạn quan tâm tin nào nhất? Bình luận cho mình biết nhé. Theo dõi để cập nhật showbiz mỗi ngày.",
+        "Tin nào khiến bạn bất ngờ nhất? Để lại bình luận, và nhớ theo dõi để không bỏ lỡ tin sao mỗi ngày.",
+        "Đó là showbiz hôm nay. Thả tim nếu bạn thấy hữu ích, theo dõi để nghe tiếp vào ngày mai."
+      ],
+      "tieu_de_intro": "{n} TIN SHOWBIZ NÓNG NHẤT HÔM NAY",
+      "tieu_de_outro": "THEO DÕI ĐỂ XEM TIN SAO MỖI NGÀY"
+    },
+    "mien_tay": {
+      "ten": "miền Tây",
+      "hooks": [
+        "Bà con ơi, {n} tin showbiz nóng hổi vừa thổi vừa coi nè!",
+        "Mèn đét ơi, bữa nay showbiz có tới {n} chuyện, coi liền cho nóng nghen bà con.",
+        "Trời đất ơi, {n} tin giải trí bữa nay, nghe xong hết hồn luôn á.",
+        "Ngày {day} tháng {month}, làng giải trí có {n} chuyện, ngồi xuống nghe chơi nghen.",
+        "Bữa nay showbiz có gì hay? {n} tin gói gọn {dur}, coi hết đừng lướt nghen mấy cưng.",
+        "Rồi rồi, {n} tin showbiz nóng nhất bữa nay, tui kể liền cho bà con nghe."
+      ],
+      "connectors": [
+        "Đầu tiên nè",
+        "Tin thứ hai nghen",
+        "Tới luôn tin thứ ba",
+        "Chuyện thứ tư nè",
+        "Rồi tới tin thứ năm"
+      ],
+      "connector_cuoi": "Và chốt hạ",
+      "reactions": {
+        "cuoi_hen_ho": [
+          "Mừng quá xá nghen bà con.",
+          "Vậy là sắp có đám ăn rồi hen.",
+          "Chúc hai bạn trăm năm nghen."
+        ],
+        "chia_tay": [
+          "Chuyện đời mà, ai nói trước được hen.",
+          "Thôi thì chúc mọi chuyện nhẹ nhàng nghen."
+        ],
+        "tranh_cai": [
+          "Coi bộ căng à nha.",
+          "Vụ này chắc còn dài dài nghen.",
+          "Bà con thấy sao, còm men cái coi."
+        ],
+        "thanh_tich": [
+          "Dữ thần à nghen!",
+          "Đỉnh quá xá luôn á.",
+          "Nghe mà nể thiệt chớ."
+        ],
+        "am_nhac": [
+          "Nghe là thấy đã cái lỗ tai rồi á.",
+          "Vậy là có chỗ đi chơi rồi nghen.",
+          "Cái này đáng đi coi à nha."
+        ],
+        "phim": [
+          "Thêm phim vô danh sách coi rồi nghen.",
+          "Coi bộ đáng coi à nha.",
+          "Để bữa nào rảnh coi thử hen."
+        ],
+        "nhan_sac": [
+          "Đẹp quá xá là đẹp nghen.",
+          "Hồi hộp dữ à nha.",
+          "Chờ coi ai đăng quang nghen bà con."
+        ],
+        "chung": [
+          "Trời đất, ngộ dữ hen.",
+          "Thiệt tình luôn á.",
+          "Bà con thấy sao chớ tui thấy ngộ à nghen.",
+          "Úi trời, vậy mới nói."
+        ]
+      },
+      "outros": [
+        "Bà con thấy tin nào ngộ nhất? Còm men cho tui hay nghen. Nhớ bấm theo dõi, mai tui kể tiếp.",
+        "Tin nào làm bà con hết hồn nhất? Để lại còm men nghen. Theo dõi đặng mai coi tiếp cho vui.",
+        "Vậy đó, showbiz bữa nay bao nhiêu đó thôi. Thả tim với theo dõi giùm tui nghen bà con."
+      ],
+      "tieu_de_intro": "{n} TIN SHOWBIZ NÓNG HỔI BỮA NAY",
+      "tieu_de_outro": "THEO DÕI ĐẶNG MAI COI TIẾP NGHEN"
+    }
+  }
+}

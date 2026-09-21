@@ -1,0 +1,106 @@
+# Toàn bộ hệ thống chạy bằng Docker. Không cần Kubernetes.
+#
+#   cd deploy && cp .env.docker.example .env && docker compose up -d --build
+#
+# Thêm giám sát (Prometheus + Grafana + Loki):
+#   docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+
+name: showbiz
+
+x-app-env: &app-env
+  env_file: [.env]
+
+services:
+  # ── Cơ sở dữ liệu ──────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-showbiz_cms}
+      MYSQL_USER: ${DB_USERNAME:-showbiz}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    # Không mở cổng ra ngoài. Cần truy cập từ máy thật: docker compose exec mysql mysql -uroot -p
+    networks: [internal]
+
+  # ── Bảng điều khiển ────────────────────────────────────────────────────────
+  cms:
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.cms
+    image: showbiz-cms:latest
+    restart: unless-stopped
+    depends_on:
+      mysql: { condition: service_healthy }
+    <<: *app-env
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      PIPELINE_ROOT: /data
+    volumes:
+      - pipeline_output:/data/output:ro     # chỉ đọc: CMS phát video, không sửa
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    networks: [internal, web]
+
+  # ── Dây chuyền dựng video ──────────────────────────────────────────────────
+  pipeline:
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.pipeline
+    image: showbiz-pipeline:latest
+    restart: unless-stopped
+    depends_on:
+      cms: { condition: service_started }
+    <<: *app-env
+    environment:
+      CMS_URL: http://cms:8080
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      SCHEDULE_TIME: ${SCHEDULE_TIME:-07:30}
+      RUN_ON_START: ${RUN_ON_START:-false}
+    volumes:
+      - pipeline_output:/app/output
+    networks: [internal]
+
+  # ── HTTPS tự động ──────────────────────────────────────────────────────────
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [cms]
+    environment:
+      DOMAIN: ${DOMAIN}
+      GRAFANA_DOMAIN: ${GRAFANA_DOMAIN:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [web]
+
+volumes:
+  mysql_data:
+  pipeline_output:
+  caddy_data:
+  caddy_config:
+
+networks:
+  # internal không nối ra Internet — MySQL và dây chuyền nằm ở đây
+  internal:
+  # web là nơi Caddy gặp CMS và Grafana
+  web:

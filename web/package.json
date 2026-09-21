@@ -1,0 +1,23 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && vite build --ssr",
+        "ssr": "node bootstrap/ssr/ssr.js"
+    },
+    "devDependencies": {
+        "@inertiajs/vue3": "^3.7.1",
+        "@tailwindcss/vite": "^4.3.3",
+        "@vitejs/plugin-vue": "^6.0.9",
+        "@vue/server-renderer": "^3.5.43",
+        "axios": "^1.11.0",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^2.0.0",
+        "playwright": "1.63",
+        "tailwindcss": "^4.3.3",
+        "vite": "^7.0.7",
+        "vue": "^3.5.43"
+    }
+}

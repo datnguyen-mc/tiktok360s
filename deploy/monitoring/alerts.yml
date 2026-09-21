@@ -1,0 +1,76 @@
+groups:
+  # ── Việc của hệ thống ──────────────────────────────────────────────────────
+  - name: showbiz
+    rules:
+      - alert: KhongCoVideoHomNay
+        # 26 giờ chứ không phải 24: chừa chỗ cho lần chạy trễ hoặc render lâu
+        expr: time() - showbiz_last_run_timestamp_seconds > 26 * 3600
+        for: 15m
+        labels: { severity: critical }
+        annotations:
+          summary: "Đã {{ $value | humanizeDuration }} không có video mới"
+          description: "Dây chuyền chưa tạo được video nào trong hơn 26 giờ. Xem log container pipeline."
+
+      - alert: DangBaiThatBai
+        expr: showbiz_publish_failures_24h > 0
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $value }} job đăng TikTok thất bại trong 24h"
+          description: "Thường là token hết hạn hoặc chạm hạn mức đăng của TikTok. Xem mục Nhật ký trong CMS."
+
+      - alert: ThoiLuongVideoLech
+        expr: showbiz_last_run_duration_seconds > 0
+          and (showbiz_last_run_duration_seconds < 90 or showbiz_last_run_duration_seconds > 120)
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Video mới nhất dài {{ $value }}s, ngoài khung 90–120s"
+          description: "Mô hình canh thời lượng đang lệch. Chạy `make calibrate` để xem tham số."
+
+      - alert: TokenKenhSapHetHan
+        expr: showbiz_channels_token_expiring > 0
+        for: 1h
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $value }} kênh TikTok cần kết nối lại trong 14 ngày"
+          description: "Refresh token sắp hết hạn. Vào CMS → Kênh TikTok để kết nối lại."
+
+      - alert: ChiPhiAiVuotNguong
+        # Ngưỡng mặc định 20 USD/ngày. Veo 3.1 Standard chạm mức này rất nhanh —
+        # sửa con số cho khớp ngân sách của bạn.
+        expr: showbiz_generation_cost_usd_today > 20
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Chi phí model AI hôm nay đã {{ $value }} USD"
+          description: "Vượt ngưỡng. Cân nhắc đổi sang model rẻ hơn hoặc tắt sinh cảnh bằng AI."
+
+  # ── Sức khoẻ máy chủ ───────────────────────────────────────────────────────
+  - name: infra
+    rules:
+      - alert: SapHetDia
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/host"} /
+           node_filesystem_size_bytes{mountpoint="/host"}) * 100 < 15
+        for: 10m
+        labels: { severity: critical }
+        annotations:
+          summary: "Ổ đĩa còn {{ $value | printf \"%.0f\" }}%"
+          description: "Video cũ chiếm chỗ. Xoá bớt trong thư mục output, hoặc tăng dung lượng."
+
+      - alert: SapHetBoNho
+        expr: |
+          (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 < 10
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "RAM khả dụng còn {{ $value | printf \"%.0f\" }}%"
+          description: "Render ffmpeg ăn RAM. Máy chủ nên có ít nhất 4GB."
+
+      - alert: ContainerChetDiChetLai
+        expr: rate(container_start_time_seconds[15m]) > 0
+        for: 15m
+        labels: { severity: warning }
+        annotations:
+          summary: "Container {{ $labels.name }} khởi động lại liên tục"

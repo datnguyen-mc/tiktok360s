@@ -1,0 +1,133 @@
+{
+  "style": "ke_chuyen",
+  "date": "2026-09-22",
+  "topic": "chomeo",
+  "topic_name": "Chó Mèo Yêu Nhau",
+  "tap": 1,
+  "title": "Chuyện nhà Bơ & Miu — Tập 1: Ngày Bơ dọn về xóm Mây",
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+8%",
+    "pitch": "+6Hz",
+    "volume": "+0%",
+    "rate_min_pct": -5,
+    "rate_max_pct": 20
+  },
+  "scenes": [
+    {
+      "kind": "intro",
+      "headline": "CHUYỆN NHÀ BƠ & MIU · TẬP 1",
+      "image": "",
+      "source": "",
+      "url": "",
+      "vo": "Chuyện nhà Bơ và Miu, tập một. Ngày Bơ dọn về xóm Mây."
+    },
+    {
+      "kind": "news",
+      "index": 1,
+      "total": 7,
+      "headline": "Bơ kéo xe đồ đạc vào con hẻm nhỏ",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Ngày đầu tiên ở xóm Mây, Bơ kéo cái xe đồ cũ kỹ vào con hẻm."
+    },
+    {
+      "kind": "news",
+      "index": 2,
+      "total": 7,
+      "headline": "Bơ vấp dây điện, thùng cá đổ tung toé",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Được đúng hai chục bước thì vấp phải sợi dây điện. Cả thùng cá của người ta đổ tung ra đường."
+    },
+    {
+      "kind": "news",
+      "index": 3,
+      "total": 7,
+      "headline": "Miu đứng bên kia đường nhìn đống cá đổ",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Miu đứng bên kia đường. Không la, không trách một tiếng nào."
+    },
+    {
+      "kind": "news",
+      "index": 4,
+      "total": 7,
+      "headline": "Miu quay lưng bỏ đi, đuôi phe phẩy",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Miu chỉ nhìn Bơ một cái, rồi quay lưng đi thẳng."
+    },
+    {
+      "kind": "news",
+      "index": 5,
+      "total": 7,
+      "headline": "Bơ ngồi xổm nhặt từng con cá dưới nắng chiều",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Bơ ngồi nhặt từng con cá. Nắng chiều xóm Mây rọi xuống, nóng ran cả lưng."
+    },
+    {
+      "kind": "news",
+      "index": 6,
+      "total": 7,
+      "headline": "Bà Bảy tạp hoá thò đầu ra khỏi cửa cười",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Bà Bảy tạp hoá thò đầu ra: Mới tới hả con? Con nhỏ đó khó tính lắm nghen."
+    },
+    {
+      "kind": "news",
+      "index": 7,
+      "total": 7,
+      "headline": "Bơ đứng một mình nhìn cuối con hẻm lúc hoàng hôn",
+      "image": "",
+      "source": "",
+      "url": "",
+      "topic": "tap01",
+      "reaction": "",
+      "vo": "Ấn tượng đầu tiên coi như hỏng. Mà khổ nỗi, xóm này có mỗi một con hẻm thôi."
+    },
+    {
+      "kind": "outro",
+      "headline": "THEO DÕI ĐỂ XEM TẬP TIẾP THEO",
+      "image": "",
+      "source": "",
+      "url": "",
+      "vo": "Tập sau, Bơ mang cá qua đền. Ba lần bấm chuông, ba lần cửa đóng. Theo dõi để coi tiếp nghen."
+    }
+  ],
+  "caption": "🐶🐱 Tập 1/40 · Ngày Bơ dọn về xóm Mây\n\nẤn tượng đầu tiên hỏng bét. Mà xóm này có mỗi một con hẻm thôi.\n\nTheo bạn Bơ nên làm gì để xin lỗi Miu? Còm men bên dưới 👇\nTheo dõi @chomeoyeunhau để xem tập tiếp theo.\n\n#chomeo #hoathinh #phimhoathinh #chuyennhabomiu #seriestiktok #tapmoi #chuyentinh #xuhuong #xuhuongtiktok #fyp",
+  "hashtags": [
+    "#chomeo",
+    "#hoathinh",
+    "#phimhoathinh",
+    "#chuyennhabomiu",
+    "#seriestiktok",
+    "#tapmoi",
+    "#chuyentinh",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#fyp"
+  ],
+  "sources": []
+}
