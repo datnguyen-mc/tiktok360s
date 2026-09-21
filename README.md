@@ -56,6 +56,7 @@ Mỗi chủ đề là một file trong [topics/](topics/):
 |---|---|---|---|
 | `showbiz` | 6 báo, feed giải trí riêng | không cần lọc | miền Tây |
 | `bongda` | 6 báo, feed thể thao chung | lọc bằng 53 từ khoá bóng đá | lém lỉnh, nhanh |
+| `drama` | 7 feed giải trí + đời sống | chỉ nhận tin có dấu hiệu drama | kể drama, thận trọng |
 | `chomeo` | **không có** — kịch bản viết tay | — | kể chuyện |
 
 Bóng đá phải lọc vì **không báo nào có feed riêng cho bóng đá** — chỉ có feed "thể thao"
@@ -74,6 +75,21 @@ make video TOPIC=amnhac
 ```
 
 Video của mỗi chủ đề nằm riêng ở `output/<chủ đề>/<ngày>/`.
+
+**`drama` dùng chung nguồn với `showbiz` nên phải lọc chặt.** Showbiz nhận hết feed giải
+trí; drama bắt buộc tin phải có dấu hiệu xung đột (`tranh cãi`, `bị tố`, `đáp trả`,
+`tin đồn`…) trong 49 từ khoá `require_keywords`. Không lọc thì hai kênh ra gần như cùng
+một video mỗi ngày. Đo hôm 21/09: 181 tin thô → 15 tin đúng chủ đề → chọn 8.
+
+Kênh này có thêm hai lớp chắn mà các kênh khác không cần:
+
+- `block_keywords` **29 từ** (showbiz chỉ 6) — chặn tang sự, bệnh tật, án mạng, xâm hại.
+  Đây là kênh dễ vượt ranh giới nhất nên danh sách dài có chủ ý.
+- `exclude_keywords` chặn chuyện pháp lý và hình sự (`khởi tố`, `toà án`, `ma túy`…).
+  Những tin đó rất "drama" nhưng gói vào mười giây thì dễ thành vu khống.
+- Mọi câu cảm thán trong giọng văn `ke_drama` đều **chờ xem chứ không phán xử**
+  ("Mới nghe một phía thôi nghen", "Chưa ai xác nhận hết á"), và câu kết luôn nhắc
+  mọi thông tin đều dẫn theo báo.
 
 **`chomeo` chạy khác hai chủ đề kia.** Đây là kênh phim hoạt hình nhiều tập, không lấy tin
 từ RSS nên `make video TOPIC=chomeo` sẽ không tìm được gì. Mỗi tập là một kịch bản viết
@@ -272,7 +288,11 @@ Có gì:
 - **Đăng nhập** — email + mật khẩu, Google OAuth, và xác thực hai lớp bằng mã OTP.
 - **Engine tạo video** — bấm nút để chạy dây chuyền này, hoặc trỏ sang model dựng video
   riêng của bạn qua HTTP.
-- **Tạo lại** — dựng lại một video đã có mà không phải khai lại thiết lập.
+- **Tạo lại / Xoá** — dựng lại một video đã có mà không phải khai lại thiết lập; xoá thì
+  chọn được có xoá luôn file trong `output/` hay không.
+- **Chi phí sinh cảnh** — nhật ký từng lần gọi Veo / Kling kèm giá, cả lần thất bại.
+  Xem được model nào ăn tiền nhất, ngày nào nhảy vọt, và prompt của lần gọi hỏng.
+  Lịch sử này **không mất khi xoá video** — tiền đã chi thì vẫn phải còn trong sổ.
 - **Cài đặt** — khoá TikTok và Google sửa ngay trên web, lưu mã hoá trong MySQL.
 
 Dây chuyền tự đẩy dữ liệu sang CMS sau mỗi lần render. **CMS tắt cũng không sao** —

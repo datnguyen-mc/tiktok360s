@@ -1,0 +1,442 @@
+{
+  "name": "Drama Mỗi Ngày",
+  "description": "Điểm drama và ồn ào mạng xã hội trong ngày, có dẫn nguồn, không kết luận",
+  "brand": {
+    "name": "DRAMA MỖI NGÀY",
+    "handle": "@dramamoingay",
+    "tagline": "Điểm drama trong ngày",
+    "accent": "#A855F7",
+    "accent2": "#FFD60A",
+    "bg": "#0D0A14"
+  },
+  "voice": {
+    "id": "vi-VN-HoaiMyNeural",
+    "alt_id": "vi-VN-NamMinhNeural",
+    "rate": "+28%",
+    "pitch": "-4Hz",
+    "volume": "+0%"
+  },
+  "sources": [
+    {
+      "name": "Kenh14",
+      "url": "https://kenh14.vn/star.rss",
+      "weight": 1.0
+    },
+    {
+      "name": "Kenh14 ĐS",
+      "url": "https://kenh14.vn/doi-song.rss",
+      "weight": 0.95
+    },
+    {
+      "name": "VnExpress",
+      "url": "https://vnexpress.net/rss/giai-tri.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Dân Trí",
+      "url": "https://dantri.com.vn/rss/giai-tri.rss",
+      "weight": 0.9
+    },
+    {
+      "name": "Thanh Niên",
+      "url": "https://thanhnien.vn/rss/giai-tri.rss",
+      "weight": 0.85
+    },
+    {
+      "name": "ZNews",
+      "url": "https://znews.vn/rss/giai-tri.rss",
+      "weight": 0.8
+    },
+    {
+      "name": "Tuổi Trẻ",
+      "url": "https://tuoitre.vn/rss/giai-tri.rss",
+      "weight": 0.75
+    }
+  ],
+  "ranking": {
+    "require_keywords": [
+      "tranh cãi",
+      "gây tranh luận",
+      "ồn ào",
+      "lùm xùm",
+      "drama",
+      "phốt",
+      "bóc phốt",
+      "bị tố",
+      "tố cáo",
+      "vạch trần",
+      "phanh phui",
+      "đấu tố",
+      "khẩu chiến",
+      "đáp trả",
+      "phản hồi",
+      "lên tiếng",
+      "làm rõ",
+      "đính chính",
+      "gỡ bài",
+      "xin lỗi",
+      "nhận sai",
+      "thừa nhận",
+      "phủ nhận",
+      "im lặng",
+      "chỉ trích",
+      "bức xúc",
+      "phản ứng dữ dội",
+      "làn sóng phản ứng",
+      "tẩy chay",
+      "antifan",
+      "cà khịa",
+      "đá xéo",
+      "ẩn ý",
+      "đáp lời",
+      "nghi vấn",
+      "tin đồn",
+      "rộ tin",
+      "rò rỉ",
+      "lộ clip",
+      "chưa xác nhận",
+      "chia tay",
+      "ly hôn",
+      "rạn nứt",
+      "huỷ hôn",
+      "hủy hôn",
+      "unfollow",
+      "bỏ theo dõi",
+      "xoá ảnh",
+      "xóa ảnh"
+    ],
+    "exclude_keywords": [
+      "khởi tố",
+      "bắt tạm giam",
+      "bắt khẩn cấp",
+      "truy tố",
+      "truy nã",
+      "toà án",
+      "tòa án",
+      "kết án",
+      "tuyên án",
+      "lĩnh án",
+      "hầu toà",
+      "hầu tòa",
+      "ma túy",
+      "mại dâm",
+      "đánh bạc",
+      "rửa tiền",
+      "lừa đảo",
+      "chiếm đoạt",
+      "vỡ nợ",
+      "cưỡng đoạt"
+    ],
+    "hot_keywords": [
+      "drama",
+      "phốt",
+      "bóc phốt",
+      "đấu tố",
+      "khẩu chiến",
+      "tẩy chay",
+      "gây bão",
+      "dậy sóng",
+      "bị tố",
+      "vạch trần",
+      "phanh phui",
+      "đáp trả",
+      "lên tiếng",
+      "xin lỗi",
+      "phủ nhận",
+      "thừa nhận",
+      "rò rỉ",
+      "lộ clip",
+      "tin đồn",
+      "nghi vấn",
+      "chia tay",
+      "ly hôn",
+      "rạn nứt",
+      "unfollow",
+      "cà khịa",
+      "đá xéo",
+      "chỉ trích",
+      "bức xúc",
+      "ồn ào",
+      "lùm xùm"
+    ],
+    "block_keywords": [
+      "qua đời",
+      "tử vong",
+      "tang lễ",
+      "tang sự",
+      "tang gia",
+      "chia buồn",
+      "vĩnh biệt",
+      "bi kịch",
+      "án mạng",
+      "giết người",
+      "sát hại",
+      "hiếp",
+      "xâm hại",
+      "ấu dâm",
+      "bạo hành trẻ",
+      "xâm phạm thân thể",
+      "tự tử",
+      "tự sát",
+      "ung thư",
+      "đột quỵ",
+      "hôn mê",
+      "nguy kịch",
+      "cấp cứu",
+      "tai nạn thương tâm",
+      "khủng bố",
+      "trầm cảm",
+      "bệnh viện",
+      "nhập viện",
+      "giảm cân bất thường"
+    ],
+    "max_per_source": 3
+  },
+  "hashtags": [
+    "#drama",
+    "#dramamoingay",
+    "#tinnong",
+    "#netizen",
+    "#congdongmang",
+    "#diemtin",
+    "#showbizviet",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#fyp"
+  ],
+  "script": {
+    "style": "ke_drama",
+    "items_per_video": 8,
+    "min_items_per_video": 6,
+    "max_detail_sentences": 2,
+    "headline_max_chars": 72,
+    "reaction_every": 1
+  },
+  "khong_pha_tro": [
+    "qua doi",
+    "tu vong",
+    "tang le",
+    "tang su",
+    "chia buon",
+    "vinh biet",
+    "bi kich",
+    "benh",
+    "ung thu",
+    "nhap vien",
+    "cap cuu",
+    "dot quy",
+    "tai nan",
+    "tu tu",
+    "tram cam",
+    "xam hai",
+    "bao hanh",
+    "hanh hung",
+    "au dam",
+    "hiep",
+    "ma tuy",
+    "lua dao",
+    "khoi to",
+    "bat giu",
+    "dieu tra",
+    "khoi kien",
+    "toa an",
+    "ket an",
+    "tre em",
+    "vi thanh nien",
+    "suc khoe",
+    "mang thai",
+    "sinh con"
+  ],
+  "nhom_tu_khoa": [
+    [
+      "bi_to",
+      [
+        "bi to",
+        "to cao",
+        "phot",
+        "boc",
+        "vach tran",
+        "to giac",
+        "bi phanh phui"
+      ]
+    ],
+    [
+      "tin_don",
+      [
+        "tin don",
+        "nghi van",
+        "ro tin",
+        "ro ri",
+        "lo anh",
+        "lo clip",
+        "bat gap",
+        "chua xac nhan",
+        "don doan"
+      ]
+    ],
+    [
+      "dap_tra",
+      [
+        "dap tra",
+        "len tieng",
+        "phan hoi",
+        "phu nhan",
+        "lam ro",
+        "dinh chinh",
+        "thua nhan",
+        "giai thich"
+      ]
+    ],
+    [
+      "xin_loi",
+      [
+        "xin loi",
+        "nhan sai",
+        "cui dau",
+        "rut kinh nghiem",
+        "go bai"
+      ]
+    ],
+    [
+      "tay_chay",
+      [
+        "tay chay",
+        "antifan",
+        "chi trich",
+        "buc xuc",
+        "keu goi",
+        "phan ung du doi",
+        "lan song"
+      ]
+    ],
+    [
+      "khau_chien",
+      [
+        "khau chien",
+        "dau to",
+        "ca khia",
+        "da xeo",
+        "an y",
+        "doi dau",
+        "doi da",
+        "cang thang"
+      ]
+    ],
+    [
+      "chia_tay",
+      [
+        "chia tay",
+        "ly hon",
+        "ran nut",
+        "duong ai nay di",
+        "unfollow",
+        "bo theo doi",
+        "xoa anh",
+        "huy hon"
+      ]
+    ]
+  ],
+  "styles": {
+    "chuan": {
+      "ten": "chuẩn",
+      "hooks": [
+        "Ngày {day} tháng {month}, mạng xã hội có {n} chuyện đáng chú ý.",
+        "{n} drama được nói tới nhiều nhất hôm nay, gói gọn {dur}.",
+        "Hôm nay bạn bỏ lỡ gì? Đây là {n} vụ ồn ào nhất.",
+        "Điểm drama ngày {day} tháng {month}, {n} vụ, xem hết đừng lướt nhé."
+      ],
+      "connectors": [
+        "Đầu tiên",
+        "Vụ thứ hai",
+        "Tiếp theo",
+        "Chuyện thứ tư",
+        "Vụ thứ năm"
+      ],
+      "connector_cuoi": "Và cuối cùng",
+      "reactions": {},
+      "outros": [
+        "Bạn quan tâm vụ nào nhất? Bình luận bên dưới. Theo dõi để cập nhật mỗi ngày.",
+        "Mọi thông tin đều dẫn theo báo, chưa có kết luận nào. Theo dõi để xem diễn biến."
+      ],
+      "tieu_de_intro": "{n} DRAMA NÓNG NHẤT HÔM NAY",
+      "tieu_de_outro": "THEO DÕI ĐỂ CẬP NHẬT MỖI NGÀY"
+    },
+    "ke_drama": {
+      "ten": "kể drama (miền Tây, thận trọng, không phán xét)",
+      "hooks": [
+        "Bà con ơi, drama bữa nay có {n} vụ, ngồi xuống nghe kể nghen.",
+        "Ngày {day} tháng {month}, mạng xã hội có {n} chuyện đáng bàn.",
+        "Rồi rồi, điểm drama bữa nay. {n} vụ, vụ cuối căng nhất.",
+        "Bữa nay mạng có gì? {n} vụ gói gọn {dur}, coi hết đừng lướt nghen.",
+        "Mèn ơi, {n} vụ ồn ào bữa nay. Ngồi im nghe kể nè.",
+        "Bà con bỏ lỡ gì hôm nay không? {n} chuyện được nói tới nhiều nhất đây."
+      ],
+      "connectors": [
+        "Đầu tiên nè",
+        "Vụ thứ hai nghen",
+        "Tới luôn vụ thứ ba",
+        "Chuyện thứ tư nè",
+        "Rồi tới vụ thứ năm"
+      ],
+      "connector_cuoi": "Và chốt hạ",
+      "reactions": {
+        "bi_to": [
+          "Mới nghe một phía thôi nghen.",
+          "Chuyện này còn chờ người trong cuộc nói.",
+          "Nghe cho biết, chưa kết luận gì.",
+          "Đợi phía kia lên tiếng đã."
+        ],
+        "tin_don": [
+          "Tin đồn thôi nghen, đừng vội tin.",
+          "Chưa ai xác nhận hết á.",
+          "Cái này báo dẫn lại, mình nghe cho biết.",
+          "Chờ thông báo chính thức đã."
+        ],
+        "dap_tra": [
+          "Vậy là có hai phía rồi.",
+          "Nói ra được là tốt.",
+          "Để coi ai đưa được bằng chứng.",
+          "Rõ ràng hơn chút rồi đó."
+        ],
+        "xin_loi": [
+          "Nhận sai cũng cần dũng khí.",
+          "Coi bộ khép lại được rồi.",
+          "Vậy là xong một chuyện.",
+          "Chuyện tới đây là vừa."
+        ],
+        "tay_chay": [
+          "Mạng xã hội căng thiệt.",
+          "Bà con bình tĩnh nghen.",
+          "Để coi diễn biến tới đâu.",
+          "Nói nhau nhẹ nhẹ thôi nghen."
+        ],
+        "khau_chien": [
+          "Căng à nha.",
+          "Chuyện này chắc còn dài.",
+          "Bà con thấy sao, còm men cái coi.",
+          "Coi bộ chưa tới hồi kết."
+        ],
+        "chia_tay": [
+          "Chuyện riêng của người ta, mình coi thôi.",
+          "Chúc cả hai bình an nghen.",
+          "Thôi thì duyên hết.",
+          "Không bàn sâu chuyện riêng nghen."
+        ],
+        "chung": [
+          "Ngộ dữ hen.",
+          "Chuyện mạng mà, nói hoài không hết.",
+          "Bà con thấy sao chớ?",
+          "Mỗi ngày một chuyện.",
+          "Úi trời, vậy mới nói."
+        ]
+      },
+      "outros": [
+        "Bà con thấy vụ nào căng nhất? Còm men cho tui hay nghen. Theo dõi để mai coi tiếp.",
+        "Nhắc lại là mọi thông tin đều dẫn theo báo, chưa kết luận gì hết nghen. Theo dõi để coi diễn biến.",
+        "Vậy đó, drama bữa nay bao nhiêu đó thôi. Thả tim với theo dõi giùm tui nghen."
+      ],
+      "tieu_de_intro": "{n} DRAMA NÓNG NHẤT BỮA NAY",
+      "tieu_de_outro": "THEO DÕI ĐỂ COI DRAMA MỖI NGÀY"
+    }
+  }
+}

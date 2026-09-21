@@ -130,6 +130,8 @@ def run(args: argparse.Namespace) -> int:
             script["prompt_template"] = ai["channel"]["prompt_template"]
             script["generation_cost_usd"] = round(
                 sum(c.get("cost", 0) for c in clips.values()), 4)
+            # Nhật ký từng lần gọi, kèm cả lần hỏng — CMS lưu thành lịch sử chi phí.
+            script["clip_calls"] = aiclip.call_log(clips, ai, script)
             for i, scene in enumerate(voice["scenes"]):
                 if i in clips:
                     scene["clip_prompt"] = clips[i].get("prompt")

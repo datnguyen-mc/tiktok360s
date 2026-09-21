@@ -6,6 +6,7 @@ import StatusPill from '../components/StatusPill.vue'
 import EmptyState from '../components/EmptyState.vue'
 import CreateVideoDialog from '../components/CreateVideoDialog.vue'
 import RegenerateDialog from '../components/RegenerateDialog.vue'
+import DeleteRunDialog from '../components/DeleteRunDialog.vue'
 import Toast from '../components/Toast.vue'
 import { fmtBytes, fmtDate, fmtDuration, RUN_STATUS } from '../format'
 
@@ -17,6 +18,7 @@ const topics = ref([])
 const page = ref(1)
 const creating = ref(false)
 const regenerating = ref(null)      // bản ghi đang được tạo lại
+const deleting = ref(null)          // bản ghi đang chờ xoá
 const toast = ref({ message: '', tone: 'good' })
 
 function onCreated(res) {
@@ -29,6 +31,15 @@ function onCreated(res) {
   }
   // Dây chuyền chạy nền khoảng một phút; làm mới danh sách sau đó.
   setTimeout(load, 60_000)
+}
+
+function onDeleted(res) {
+  const ten = deleting.value?.title || 'video'
+  deleting.value = null
+  const files = res.files_removed?.length ? ` · đã xoá ${res.files_removed.length} file` : ''
+  const r2 = res.r2_kept ? ' · bản trên R2 vẫn còn' : ''
+  toast.value = { message: `Đã xoá ${ten}${files}${r2}`, tone: 'good' }
+  load()
 }
 
 function onRegenerated(res) {
@@ -173,12 +184,18 @@ const statuses = [
                           :tone="r.publish_jobs[0].status === 'published' ? 'good'
                                 : r.publish_jobs[0].status === 'failed' ? 'critical' : 'warning'" />
             </td>
-            <td class="px-5 py-2.5 text-right">
+            <td class="px-5 py-2.5">
+              <span class="flex justify-end gap-1.5">
               <button class="btn !py-1.5 !text-xs" :disabled="r.status === 'running'"
                       :title="r.status === 'running' ? 'Đang dựng, chờ xong đã' : 'Dựng lại video này'"
                       @click="regenerating = r">
                 Tạo lại
               </button>
+              <button class="btn btn-ghost !py-1.5 !text-xs text-ink-muted"
+                      title="Xoá bản ghi này" @click="deleting = r">
+                Xoá
+              </button>
+              </span>
             </td>
           </tr>
         </tbody>
@@ -197,6 +214,8 @@ const statuses = [
       <CreateVideoDialog v-if="creating" @close="creating = false" @created="onCreated" />
       <RegenerateDialog v-if="regenerating" :run="regenerating"
                         @close="regenerating = null" @started="onRegenerated" />
+      <DeleteRunDialog v-if="deleting" :run="deleting"
+                       @close="deleting = null" @deleted="onDeleted" />
     </Teleport>
 
     <Toast :message="toast.message" :tone="toast.tone" @close="toast.message = ''" />

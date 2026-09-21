@@ -15,6 +15,9 @@
 /node_modules
 /public/build
 /public/hot
+# Bản SSR do `vite build --ssr` sinh ra (2 MB, đổi mỗi lần build).
+# Dockerfile.web tự chạy npm run build rồi copy ra nên không cần commit.
+/bootstrap/ssr
 /public/storage
 /storage/*.key
 /storage/pail

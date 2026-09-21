@@ -1,15 +1,18 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import http, { errorMessage } from '../api'
 import StatusPill from '../components/StatusPill.vue'
 import Toast from '../components/Toast.vue'
 import RegenerateDialog from '../components/RegenerateDialog.vue'
+import DeleteRunDialog from '../components/DeleteRunDialog.vue'
 import { fmtBytes, fmtDate, fmtDuration, fmtTime, JOB_STATUS, RUN_STATUS, TOPIC_LABEL } from '../format'
 
 const STEP_TONE = { done: 'good', running: 'warning', failed: 'critical' }
 const ms = (v) => v == null ? '—' : v < 1000 ? `${v}ms` : `${(v / 1000).toFixed(1)}s`
 
 const props = defineProps({ id: { type: String, required: true } })
+const router = useRouter()
 
 const run = ref(null)
 const accounts = ref([])
@@ -21,6 +24,12 @@ const video = ref(null)
 const form = ref({ tiktok_account_id: '', mode: 'inbox', privacy_level: 'SELF_ONLY', caption: '' })
 const showPublish = ref(false)
 const showRegenerate = ref(false)
+const showDelete = ref(false)
+
+function onDeleted() {
+  // Bản ghi không còn nên ở lại trang chi tiết là vô nghĩa — về danh sách.
+  router.push('/videos')
+}
 
 function onRegenerated(res) {
   showRegenerate.value = false
@@ -127,6 +136,10 @@ const totalSceneDur = computed(() =>
                 :title="run.status === 'running' ? 'Đang dựng, chờ xong đã' : 'Dựng lại video này'"
                 @click="showRegenerate = true">
           Tạo lại
+        </button>
+        <button class="btn btn-ghost text-ink-muted" title="Xoá video này"
+                @click="showDelete = true">
+          Xoá
         </button>
         <button class="btn btn-primary" :disabled="!run.has_video || !accounts.length"
                 @click="showPublish = true">
@@ -376,6 +389,8 @@ const totalSceneDur = computed(() =>
     <Teleport to="body">
       <RegenerateDialog v-if="showRegenerate" :run="run"
                         @close="showRegenerate = false" @started="onRegenerated" />
+      <DeleteRunDialog v-if="showDelete" :run="run"
+                       @close="showDelete = false" @deleted="onDeleted" />
     </Teleport>
 
     <Toast :message="toast.message" :tone="toast.tone" @close="toast.message = ''" />

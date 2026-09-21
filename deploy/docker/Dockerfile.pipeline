@@ -12,6 +12,9 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY pipeline/ ./pipeline/
+# topics/ là cấu hình từng kênh (giọng đọc, nguồn tin, từ khoá xếp hạng).
+# Thiếu nó thì `--topic showbiz` chết ngay ở bước nạp cấu hình.
+COPY topics/ ./topics/
 COPY config.json Makefile ./
 COPY assets/fonts/ ./assets/fonts/
 COPY deploy/docker/pipeline-scheduler.sh /usr/local/bin/scheduler

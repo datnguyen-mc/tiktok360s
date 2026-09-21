@@ -23,6 +23,14 @@ cms/storage/framework/views/*
 cms/bootstrap/cache/*
 cms/public/build/
 cms/tests/browser/
+web/storage/logs/*
+web/storage/framework/cache/*
+web/storage/framework/sessions/*
+web/storage/framework/views/*
+web/bootstrap/cache/*
+web/public/build/
+web/bootstrap/ssr/
+web/public/hot
 
 .git/
 .DS_Store

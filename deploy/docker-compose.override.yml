@@ -1,0 +1,9 @@
+# Chỉ dùng khi chạy thử ở máy cá nhân: cổng 80/443 thường đã bị chiếm, và mở
+# thẳng cổng của web/cms thì thử nhanh hơn. Trên máy chủ thật thì XOÁ tệp này.
+services:
+  caddy:
+    profiles: ["dont-start"]
+  web:
+    ports: ["8091:8080"]
+  cms:
+    ports: ["8090:8080"]

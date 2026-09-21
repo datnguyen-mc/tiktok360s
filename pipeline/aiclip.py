@@ -279,11 +279,14 @@ def generate_clips(scenes: list[dict], conf: dict, workdir: Path) -> dict:
         try:
             result = provider.generate(prompt, dest)
             log(f"  ✓ cảnh {idx}: clip {result['seconds']}s")
-            return idx, {"path": dest, "prompt": prompt,
+            return idx, {"path": dest, "prompt": prompt, "seconds": result["seconds"],
                          "cost": round(result["seconds"] * rate, 4), "url": result.get("url")}
         except Exception as e:
             log(f"  ✗ cảnh {idx}: {e}")
-            return idx, {"path": None, "prompt": prompt, "cost": 0.0, "error": str(e)}
+            # Giữ nguyên `seconds` cả khi hỏng: cần biết đã ĐỊNH gọi bao nhiêu giây
+            # mới so được "trượt bao nhiêu tiền" với "tốn bao nhiêu tiền".
+            return idx, {"path": None, "prompt": prompt, "seconds": provider.seconds,
+                         "cost": 0.0, "error": str(e)}
 
     with ThreadPoolExecutor(max_workers=MAX_PARALLEL) as pool:
         for idx, result in pool.map(one, news):
@@ -293,3 +296,31 @@ def generate_clips(scenes: list[dict], conf: dict, workdir: Path) -> dict:
     cost = sum(c["cost"] for c in clips.values())
     log(f"✓ {made}/{len(news)} clip · chi phí thực {cost:.2f} USD")
     return clips
+
+
+def call_log(clips: dict, conf: dict, script: dict) -> list[dict]:
+    """Gom nhật ký từng lần gọi API để CMS lưu lại chi phí.
+
+    Lấy từ `clips` chứ không lấy từ scenes: cảnh nào gọi hỏng thì không có clip
+    nào gắn vào scene, mà đó lại đúng là những lần gọi cần soi nhất.
+    """
+    engine = conf.get("engine") or {}
+    rate = engine.get("cost_per_second") or 0
+    out = []
+    for idx in sorted(clips):
+        c = clips[idx]
+        out.append({
+            "video_engine_id": engine.get("id"),
+            "provider": engine.get("provider"),
+            "model": engine.get("model"),
+            "resolution": engine.get("resolution"),
+            "scene_index": idx,
+            "prompt": c.get("prompt"),
+            "seconds": c.get("seconds"),
+            "cost_per_second": rate or None,
+            "cost_usd": c.get("cost") or 0,
+            "status": "success" if c.get("path") else "failed",
+            "error_message": c.get("error"),
+            "clip_url": c.get("url"),
+        })
+    return out

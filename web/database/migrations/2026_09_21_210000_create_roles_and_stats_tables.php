@@ -1,7 +1,9 @@
 <?php
 
+use App\Support\Roles;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -60,6 +62,42 @@ return new class extends Migration
             $table->json('top_articles')->nullable();
             $table->timestamp('rolled_at')->nullable();
         });
+
+        $this->seedRoles();
+    }
+
+    /**
+     * Gieo bốn vai trò mặc định.
+     *
+     * Làm trong migration chứ không trong seeder: đây là dữ liệu ứng dụng BẮT
+     * BUỘC phải có để chạy, không phải dữ liệu mẫu. Seeder chỉ chạy khi người
+     * cài gọi `db:seed`, mà bảng roles trống thì trang Vai trò rỗng trơn và
+     * không đổi được quyền cho ai.
+     */
+    private function seedRoles(): void
+    {
+        $now = now();
+
+        foreach (Roles::SEED as $slug => $r) {
+            if (DB::table('roles')->where('slug', $slug)->exists()) {
+                continue;
+            }
+
+            DB::table('roles')->insert([
+                'slug'      => $slug,
+                'name'      => $r['name'],
+                'color'     => $r['color'],
+                'sort'      => $r['sort'],
+                'is_system' => $r['is_system'],
+                // `admin` khai ['*'] — trải ra thành toàn bộ danh mục quyền
+                'abilities' => json_encode(
+                    $r['abilities'] === ['*'] ? array_keys(Roles::ABILITIES) : $r['abilities'],
+                    JSON_UNESCAPED_UNICODE
+                ),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
     }
 
     public function down(): void

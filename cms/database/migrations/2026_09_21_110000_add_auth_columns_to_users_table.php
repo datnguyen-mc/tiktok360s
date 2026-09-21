@@ -10,8 +10,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('google_id')->nullable()->unique()->after('email');
-            $table->string('avatar_url', 1000)->nullable()->after('google_id');
+            // Kiểm tra từng cột: MySQL không quay lui được DDL, nên migration
+            // hỏng nửa chừng sẽ để lại cột đã thêm mà không ghi nhận migration.
+            if (! Schema::hasColumn('users', 'google_id')) {
+                $table->string('google_id')->nullable()->unique()->after('email');
+            }
+            if (! Schema::hasColumn('users', 'avatar_url')) {
+                $table->string('avatar_url', 1000)->nullable();
+            }
 
             // Bí mật TOTP và mã dự phòng đều mã hoá ở tầng model
             $table->text('two_factor_secret')->nullable()->after('password');

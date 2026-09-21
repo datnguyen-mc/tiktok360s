@@ -8,6 +8,13 @@ __pycache__/
 logs/*.log
 .DS_Store
 
-# Bí mật của bản triển khai — chứa APP_KEY và mật khẩu
-deploy/.env
-deploy/.env.docker
+# Bí mật: MỌI biến thể .env, ở bất kỳ thư mục nào.
+#
+# Liệt kê đúng từng tên như trước là không đủ — script triển khai tự sinh bản
+# sao lưu kiểu `deploy/.env.bak.1789983405`, tên có mốc thời gian nên không thể
+# khai trước, và bản đó chứa nguyên mật khẩu DB, mật khẩu root MySQL, APP_KEY.
+# Chặn theo mẫu rồi mở lại riêng các file *.example.
+.env
+.env.*
+!.env.example
+!.env.*.example

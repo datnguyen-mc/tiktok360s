@@ -17,3 +17,12 @@ Schedule::command('news:fetch')->everyThirtyMinutes()->withoutOverlapping();
  | gom cuối cùng của ngày đó.
  */
 Schedule::command('stats:rollup')->everyTenMinutes()->withoutOverlapping();
+
+/*
+ | Dọn nợ nội dung và ảnh mỗi 15 phút.
+ |
+ | Tách khỏi `news:fetch` vì hai việc khác nhau: lấy tin mới phải nhanh, còn bổ
+ | sung nội dung cho bài cũ thì chậm và có thể chạy nhiều lượt. Hạn mức nhỏ để
+ | không bắn quá nhiều request vào máy chủ của các báo.
+ */
+Schedule::command('news:backfill --limit=20')->everyFifteenMinutes()->withoutOverlapping();

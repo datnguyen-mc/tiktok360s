@@ -105,6 +105,7 @@ def build_payload(script: dict, voice: dict | None, video: Path | None,
         "finished_at": script.get("generated_at"),
         "error_message": error or None,
         "items": items,
+        "clip_calls": script.get("clip_calls") or [],
     }
 
 

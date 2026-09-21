@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\GenerationCall;
 use App\Models\PublishJob;
 use App\Models\Run;
 use App\Models\TiktokAccount;
@@ -106,17 +107,33 @@ class IngestController extends Controller
             'items.*.clip_cost_usd' => ['nullable', 'numeric', 'min:0'],
             'items.*.scene_start'  => ['nullable', 'numeric'],
             'items.*.scene_dur'    => ['nullable', 'numeric'],
+
+            // Nhật ký từng lần gọi API sinh cảnh, kèm cả lần thất bại
+            'clip_calls'                    => ['nullable', 'array'],
+            'clip_calls.*.video_engine_id'  => ['nullable', 'integer'],
+            'clip_calls.*.provider'         => ['required_with:clip_calls', 'string', 'max:30'],
+            'clip_calls.*.model'            => ['nullable', 'string', 'max:80'],
+            'clip_calls.*.resolution'       => ['nullable', 'string', 'max:20'],
+            'clip_calls.*.scene_index'      => ['nullable', 'integer', 'min:0'],
+            'clip_calls.*.prompt'           => ['nullable', 'string'],
+            'clip_calls.*.seconds'          => ['nullable', 'integer', 'min:0'],
+            'clip_calls.*.cost_per_second'  => ['nullable', 'numeric', 'min:0'],
+            'clip_calls.*.cost_usd'         => ['nullable', 'numeric', 'min:0'],
+            'clip_calls.*.status'           => ['nullable', Rule::in(['success', 'failed'])],
+            'clip_calls.*.error_message'    => ['nullable', 'string'],
+            'clip_calls.*.clip_url'         => ['nullable', 'string', 'max:1000'],
         ]);
 
         $items = $data['items'] ?? [];
-        unset($data['items']);
+        $calls = $data['clip_calls'] ?? [];
+        unset($data['items'], $data['clip_calls']);
 
         // Kịch bản cũ (trước khi có chủ đề) gửi topic = null. Để nguyên thì câu
         // UPDATE sẽ ghi đè cột thành null và vi phạm ràng buộc NOT NULL.
         $data['topic'] = $data['topic'] ?: 'showbiz';
         $data['topic_name'] = $data['topic_name'] ?: ucfirst($data['topic']);
 
-        $run = DB::transaction(function () use ($data, $items) {
+        $run = DB::transaction(function () use ($data, $items, $calls) {
             // Chạy lại cùng chủ đề + cùng ngày thì ghi đè, không tạo bản trùng.
             // Phải có cả `topic`: hai chủ đề chạy cùng ngày là hai video khác nhau.
             $run = Run::updateOrCreate(
@@ -126,6 +143,24 @@ class IngestController extends Controller
             $run->items()->delete();
             if ($items) {
                 $run->items()->createMany($items);
+            }
+
+            /*
+             * Nhật ký chi phí thì GHI THÊM, không xoá bản cũ như items.
+             *
+             * Tạo lại một video là gọi API lần nữa và tốn tiền lần nữa; xoá lượt
+             * gọi cũ đi thì tổng chi phí tháng sẽ thiếu đúng phần đã tiêu. Đây là
+             * chỗ duy nhất trong hàm này cố tình không ghi đè.
+             */
+            foreach ($calls as $call) {
+                GenerationCall::create(array_merge($call, [
+                    'run_id'    => $run->id,
+                    'topic'     => $run->topic,
+                    'run_date'  => $run->run_date,
+                    'run_title' => $run->title,
+                    'status'    => $call['status'] ?? 'success',
+                    'cost_usd'  => $call['cost_usd'] ?? 0,
+                ]));
             }
 
             return $run;

@@ -1,26 +1,40 @@
 # Toàn bộ hệ thống chạy bằng Docker. Không cần Kubernetes.
 #
-#   cd deploy && cp .env.docker.example .env && docker compose up -d --build
+#   ./deploy/install.sh              cài và khởi động tất cả
+#   make -C deploy up                khởi động lại sau khi sửa
+#   make -C deploy logs              xem log
 #
 # Thêm giám sát (Prometheus + Grafana + Loki):
-#   docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+#   make -C deploy monitoring
 
-name: showbiz
+name: tiktok360s
 
-x-app-env: &app-env
+x-app: &app
   env_file: [.env]
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    # Không giới hạn thì log ăn hết đĩa VPS sau vài tuần
+    options: { max-size: "10m", max-file: "3" }
 
 services:
-  # ── Cơ sở dữ liệu ──────────────────────────────────────────────────────────
+  # ── Cơ sở dữ liệu (dùng chung cho CMS và website) ──────────────────────────
   mysql:
+    <<: *app
     image: mysql:8.0
-    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE:-showbiz_cms}
       MYSQL_USER: ${DB_USERNAME:-showbiz}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      # Bảng `visits` ghi liên tục và bảng `articles` có FULLTEXT tiếng Việt —
+      # 256M bộ đệm là mức tối thiểu để không phải đọc đĩa mỗi truy vấn.
+      - --innodb-buffer-pool-size=256M
+      - --max-connections=200
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -29,78 +43,150 @@ services:
       timeout: 5s
       retries: 30
       start_period: 40s
-    # Không mở cổng ra ngoài. Cần truy cập từ máy thật: docker compose exec mysql mysql -uroot -p
+    # KHÔNG mở cổng ra Internet. Cần vào: make -C deploy db
     networks: [internal]
 
-  # ── Bảng điều khiển ────────────────────────────────────────────────────────
+  # ── Redis: cache và hàng đợi ───────────────────────────────────────────────
+  # Phiên đăng nhập vẫn để ở MySQL, không chuyển sang đây: hai ứng dụng dùng
+  # chung bảng `sessions` để một lần đăng nhập vào được cả hai, và phiên mà mất
+  # khi Redis khởi động lại thì mọi người bị đá ra ngoài.
+  redis:
+    <<: *app
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "no", "--maxmemory", "256mb",
+              "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks: [internal]
+
+  # ── CMS dựng video TikTok ──────────────────────────────────────────────────
   cms:
+    <<: *app
     build:
       context: ..
       dockerfile: deploy/docker/Dockerfile.cms
-    image: showbiz-cms:latest
-    restart: unless-stopped
+    image: tiktok360s-cms:latest
     depends_on:
       mysql: { condition: service_healthy }
-    <<: *app-env
+      redis: { condition: service_healthy }
     environment:
+      APP_URL: https://${CMS_DOMAIN}
       DB_HOST: mysql
       DB_PORT: "3306"
+      REDIS_HOST: redis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: database
       PIPELINE_ROOT: /data
-    volumes:
-      - pipeline_output:/data/output:ro     # chỉ đọc: CMS phát video, không sửa
+      RUN_SCHEDULER: "true"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/up"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 30
       start_period: 60s
-    networks: [internal, web]
+    volumes:
+      - pipeline_output:/data/output:ro   # chỉ đọc: CMS phát video, không sửa
+      # Chủ đề kênh là cấu hình-dạng-mã, sống trong kho mã. Gắn thẳng thư mục
+      # thật vào cả hai container: sửa trong CMS thì dây chuyền thấy ngay, và
+      # thay đổi vẫn nằm trong git chứ không biến mất cùng container.
+      - ../topics:/data/topics
+    networks: [internal, edge]
+
+  # ── Website tin tức (có SSR cho SEO) ───────────────────────────────────────
+  web:
+    <<: *app
+    build:
+      context: ..
+      dockerfile: deploy/docker/Dockerfile.web
+    image: tiktok360s-web:latest
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      # Bảng `users` do CMS tạo và CMS cũng thêm cột vào đó. Khởi động song song
+      # thì migration của website có thể chạy trước và tham chiếu cột chưa tồn
+      # tại. Chờ CMS xong rồi mới chạy.
+      cms:   { condition: service_healthy }
+    environment:
+      APP_NAME: ${SITE_NAME:-Tin360s}
+      APP_URL: https://${DOMAIN}
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      REDIS_HOST: redis
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: database
+      RUN_SCHEDULER: "true"
+    networks: [internal, edge]
 
   # ── Dây chuyền dựng video ──────────────────────────────────────────────────
   pipeline:
+    <<: *app
     build:
       context: ..
       dockerfile: deploy/docker/Dockerfile.pipeline
-    image: showbiz-pipeline:latest
-    restart: unless-stopped
+    image: tiktok360s-pipeline:latest
     depends_on:
       cms: { condition: service_started }
-    <<: *app-env
     environment:
       CMS_URL: http://cms:8080
+      WEBSITE_URL: http://web:8080
       TZ: ${TZ:-Asia/Ho_Chi_Minh}
       SCHEDULE_TIME: ${SCHEDULE_TIME:-07:30}
       RUN_ON_START: ${RUN_ON_START:-false}
     volumes:
       - pipeline_output:/app/output
+      - ../topics:/app/topics
+    networks: [internal]
+
+  # ── Sao lưu cơ sở dữ liệu ──────────────────────────────────────────────────
+  # Hạ tầng không có bản sao lưu thì không phải hạ tầng, chỉ là may mắn.
+  backup:
+    <<: *app
+    image: mysql:8.0
+    depends_on:
+      mysql: { condition: service_healthy }
+    environment:
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    entrypoint: ["/bin/bash", "/backup.sh"]
+    volumes:
+      - ./docker/backup.sh:/backup.sh:ro
+      - backups:/backups
     networks: [internal]
 
   # ── HTTPS tự động ──────────────────────────────────────────────────────────
   caddy:
+    <<: *app
     image: caddy:2-alpine
-    restart: unless-stopped
-    depends_on: [cms]
+    depends_on: [web, cms]
     environment:
       DOMAIN: ${DOMAIN}
+      CMS_DOMAIN: ${CMS_DOMAIN}
       GRAFANA_DOMAIN: ${GRAFANA_DOMAIN:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"     # HTTP/3
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-    networks: [web]
+    networks: [edge]
 
 volumes:
   mysql_data:
   pipeline_output:
   caddy_data:
   caddy_config:
+  backups:
 
 networks:
-  # internal không nối ra Internet — MySQL và dây chuyền nằm ở đây
+  # internal: MySQL, Redis, dây chuyền — không ai bên ngoài chạm tới
   internal:
-  # web là nơi Caddy gặp CMS và Grafana
-  web:
+  # edge: nơi Caddy gặp web, cms và grafana
+  edge:

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CreateVideoController;
+use App\Http\Controllers\Api\GenerationCostController;
 use App\Http\Controllers\Api\RegenerateVideoController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\IngestController;
@@ -100,6 +101,9 @@ Route::prefix('api')->group(function () {
         Route::delete('video-engines/{engine}', [VideoEngineController::class, 'destroy']);
         Route::post('video-engines/{engine}/trigger', [VideoEngineController::class, 'trigger']);
         Route::post('video-engines/estimate', [VideoEngineController::class, 'estimate']);
+
+        // Lịch sử chi phí gọi API sinh cảnh
+        Route::get('generation-costs', [GenerationCostController::class, 'index']);
 
         // Cấu hình khoá API
         Route::get('settings', [SettingsController::class, 'index']);

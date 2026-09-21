@@ -29,6 +29,15 @@ class NewsFetcher
      */
     private const CONTENT_BUDGET = 25;
 
+    /**
+     * Khoảng cách tối thiểu trước khi thử lại một bài đã trích hỏng.
+     *
+     * Không có nó thì vài bài không trích được (báo đổi bố cục, trang chặn bot)
+     * sẽ chiếm hết hạn mức của mọi lượt chạy, và phần còn lại vĩnh viễn không
+     * đến lượt.
+     */
+    private const RETRY_AFTER_HOURS = 12;
+
     public function __construct(private ContentExtractor $extractor) {}
 
     /** @return array{added:int, skipped:int, failed:int} */
@@ -53,39 +62,57 @@ class NewsFetcher
         $items = $this->filter($items, $category);
         $result = $this->store($items, $category);
 
-        if ($category->content_paragraphs > 0) {
-            $result['content'] = $this->fillContent($category);
-        }
+        $result['content'] = $this->fillContent($category);
 
         return [...$result, 'failed' => $failed];
     }
 
     /**
-     * Lấy nội dung đầy đủ cho các bài chưa có, trong hạn mức cho phép.
-     * Chạy sau khi lưu để chỉ tải trang gốc của bài thật sự mới.
+     * Lấy nội dung và ảnh cho các bài còn thiếu, trong hạn mức cho phép.
+     *
+     * Nhận cả bài THIẾU ẢNH chứ không chỉ thiếu nội dung: RSS của nhiều báo
+     * không kèm ảnh, mà một trang tin toàn ô xám thì không ai đọc.
      */
-    private function fillContent(Category $category): int
+    public function fillContent(Category $category, ?int $budget = null): int
     {
+        $paragraphs = max(1, $category->content_paragraphs ?: 6);
+
         $pending = Article::where('category_id', $category->id)
-            ->whereNull('content')
             ->whereNotNull('source_url')
+            ->where(fn ($q) => $q->whereNull('content')->orWhereNull('image_url'))
+            // Bài vừa thử cách đây chưa lâu thì để lần sau, nhường chỗ cho bài
+            // chưa ai đụng tới.
+            ->where(fn ($q) => $q->whereNull('content_fetched_at')
+                ->orWhere('content_fetched_at', '<', now()->subHours(self::RETRY_AFTER_HOURS)))
+            ->orderByRaw('content_fetched_at IS NOT NULL')   // chưa thử bao giờ thì trước
             ->latest('published_at')
-            ->limit(self::CONTENT_BUDGET)
-            ->get(['id', 'source_url', 'image_url']);
+            ->limit($budget ?? self::CONTENT_BUDGET)
+            ->get(['id', 'source_url', 'image_url', 'content']);
 
         $done = 0;
         foreach ($pending as $a) {
-            $r = $this->extractor->extract($a->source_url, $category->content_paragraphs);
-            if (! $r['content']) {
-                continue;
+            try {
+                $r = $this->extractor->extract($a->source_url, $paragraphs);
+            } catch (Throwable) {
+                $r = ['content' => null, 'image' => null];
             }
 
-            $a->update([
-                'content'   => $r['content'],
-                // Ảnh og: thường nét hơn ảnh thumbnail trong RSS
-                'image_url' => $a->image_url ?: $r['image'],
-            ]);
-            $done++;
+            $fields = ['content_fetched_at' => now()];
+
+            if (! $a->content && $r['content']) {
+                $fields['content'] = $r['content'];
+            }
+            // Lưu ảnh KỂ CẢ khi không trích được nội dung: thẻ og:image gần như
+            // trang nào cũng có, còn phần thân bài thì mỗi báo một kiểu.
+            if (! $a->image_url && $r['image']) {
+                $fields['image_url'] = $r['image'];
+            }
+
+            $a->forceFill($fields)->save();
+
+            if (count($fields) > 1) {
+                $done++;
+            }
         }
 
         return $done;

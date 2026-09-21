@@ -7,7 +7,7 @@
 #   Loki        gom log của mọi container
 #   node/cadvisor  CPU, RAM, đĩa của máy chủ và từng container
 
-name: showbiz
+name: tiktok360s
 
 services:
   prometheus:
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./monitoring/grafana:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
-    networks: [internal, web]
+    networks: [internal, edge]
 
   loki:
     image: grafana/loki:3.2.1
@@ -86,4 +86,4 @@ volumes:
 
 networks:
   internal:
-  web:
+  edge:

@@ -238,7 +238,10 @@ def build_caption(scenes: list[dict], cfg: dict, ngay: datetime | None = None) -
              f"{_duration_phrase(cfg)}".replace("  ", " "), ""]
     lines += [f"{i}. {shorten(s['headline'], 70)}" for i, s in enumerate(news, 1)]
     lines += ["", "Bạn quan tâm tin nào nhất? Comment bên dưới 👇",
-              f"Theo dõi {cfg['brand']['handle']} để cập nhật tin sao mỗi ngày.", "",
+              # Tagline lấy từ chủ đề, không gắn cứng "tin sao": kênh bóng đá và
+              # kênh drama cũng dùng hàm này, và đã đăng ra caption sai một thời gian.
+              f"Theo dõi {cfg['brand']['handle']} — "
+              f"{(cfg['brand'].get('tagline') or 'cập nhật mỗi ngày').lower()}.", "",
               " ".join(cfg["hashtags"])]
     return {
         "caption": "\n".join(lines),

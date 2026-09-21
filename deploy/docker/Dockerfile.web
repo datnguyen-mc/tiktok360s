@@ -1,0 +1,70 @@
+# Website tin tức Tin360s.
+#
+# Khác CMS ở một điểm quan trọng: trang này render phía máy chủ (Inertia SSR)
+# nên bản chạy thật CẦN Node, không chỉ cần PHP. Thiếu Node thì trang vẫn mở
+# được nhưng Google chỉ thấy một thẻ <div id="app"> rỗng.
+
+# ── Tầng 1: dựng tài nguyên trình duyệt + gói SSR ─────────────────────────────
+FROM node:20-alpine AS assets
+WORKDIR /build
+
+# Playwright nằm trong devDependencies (chỉ dùng để kiểm thử). Không chặn thì
+# script cài của nó tải về hơn 100 MB trình duyệt mà image chạy thật không dùng.
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
+COPY web/package*.json ./
+RUN npm ci
+
+COPY web/vite.config.js ./
+COPY web/resources ./resources
+# `npm run build` = vite build && vite build --ssr → sinh public/build + bootstrap/ssr
+RUN npm run build
+
+# ── Tầng 2: thư viện PHP ──────────────────────────────────────────────────────
+FROM composer:2 AS vendor
+WORKDIR /build
+COPY web/composer.json web/composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction
+COPY web/ ./
+RUN composer dump-autoload --optimize --no-dev --no-scripts
+
+# ── Tầng 3: bản chạy thật ─────────────────────────────────────────────────────
+FROM php:8.3-fpm-alpine
+
+RUN apk add --no-cache \
+        nginx supervisor mysql-client nodejs \
+        icu-dev oniguruma-dev libzip-dev \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && docker-php-ext-install -j"$(nproc)" pdo_mysql bcmath opcache intl zip \
+    # Cache và hàng đợi chạy trên Redis; thiếu extension này thì queue worker
+    # chết ngay lúc khởi động mà trang vẫn mở được — rất khó thấy.
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/* /tmp/pear
+
+WORKDIR /var/www/html
+
+COPY --from=vendor /build                  /var/www/html
+COPY --from=assets /build/public/build     /var/www/html/public/build
+COPY --from=assets /build/bootstrap/ssr    /var/www/html/bootstrap/ssr
+
+COPY deploy/docker/nginx-web.conf        /etc/nginx/nginx.conf
+COPY deploy/docker/php.ini               /usr/local/etc/php/conf.d/app.ini
+COPY deploy/docker/supervisord-web.conf  /etc/supervisord.conf
+COPY deploy/docker/entrypoint-web.sh     /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+# robots.txt tĩnh sẽ che mất route sinh động (có dòng Sitemap và Disallow /admin).
+# Nếu lỡ lọt vào image thì xoá đi.
+RUN rm -f public/robots.txt \
+    && mkdir -p storage/framework/cache storage/framework/sessions \
+                storage/framework/views storage/logs bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s \
+    CMD wget -qO- http://127.0.0.1:8080/up || exit 1
+
+ENTRYPOINT ["entrypoint"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

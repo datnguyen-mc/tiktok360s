@@ -13,13 +13,16 @@ class DatabaseSeeder extends Seeder
      * Hai chuyên mục đầu nối với chủ đề của dây chuyền video (`topic`) — chúng
      * nhận tin từ dây chuyền VÀ tự lấy thêm. Các chuyên mục còn lại chỉ có tin,
      * không dựng video, nên chỉ cần khai nguồn RSS.
+     *
+     * `content_paragraphs` phải khai rõ: để mặc định 0 thì chuyên mục không bao
+     * giờ lấy nội dung, và trang tin chỉ còn những bài trơ mỗi cái sapo.
      */
     public function run(): void
     {
         $categories = [
             [
                 'slug' => 'showbiz', 'name' => 'Showbiz', 'topic' => 'showbiz',
-                'color' => '#FE2C55', 'sort' => 10,
+                'color' => '#FE2C55', 'sort' => 10, 'content_paragraphs' => 6,
                 'description' => 'Tin giải trí, sao Việt và quốc tế',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/giai-tri.rss'],
@@ -30,7 +33,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'bongda', 'name' => 'Bóng đá', 'topic' => 'bongda',
-                'color' => '#00A650', 'sort' => 20,
+                'color' => '#00A650', 'sort' => 20, 'content_paragraphs' => 6,
                 'description' => 'Tin bóng đá Việt Nam và quốc tế',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/the-thao.rss'],
@@ -51,7 +54,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'cong-nghe', 'name' => 'Công nghệ',
-                'color' => '#0A9CB0', 'sort' => 30,
+                'color' => '#0A9CB0', 'sort' => 30, 'content_paragraphs' => 6,
                 'description' => 'Điện thoại, máy tính, AI và chuyển đổi số',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/so-hoa.rss'],
@@ -62,7 +65,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'kinh-doanh', 'name' => 'Kinh doanh',
-                'color' => '#7C3AED', 'sort' => 40,
+                'color' => '#7C3AED', 'sort' => 40, 'content_paragraphs' => 6,
                 'description' => 'Thị trường, doanh nghiệp và tài chính',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/kinh-doanh.rss'],
@@ -72,7 +75,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'the-gioi', 'name' => 'Thế giới',
-                'color' => '#2563EB', 'sort' => 50,
+                'color' => '#2563EB', 'sort' => 50, 'content_paragraphs' => 6,
                 'description' => 'Tin quốc tế nổi bật',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/the-gioi.rss'],
@@ -81,7 +84,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'doi-song', 'name' => 'Đời sống',
-                'color' => '#EA580C', 'sort' => 60,
+                'color' => '#EA580C', 'sort' => 60, 'content_paragraphs' => 6,
                 'description' => 'Gia đình, ẩm thực, du lịch và nhịp sống',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/doi-song.rss'],
@@ -90,7 +93,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'slug' => 'suc-khoe', 'name' => 'Sức khoẻ',
-                'color' => '#059669', 'sort' => 70,
+                'color' => '#059669', 'sort' => 70, 'content_paragraphs' => 6,
                 'description' => 'Y tế, dinh dưỡng và phòng bệnh',
                 'sources' => [
                     ['name' => 'VnExpress', 'url' => 'https://vnexpress.net/rss/suc-khoe.rss'],
