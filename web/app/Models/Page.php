@@ -46,4 +46,19 @@ class Page extends Model
 
         return $slug;
     }
+
+    /**
+     * Đổi slug thì ghi lại địa chỉ cũ, để nó chuyển hướng 301 thay vì 404.
+     * Làm ở model chứ không ở controller: slug đổi được từ nhiều đường (giao
+     * diện quản trị, tinker, seeder), quên một đường là mất liên kết.
+     */
+    protected static function booted(): void
+    {
+        static::updating(function (self $m) {
+            if ($m->isDirty('slug')) {
+                SlugRedirect::record('page', $m->getOriginal('slug'), $m->slug);
+            }
+        });
+    }
+
 }

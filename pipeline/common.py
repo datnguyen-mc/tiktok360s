@@ -194,3 +194,13 @@ def log(msg: str) -> None:
 
 def step(msg: str) -> None:
     print(f"\n▶ {msg}", flush=True)
+
+
+def chua_cum(text: str, cum: str) -> bool:
+    """Văn bản có chứa CỤM TỪ này không — theo ranh giới từ, không phải chuỗi con.
+
+    Dùng `cum in text` sẽ khớp nhầm giữa chừng một từ khác: "ăn ba" nằm gọn
+    trong "khó khăn ban đầu", "lol" nằm trong "lolita". Tiếng Việt viết rời từng
+    âm tiết nên chỉ cần chặn hai đầu bằng ranh giới chữ là đủ.
+    """
+    return re.search(rf"(?<!\w){re.escape(cum)}(?!\w)", text) is not None

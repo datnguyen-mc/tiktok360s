@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
-from .common import (ROOT, load_config, log, no_accent, sentences, shorten,
+from .common import (ROOT, chua_cum, load_config, log, no_accent, sentences, shorten,
                      step, strip_html, strip_lead)
 
 VN_TZ = timezone(timedelta(hours=7))     # tin showbiz Việt — gom theo ngày giờ Việt Nam
@@ -114,14 +114,50 @@ def dedupe(items: list[dict], threshold: float = 0.55) -> list[dict]:
     return kept
 
 
+# Hai chữ trở lên viết hoa liên tiếp, toàn ký tự ASCII, không dấu tiếng Việt
+_TEN_NGOAI = re.compile(r"\b[A-Z][a-z]{1,}(?:\s+[A-Z][a-z]{1,}){1,}\b")
+
+# Những cụm hai chữ hoa hay gặp trong tin tiếng Việt mà KHÔNG phải tên người
+_BO_QUA = {
+    "Viet Nam", "Ha Noi", "Sai Gon", "Premier League", "Champions League",
+    "Europa League", "Nations League", "World Cup", "La Liga", "Serie A",
+    "The Voice", "The Face", "The Scandal", "Rap Viet", "Running Man",
+    "An Cung", "Thu Duc", "Binh Duong", "Can Tho", "Da Nang", "Nha Trang",
+}
+
+
+def _foreign_names(title: str) -> int:
+    """Đếm số cụm tên riêng nước ngoài trong tiêu đề."""
+    return sum(1 for m in _TEN_NGOAI.findall(title) if m not in _BO_QUA)
+
+
 def score(item: dict, cfg: dict) -> float:
     rank = cfg["ranking"]
     title_l = item["title"].lower()
     text_l = (item["title"] + " " + item["summary"]).lower()
 
     s = 10.0 * item["weight"]
-    s += 3.0 * sum(1 for k in rank["hot_keywords"] if k in title_l)
-    s += 1.0 * sum(1 for k in rank["hot_keywords"] if k in text_l and k not in title_l)
+    s += 3.0 * sum(1 for k in rank["hot_keywords"] if chua_cum(title_l, k))
+    s += 1.0 * sum(1 for k in rank["hot_keywords"]
+                   if chua_cum(text_l, k) and not chua_cum(title_l, k))
+
+    # Tên riêng nước ngoài: "Selena Gomez", "Ji Chang Wook", "Taylor Swift" —
+    # hai chữ hoa liền nhau, không dấu. Chữ Việt gần như luôn có dấu ở đâu đó,
+    # nên đây là dấu hiệu rẻ mà khá chắc để nhận ra tin về sao ngoại.
+    #
+    # Là suy đoán chứ không phải sự thật: "Sơn Tùng M-TP" hay "Quang Hải" viết
+    # không dấu vẫn lọt. Nên nó chỉ TRỪ ĐIỂM, không loại bỏ — tin ngoại thật sự
+    # nổi bật vẫn lên được.
+    if rank.get("phat_ten_ngoai"):
+        s -= float(rank["phat_ten_ngoai"]) * _foreign_names(item["title"])
+
+    # Ưu tiên theo nhóm: cách nói "chủ yếu là X" bằng điểm thay vì bằng bộ lọc.
+    # Lọc cứng thì mất hẳn phần còn lại; cộng/trừ điểm thì X luôn nổi lên trên
+    # mà vẫn còn chỗ cho tin ngoài X khi nó thật sự nổi bật.
+    for group in rank.get("prefer_keywords") or []:
+        bonus = float(group.get("bonus", 0))
+        if any(chua_cum(text_l, k) for k in group.get("keywords") or []):
+            s += bonus
     if item["image"]:
         s += 4.0
     # càng mới càng ưu tiên: trừ dần theo giờ
@@ -135,7 +171,7 @@ def score(item: dict, cfg: dict) -> float:
 def is_blocked(item: dict, cfg: dict) -> bool:
     """Chặn tin tang thương / nhạy cảm — không hợp định dạng tin nhanh."""
     text_l = (item["title"] + " " + item["summary"]).lower()
-    return any(k in text_l for k in cfg["ranking"]["block_keywords"])
+    return any(chua_cum(text_l, k) for k in cfg["ranking"]["block_keywords"])
 
 
 def matches_topic(item: dict, cfg: dict) -> bool:
@@ -150,21 +186,32 @@ def matches_topic(item: dict, cfg: dict) -> bool:
     """
     rank = cfg.get("ranking", {})
     require = rank.get("require_keywords") or []
+    strong = rank.get("require_strong_keywords") or []
     exclude = rank.get("exclude_keywords") or []
     text_l = (item["title"] + " " + item["summary"]).lower()
 
-    if any(k in text_l for k in exclude):
+    if any(chua_cum(text_l, k) for k in exclude):
         return False
+
+    # Từ khoá "chắc chắn đúng chủ đề". Có khai thì bắt buộc phải khớp một cái.
+    #
+    # Cần lớp này vì `require_keywords` chứa những từ quá chung để đứng một
+    # mình: "đội tuyển" khớp cả đội tuyển cầu mây, đội tuyển bắn súng và đội
+    # tuyển PUBG — ba thứ không liên quan gì tới bóng đá. Một từ chắc chắn như
+    # "bóng đá" hay "ngoại hạng" thì không nhầm được.
+    if strong:
+        return any(chua_cum(text_l, k) for k in strong)
+
     if not require:
         return True
-    return any(k in text_l for k in require)
+    return any(chua_cum(text_l, k) for k in require)
 
 
 def _parse_date(value: str) -> date_cls:
     try:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
-        raise SystemExit(f"Ngày không hợp lệ: {value!r} — dùng định dạng YYYY-MM-DD")
+        raise ValueError(f"Ngày không hợp lệ: {value!r} — dùng định dạng YYYY-MM-DD")
 
 
 def _window_hours(target: date_cls | None, default_hours: int) -> int:
@@ -210,6 +257,16 @@ def collect_all(cfg: dict, date: str | None = None) -> list[dict]:
         target = None                        # hôm nay thì cứ lấy tin mới nhất cho tự nhiên
 
     step("B1 · Thu thập tin showbiz" + (f" · ngày {target}" if target else ""))
+
+    # Báo ngay ở đây thay vì để bước dựng kịch bản chết vì danh sách rỗng: lỗi
+    # càng gần nguyên nhân thì càng dễ sửa.
+    if not cfg.get("sources"):
+        raise RuntimeError(
+            f"Chủ đề “{cfg.get('topic_name') or cfg.get('topic')}” chưa khai nguồn RSS nào.\n"
+            f"  Thêm vào topics/{cfg.get('topic', '?')}.json, mục `sources`, "
+            f"hoặc sửa trong CMS ở trang Chủ đề kênh."
+        )
+
     window = _window_hours(target, cfg["script"]["max_age_hours"])
     raw: list[dict] = []
     for src in cfg["sources"]:
@@ -221,7 +278,7 @@ def collect_all(cfg: dict, date: str | None = None) -> list[dict]:
                if datetime.fromisoformat(i["published"]).astimezone(VN_TZ).date() == target]
         log(f"lọc theo ngày {target}: {before} → {len(raw)} tin")
         if not raw:
-            raise SystemExit(
+            raise RuntimeError(
                 f"Không có tin nào đăng ngày {target} trong RSS.\n"
                 f"  RSS chỉ giữ tin vài ngày gần nhất — ngày càng cũ càng khó lấy.\n"
                 f"  Hôm nay (giờ VN) là {today_vn}."

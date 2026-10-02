@@ -21,6 +21,7 @@ use App\Http\Controllers\Web\PageController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SearchController;
 use App\Http\Middleware\EnsureAdmin;
+use App\Models\SlugRedirect;
 use App\Http\Middleware\VerifyIngestToken;
 use Illuminate\Support\Facades\Route;
 
@@ -50,12 +51,34 @@ Route::post('/api/ingest/articles', IngestArticleController::class)
     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
     ->middleware(VerifyIngestToken::class);
 
+/*
+ | Slug đã đổi tên.
+ |
+ | Phải bắt ở tầng route chứ không phải trong controller: route bind theo slug,
+ | không tìm thấy là Laravel ném 404 trước khi controller kịp chạy. `missing()`
+ | là móc mà Laravel gọi đúng lúc đó.
+ */
+$moved301 = fn (string $kind, string $prefix) => function ($request) use ($kind, $prefix) {
+    $slug = $request->route()->parameter($kind === 'article' ? 'article' : $kind);
+    $slug = is_string($slug) ? $slug : (string) $slug;
+
+    if ($to = SlugRedirect::to($kind, $slug)) {
+        return redirect("/{$prefix}/{$to}".($request->getQueryString()
+            ? '?'.$request->getQueryString() : ''), 301);
+    }
+
+    abort(404);
+};
+
 // ── Trang công khai ──────────────────────────────────────────────────────────
 Route::get('/', HomeController::class)->name('home');
 Route::get('/search', SearchController::class)->name('search');
-Route::get('/category/{category}', CategoryController::class)->name('category');
-Route::get('/page/{page}', PageController::class)->name('page');
-Route::get('/news/{article}', ArticleController::class)->name('article');
+Route::get('/category/{category}', CategoryController::class)->name('category')
+    ->missing($moved301('category', 'category'));
+Route::get('/page/{page}', PageController::class)->name('page')
+    ->missing($moved301('page', 'page'));
+Route::get('/news/{article}', ArticleController::class)->name('article')
+    ->missing($moved301('article', 'news'));
 
 // ── Tương tác của độc giả (phải đăng nhập) ──────────────────────────────────
 Route::middleware('auth')->group(function () {
@@ -160,11 +183,26 @@ Route::post('/logout', [SessionController::class, 'destroy'])->middleware('auth'
  | ── Đường dẫn tiếng Việt cũ ────────────────────────────────────────────────
  | 301 chứ không phải 302: nói với Google rằng địa chỉ đã chuyển hẳn, để thứ
  | hạng của đường dẫn cũ dồn sang đường dẫn mới thay vì bị chia đôi.
+ |
+ | Ba đường dưới đây phải dịch CẢ tiền tố lẫn slug trong MỘT bước. Chuyển
+ | /chuyen-muc/bongda sang /category/bongda rồi mới sang /category/football là
+ | một chuỗi hai bước — Google coi chuỗi chuyển hướng là lỗi và không dồn hết
+ | thứ hạng qua.
  */
+foreach ([
+    'tin'        => ['article', 'news'],
+    'chuyen-muc' => ['category', 'category'],
+    'trang'      => ['page', 'page'],
+] as $old => [$kind, $prefix]) {
+    Route::get($old.'/{slug}', function (string $slug) use ($kind, $prefix) {
+        $slug = SlugRedirect::to($kind, $slug) ?: $slug;
+
+        return redirect("/{$prefix}/{$slug}".(request()->getQueryString()
+            ? '?'.request()->getQueryString() : ''), 301);
+    })->where('slug', '.*');
+}
+
 $moved = [
-    'tin/{rest}'        => 'news/{rest}',
-    'chuyen-muc/{rest}' => 'category/{rest}',
-    'trang/{rest}'      => 'page/{rest}',
     'tim-kiem'          => 'search',
     'dang-nhap'         => 'login',
     'dang-ky'           => 'register',

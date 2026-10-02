@@ -32,7 +32,10 @@ watch(f, (v) => {
 }, { deep: true })
 
 function toggle(a, field, value) {
-  router.patch(`/admin/articles/${a.id}/doi`, { field, value }, { preserveScroll: true })
+  // `/toggle`, không phải `/doi`. Khu quản trị đặt route bằng tiếng Anh; các
+  // đường dẫn tiếng Việt (quan-tri/tin…) chỉ là redirect GET cho link cũ, nên
+  // một PATCH tới /doi không khớp route nào và trả về 404.
+  router.patch(`/admin/articles/${a.id}/toggle`, { field, value }, { preserveScroll: true })
 }
 
 function remove(a) {

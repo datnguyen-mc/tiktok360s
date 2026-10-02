@@ -15,6 +15,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
+from . import logos
 from .common import ROOT, hex_to_rgb, load_config, log, rel, step
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124 Safari/537.36"
@@ -178,10 +179,108 @@ def rounded_photo(photo: Path, w: int, h: int, radius: int = 40) -> Image.Image:
 
 # --------------------------------------------------------------- lớp giao diện
 
+def _the_clb(ui: Image.Image, d: ImageDraw.ImageDraw, the: dict,
+             x: int, y: int, w: int, h: int,
+             accent: tuple, accent2: tuple, noi_bat: str | None = None) -> None:
+    """Bảng thông tin câu lạc bộ, vẽ vào chỗ lẽ ra là ảnh.
+
+    Bốn dòng dữ kiện: tên, giải, năm thành lập + sân, danh hiệu. Danh hiệu dài
+    nên tách theo dấu · thành từng dòng — nhồi một dòng dài thì chữ co lại tới
+    mức không đọc nổi trên điện thoại.
+    """
+    d.rounded_rectangle((x, y, x + w, y + h), radius=40, fill=(12, 18, 32, 235))
+
+    # Vạch màu bên trái làm điểm tựa cho mắt
+    d.rounded_rectangle((x + 34, y + 44, x + 44, y + h - 44), radius=5, fill=accent + (255,))
+
+    px = x + 74
+    pw = w - 108
+    cy = y + 52
+
+    # Phần đang được nói tới thì sáng lên, phần còn lại mờ đi. Bảng đứng yên
+    # suốt video thì người xem hết nhìn sau năm giây.
+    def mo(khoa: str) -> int:
+        if noi_bat is None:
+            return 235
+        return 255 if khoa == noi_bat else 85
+
+    if the.get("giai"):
+        f = font("body", 30)
+        d.text((px, cy), the["giai"].upper(), font=f, fill=accent2 + (255,))
+        cy += 46
+
+    # Tên CLB: cỡ chữ tự co cho vừa một dòng
+    f_ten, dong_ten = fit_font(d, the.get("ten", ""), "head", 62, pw, 1, min_size=36)
+    d.text((px, cy), dong_ten[0] if dong_ten else the.get("ten", ""),
+           font=f_ten, fill=(255, 255, 255, 255))
+    cy += f_ten.size + 26
+
+    f_nho = font("body", 32)
+    for nhan, gt in (("Thành lập", the.get("nam")), ("Sân nhà", the.get("san"))):
+        if not gt:
+            continue
+        khoa = "nam" if nhan == "Thành lập" else "san"
+        a = mo(khoa)
+        if khoa == noi_bat:
+            # Vạch nhỏ bên trái chỉ đúng dòng đang nói
+            d.rounded_rectangle((px - 24, cy + 4, px - 18, cy + 68), radius=3,
+                                fill=accent2 + (255,))
+        d.text((px, cy), f"{nhan}", font=font("body", 26),
+               fill=(255, 255, 255, min(a, 150)))
+        cy += 32
+        for dong in wrap(d, str(gt), f_nho, pw, 2):
+            d.text((px, cy), dong, font=f_nho, fill=(255, 255, 255, a))
+            cy += 40
+        cy += 8
+
+    if the.get("danh_hieu") and cy < y + h - 90:
+        a = mo("danh_hieu")
+        if noi_bat == "danh_hieu":
+            d.rounded_rectangle((px - 24, cy + 4, px - 18, y + h - 52), radius=3,
+                                fill=accent2 + (255,))
+        d.text((px, cy), "Danh hiệu", font=font("body", 26),
+               fill=(255, 255, 255, min(a, 150)))
+        cy += 34
+        f_dh = font("body", 30)
+        for phan in [p.strip() for p in str(the["danh_hieu"]).split("·") if p.strip()]:
+            if cy > y + h - 46:
+                break
+            d.ellipse((px + 2, cy + 13, px + 12, cy + 23), fill=accent + (a,))
+            for dong in wrap(d, phan, f_dh, pw - 30, 2):
+                d.text((px + 28, cy), dong, font=f_dh, fill=(255, 255, 255, a))
+                cy += 38
+            cy += 4
+
+    d.rounded_rectangle((x, y, x + w, y + h), radius=40,
+                        outline=accent + (110,), width=3)
+
+
+def _logo(ui: Image.Image, path: Path, cx: int, cy: int, dk: int) -> None:
+    """Logo CLB đặt trên đĩa trắng, tâm (cx, cy), đường kính dk.
+
+    Nhiều logo tối màu (Juventus, Tottenham) đặt thẳng lên nền tối là chìm mất;
+    đĩa trắng giữ cho logo nào cũng rõ.
+    """
+    r = dk // 2
+    box = (cx - r, cy - r, cx + r, cy + r)
+    ui.alpha_composite(shadow_layer(
+        (W, H), lambda dd: dd.ellipse((box[0], box[1] + 16, box[2], box[3] + 16), fill=255)))
+    ImageDraw.Draw(ui).ellipse(box, fill=(255, 255, 255, 255))
+
+    img = Image.open(path).convert("RGBA")
+    # Co vào hình vuông nội tiếp của đĩa, chừa lề để logo tròn không chạm viền
+    o = int(dk * 0.64)
+    k = min(o / img.width, o / img.height)
+    img = img.resize((max(1, round(img.width * k)), max(1, round(img.height * k))), Image.LANCZOS)
+    ui.alpha_composite(img, (cx - img.width // 2, cy - img.height // 2))
+
+
 def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
-            full_bleed: bool = False) -> Image.Image:
+            full_bleed: bool = False, logo: Path | None = None) -> Image.Image:
     """full_bleed=True: nền đã là clip AI phủ kín khung, nên bỏ thẻ ảnh đi,
-    chỉ giữ tiêu đề và badge. Giữ thẻ ảnh chồng lên clip sẽ che mất cảnh."""
+    chỉ giữ tiêu đề và badge. Giữ thẻ ảnh chồng lên clip sẽ che mất cảnh.
+
+    logo: logo CLB, chỉ vẽ ở cảnh mở đầu."""
     brand = cfg["brand"]
     # Kênh tin đếm "TIN 3/10"; kênh phim truyện đếm cảnh, gắn cứng chữ "TIN" vào
     # một tập hoạt hình thì đọc rất vô duyên. Nhãn lấy từ cấu hình chủ đề.
@@ -206,6 +305,12 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
                 (MARGIN, CARD_TOP + 16, MARGIN + card_w, CARD_TOP + CARD_H + 16), radius=40, fill=255)))
         if photo is not None:
             ui.alpha_composite(rounded_photo(photo, card_w, CARD_H), (MARGIN, CARD_TOP))
+        elif scene.get("the_thong_tin"):
+            # Kênh tư liệu không có ảnh báo để dùng. Thay vì bỏ trống một mảng
+            # màu, vẽ thẳng dữ kiện lên đó — đằng nào người xem cũng cần thấy
+            # năm thành lập, sân nhà và danh hiệu chứ không chỉ nghe đọc.
+            _the_clb(ui, d, scene["the_thong_tin"], MARGIN, CARD_TOP,
+                     card_w, CARD_H, accent, accent2, scene.get("noi_bat"))
         else:
             d.rounded_rectangle((MARGIN, CARD_TOP, MARGIN + card_w, CARD_TOP + CARD_H),
                                 radius=40, fill=accent + (90,))
@@ -253,6 +358,10 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
                                 92 if scene["kind"] == "intro" else 80, content_w, 2, min_size=48)
         block_h = len(lines) * round(f_big.size * 1.18)
         y = 700 if scene["kind"] == "intro" else 760
+        if scene["kind"] == "intro" and logo is not None:
+            # Logo chiếm nửa trên, đẩy khối chữ xuống cho khỏi đè
+            _logo(ui, logo, W // 2, 560, 400)
+            y = 860
         d.rounded_rectangle((MARGIN - 26, y - 56, W - MARGIN + 26, y + block_h + 56),
                             radius=48, fill=(0, 0, 0, 96))
         for line in lines:
@@ -387,7 +496,11 @@ def build(script: dict, voice: dict, cfg: dict, workdir: Path,
         bg_path = workdir / f"bg_{i:02d}.jpg"
         bg.save(bg_path, quality=92)
 
-        ui = make_ui(scene, photo, cfg, date_label, full_bleed=clip is not None)
+        logo = None
+        if scene["kind"] == "intro" and scene.get("the_thong_tin"):
+            logo = logos.find(scene["the_thong_tin"].get("ten", ""))
+
+        ui = make_ui(scene, photo, cfg, date_label, full_bleed=clip is not None, logo=logo)
         ui.alpha_composite(make_progress((scene["start"] + scene["dur"]) / total, cfg))
         ui_path = workdir / f"ui_{i:02d}.png"
         ui.save(ui_path)

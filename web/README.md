@@ -213,16 +213,47 @@ Tiền tố dùng tiếng Anh, phần định danh vẫn là tiếng Việt khô
 | | |
 |---|---|
 | `/news/<slug>` | bài viết |
-| `/category/<slug>` | chuyên mục |
-| `/page/<slug>` | trang tĩnh |
+| `/category/showbiz` `/football` `/technology` `/business` `/world` `/life` `/health` | chuyên mục |
+| `/page/about` `/contact` `/terms` `/privacy` | trang tĩnh |
 | `/search?q=` | tìm kiếm |
 | `/login` · `/register` · `/logout` | tài khoản |
 | `/bookmarks` · `/account` | khu độc giả |
 | `/admin/...` | khu quản trị |
 
-Đường dẫn tiếng Việt cũ (`/tin/`, `/chuyen-muc/`, `/quan-tri/nguoi-dung`…) đều được
-**chuyển hướng 301** sang địa chỉ mới, kể cả phần sau tiền tố của khu quản trị. Dùng 301
-chứ không phải 302 để thứ hạng của đường dẫn cũ dồn sang đường dẫn mới thay vì bị chia đôi.
+### Slug bài viết vẫn là tiếng Việt không dấu
+
+`/news/cau-thu-nu-sn-1988-la-di-nhan-bong-da-viet-...` — sinh từ tiêu đề bài, mà tiêu đề
+là tiếng Việt lấy từ báo Việt. Đây là **cố ý**: từ khoá trong đường dẫn vẫn còn giá trị
+với Google, và người đọc của site này gõ tiếng Việt khi tìm kiếm. Dịch tiêu đề sang tiếng
+Anh sẽ làm mất đúng những từ khoá mà độc giả tìm.
+
+Muốn bỏ hẳn tiếng Việt khỏi đường dẫn thì phương án duy nhất còn lại là dùng mã bài
+(`/news/61a2f8`) — sạch nhưng mất toàn bộ tín hiệu từ khoá.
+
+### Đường dẫn cũ
+
+Mọi địa chỉ tiếng Việt cũ đều **301** sang địa chỉ mới, **trong một bước**:
+
+| Cũ | Mới |
+|---|---|
+| `/chuyen-muc/bongda` | `/category/football` |
+| `/trang/gioi-thieu` | `/page/about` |
+| `/quan-tri/nguoi-dung` | `/admin/users` |
+| `/dang-nhap` | `/login` |
+
+Dùng 301 chứ không phải 302 để thứ hạng của đường dẫn cũ dồn sang đường dẫn mới thay vì
+bị chia đôi. Và phải đi **một bước**: `/chuyen-muc/bongda` → `/category/bongda` →
+`/category/football` là chuỗi hai bước, Google coi chuỗi chuyển hướng là lỗi và không
+dồn hết thứ hạng qua.
+
+### Đổi slug về sau
+
+Bảng `slug_redirects` ghi lại mọi lần đổi slug — quản trị viên sửa slug chuyên mục trong
+giao diện thì địa chỉ cũ tự động 301 sang địa chỉ mới, không thành 404. Móc nằm ở model
+(`booted()`) chứ không ở controller, vì slug đổi được từ nhiều đường (giao diện, tinker,
+seeder) và quên một đường là mất liên kết.
+
+Đổi A→B rồi B→C thì dòng A được sửa để trỏ thẳng C, tránh sinh chuỗi chuyển hướng.
 
 ## Giao diện khu quản trị
 

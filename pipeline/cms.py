@@ -78,6 +78,7 @@ def build_payload(script: dict, voice: dict | None, video: Path | None,
 
     return {
         "run_date": script["date"],
+        "episode": script.get("so_tap") or 0,
         "topic": script.get("topic"),
         "topic_name": script.get("topic_name"),
         "status": status,

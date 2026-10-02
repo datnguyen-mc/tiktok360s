@@ -17,7 +17,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from . import aiclip, cms, r2, render, script_builder, tts, visuals, website
+from . import aiclip, cms, r2, render, script_builder, series, tts, visuals, website
 from .steps import StepTracker
 from .common import ROOT as ROOT_DIR
 from .common import load_config, log, slugify, step
@@ -44,6 +44,45 @@ def _balance(items: list[dict], cfg: dict) -> list[dict]:
     return picked
 
 
+def run_many(args: argparse.Namespace) -> int:
+    """Dựng nhiều video trong một lượt chạy.
+
+    Kênh tư liệu ra 3–5 video mỗi ngày, mỗi video một câu lạc bộ. Chạy vòng lặp
+    ở đây thay vì gọi lệnh nhiều lần từ bộ hẹn giờ: mỗi lần gọi phải nạp lại cấu
+    hình, dựng lại kết nối, và bộ hẹn giờ thì không biết hôm nay cần mấy video.
+    """
+    cfg = load_config(args.config, args.topic or None)
+
+    if args.count > 0:
+        n = args.count
+    elif cfg.get("mode") == "series" and not args.script:
+        # Số ngày trong tháng làm hạt giống: cùng một ngày cho ra cùng con số,
+        # chạy lại không đổi, mà các ngày khác nhau thì khác nhau.
+        seed = int((args.date or datetime.now().strftime("%Y-%m-%d"))[-2:])
+        n = series.videos_per_day(cfg, seed)
+    else:
+        n = 1
+
+    if n == 1:
+        return run(args)
+
+    print(f"\n▣ {cfg['brand']['name']} · hôm nay dựng {n} video")
+
+    hong = 0
+    for i in range(1, n + 1):
+        print(f"\n── video {i}/{n} " + "─" * 46)
+        try:
+            if run(args) != 0:
+                hong += 1
+        except Exception:
+            # Một video hỏng không được làm mất những video còn lại
+            traceback.print_exc()
+            hong += 1
+
+    print(f"\n▣ Xong {n - hong}/{n} video" + (f" · {hong} hỏng" if hong else ""))
+    return 1 if hong == n else 0
+
+
 def run(args: argparse.Namespace) -> int:
     cfg = load_config(args.config, args.topic or None)
     if args.items:
@@ -55,18 +94,51 @@ def run(args: argparse.Namespace) -> int:
         cfg["script"]["min_items_per_video"] = args.items
 
     date = args.date or datetime.now().strftime("%Y-%m-%d")
-    outdir = output_dir(cfg, date)
+
+    # Kênh series phải biết số tập TRƯỚC khi chạy: nó vừa là tên thư mục, vừa là
+    # phần định danh lượt chạy trong CMS. Một ngày nhiều video mà thiếu nó thì
+    # video sau đè lên video trước.
+    episode = 0
+    if cfg.get("mode") == "series" and not args.script:
+        episode = series.next_no(cfg)
+
+    # Luôn tách thư mục theo tập với kênh series, kể cả khi mỗi lần chỉ dựng một
+    # video: chạy hai lần trong cùng một ngày là chuyện bình thường, và không
+    # tách thì lần sau ghi đè lên lần trước — mất cả video lẫn ảnh bìa.
+    outdir = output_dir(cfg, date, episode)
     workdir = outdir / "_work"
     outdir.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n╔═ {cfg['brand']['name']} · {date} " + "═" * 28)
-    tracker = StepTracker(cfg, date, enabled=not args.no_cms)
+    nhan = f" · tập {episode}" if episode else ""
+    print(f"\n╔═ {cfg['brand']['name']} · {date}{nhan} " + "═" * 24)
+    tracker = StepTracker(cfg, date, enabled=not args.no_cms, episode=episode)
 
     # B1 + B2 — tin & kịch bản (hoặc dùng lại kịch bản đã sửa tay)
     if args.script:
         script = json.loads(Path(args.script).read_text(encoding="utf-8"))
         step("B1–B2 · Dùng kịch bản có sẵn")
         log(Path(args.script).name)
+    elif cfg.get("mode") == "series":
+        # Kênh phim nhiều tập: không có nguồn tin nào chảy vào. AI đọc tập hôm
+        # trước rồi viết tập kế tiếp, và cũng không đẩy gì sang website.
+        with tracker.step("fetch", "Viết tập mới bằng AI") as st:
+            items, ep = series.generate(cfg, args.date or None)
+            st.note(f"tập {ep['so_tap']} · “{ep['tieu_de']}” · {len(items)} cảnh",
+                    so_tap=ep["so_tap"], canh=len(items), model=ep.get("model"))
+
+        series.save_episode(cfg, ep, outdir)
+
+        with tracker.step("script") as st:
+            script = script_builder.build(cfg, items, args.seed, args.date or None)
+            script["so_tap"] = ep["so_tap"]
+            script["title"] = f"Tập {ep['so_tap']} — {ep['tieu_de']}"
+            news = [x for x in script["scenes"] if x["kind"] == "news"]
+            st.note(f"{len(news)} cảnh · {len(script['scenes'])} khung "
+                    f"· ước lượng {script.get('estimated_sec', 0):.0f}s · không gọi AI",
+                    items=len(news), scenes=len(script["scenes"]),
+                    estimated_sec=script.get("estimated_sec"),
+                    ai=False, nguon="gemini", style=script["style"],
+                    mo=script["scenes"][0]["vo"], chot=script["scenes"][-1]["vo"])
     else:
         with tracker.step("fetch") as st:
             if args.news:
@@ -88,9 +160,11 @@ def run(args: argparse.Namespace) -> int:
             script = script_builder.build(cfg, items, args.seed, args.date or None)
             news = [x for x in script["scenes"] if x["kind"] == "news"]
             st.note(f"{len(news)} tin · {len(script['scenes'])} cảnh "
-                    f"· ước lượng {script.get('estimated_sec', 0):.0f}s",
+                    f"· ước lượng {script.get('estimated_sec', 0):.0f}s · không gọi AI",
                     items=len(news), scenes=len(script["scenes"]),
-                    estimated_sec=script.get("estimated_sec"))
+                    estimated_sec=script.get("estimated_sec"),
+                    ai=False, nguon="rss", style=script["style"],
+                    mo=script["scenes"][0]["vo"], chot=script["scenes"][-1]["vo"])
     (outdir / "script.json").write_text(json.dumps(script, ensure_ascii=False, indent=2), encoding="utf-8")
 
     if args.script_only:
@@ -119,6 +193,9 @@ def run(args: argparse.Namespace) -> int:
             ai["channel"]["negative_prompt"] = args.negative_prompt
         if ai:
             ai["date_label"] = script["date"]
+            # `_report` gắn nhật ký gọi API vào đúng lượt chạy nhờ hai khoá này
+            ai["run_date"] = script["date"]
+            ai["topic"] = script.get("topic")
             with tracker.step("aiclip") as st:
                 clips = aiclip.generate_clips(voice["scenes"], ai, workdir)
                 made = sum(1 for c in clips.values() if c.get("path"))
@@ -214,10 +291,13 @@ def main() -> None:
     ap.add_argument("--negative-prompt", dest="negative_prompt", default="",
                     help="prompt loại trừ")
     ap.add_argument("--config", default="", help="file cấu hình khác")
+    ap.add_argument("--count", type=int, default=0,
+                    help="số video cần dựng trong lượt này "
+                         "(bỏ trống: lấy theo cấu hình kênh, mặc định 1)")
     args = ap.parse_args()
 
     try:
-        sys.exit(run(args))
+        sys.exit(run_many(args))
     except KeyboardInterrupt:
         sys.exit(130)
     except Exception as e:

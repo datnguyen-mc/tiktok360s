@@ -18,3 +18,4 @@ logs/*.log
 .env.*
 !.env.example
 !.env.*.example
+assets/logos/_auto/

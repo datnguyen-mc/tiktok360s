@@ -1,0 +1,685 @@
+{
+  "name": "Lịch Sử Câu Lạc Bộ",
+  "description": "Lịch sử thành lập, sân nhà và danh hiệu của các CLB ở 7 giải lớn châu Âu",
+  "mode": "series",
+  "brand": {
+    "name": "HỒ SƠ CÂU LẠC BỘ",
+    "handle": "@hosocaulacbo",
+    "tagline": "Mỗi ngày vài đội bóng",
+    "accent": "#C8102E",
+    "accent2": "#F4D03F",
+    "bg": "#0B1220"
+  },
+  "voice": {
+    "id": "vi-VN-NamMinhNeural",
+    "rate": "+12%",
+    "pitch": "-12Hz",
+    "volume": "+0%",
+    "rate_min_pct": 0,
+    "rate_max_pct": 25
+  },
+  "video": {
+    "target_min_sec": 90,
+    "target_max_sec": 120,
+    "min_scene_sec": 6.0
+  },
+  "captions": {
+    "chip_label": "CLB",
+    "font_size": 62,
+    "max_words_per_card": 3,
+    "y_ratio": 0.72
+  },
+  "sources": [],
+  "ranking": {
+    "require_keywords": [],
+    "exclude_keywords": [],
+    "hot_keywords": [],
+    "block_keywords": [],
+    "max_per_source": 0
+  },
+  "hashtags": [
+    "#bongda",
+    "#lichsubongda",
+    "#caulacbo",
+    "#danhhieu",
+    "#football",
+    "#bongdachauau",
+    "#tuluibongda",
+    "#xuhuong",
+    "#xuhuongtiktok",
+    "#fyp"
+  ],
+  "script": {
+    "style": "tu_lieu",
+    "items_per_video": 12,
+    "min_items_per_video": 10,
+    "max_detail_sentences": 1,
+    "headline_max_chars": 60,
+    "reaction_every": 0
+  },
+  "series": {
+    "moi_tap": 1,
+    "so_canh": 12,
+    "model": "gemini-3.6-flash",
+    "dan_bai": [
+      {
+        "so": 1,
+        "ten": "Manchester United",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1878,
+        "san": "Old Trafford (74.000)",
+        "danh_hieu": "20 vô địch Anh · 3 Champions League · 12 FA Cup · 1 Europa League",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1878 · Old Trafford (74.000)",
+        "dau_an": "Thảm hoạ máy bay Munich 1958 · Sir Matt Busby dựng lại đội · kỷ nguyên Sir Alex Ferguson 1986-2013 với 13 chức vô địch Anh · cú ăn ba 1999 lật ngược Bayern trong phút bù giờ · bộ ba Best-Law-Charlton · Cantona, Beckham, Ronaldo, Rooney · sa sút kéo dài sau 2013, thay 6 HLV"
+      },
+      {
+        "so": 2,
+        "ten": "Liverpool",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1892,
+        "san": "Anfield (61.000)",
+        "danh_hieu": "20 vô địch Anh · 6 Champions League · 8 FA Cup · 3 UEFA Cup/Europa League",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1892 · Anfield (61.000)",
+        "dau_an": "Bill Shankly dựng nền móng thập niên 1960 · thảm hoạ Heysel 1985 và Hillsborough 1989 · đêm Istanbul 2005 ngược dòng từ 0-3 trước AC Milan · Jürgen Klopp 2015-2024 đem về Champions League 2019 và chức vô địch Anh đầu tiên sau 30 năm (2020) · Arne Slot vô địch ngay mùa đầu 2024-25"
+      },
+      {
+        "so": 3,
+        "ten": "Arsenal",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1886,
+        "san": "Emirates (60.700)",
+        "danh_hieu": "13 vô địch Anh · 14 FA Cup (kỷ lục) · mùa 2003-04 bất bại",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1886 · Emirates (60.700)",
+        "dau_an": "Herbert Chapman cách tân thập niên 1930 · Arsène Wenger 1996-2018 · The Invincibles mùa 2003-04 bất bại 38 trận · rời Highbury sang Emirates 2006 · Thierry Henry, Dennis Bergkamp · Mikel Arteta đưa đội trở lại đua vô địch từ 2022"
+      },
+      {
+        "so": 4,
+        "ten": "Chelsea",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1905,
+        "san": "Stamford Bridge (40.300)",
+        "danh_hieu": "6 vô địch Anh · 2 Champions League · 8 FA Cup · 2 Europa League",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1905 · Stamford Bridge (40.300)",
+        "dau_an": "Roman Abramovich mua lại 2003 đổi đời câu lạc bộ · José Mourinho và hai chức vô địch 2005, 2006 · vô địch Champions League 2012 tại Munich và 2021 tại Porto · Frank Lampard, John Terry, Didier Drogba · đổi chủ sang Todd Boehly 2022, chi hơn một tỷ bảng mua cầu thủ"
+      },
+      {
+        "so": 5,
+        "ten": "Manchester City",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1880,
+        "san": "Etihad (53.400)",
+        "danh_hieu": "10 vô địch Anh · 1 Champions League (2023) · 7 FA Cup · cú ăn ba 2023",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1880 · Etihad (53.400)",
+        "dau_an": "Sheikh Mansour mua lại 2008 · Sergio Agüero ghi bàn phút 93:20 đoạt chức vô địch 2012 · Pep Guardiola từ 2016 · mùa 2017-18 đạt 100 điểm · bốn chức vô địch Anh liên tiếp 2021-2024 · cú ăn ba 2023 · án phạt Premier League về tài chính vẫn đang tranh tụng"
+      },
+      {
+        "so": 6,
+        "ten": "Tottenham Hotspur",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1882,
+        "san": "Tottenham Hotspur Stadium (62.850)",
+        "danh_hieu": "2 vô địch Anh · 8 FA Cup · 2 UEFA Cup · 1 Europa League (2025)",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1882 · Tottenham Hotspur Stadium (62.850)",
+        "dau_an": "Cú đúp quốc nội 1961, đội Anh đầu tiên làm được ở thế kỷ 20 · Mauricio Pochettino đưa vào chung kết Champions League 2019 · sân mới 62.850 chỗ khánh thành 2019 · Harry Kane ghi 280 bàn rồi sang Bayern 2023 · Europa League 2025 chấm dứt 17 năm trắng tay"
+      },
+      {
+        "so": 7,
+        "ten": "Everton",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1878,
+        "san": "Goodison Park → Hill Dickinson Stadium",
+        "danh_hieu": "9 vô địch Anh · 5 FA Cup · 1 Cúp C2 (1985)",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1878 · Goodison Park → Hill Dickinson Stadium",
+        "dau_an": "Câu lạc bộ dự nhiều mùa giải cao nhất nước Anh nhất · Dixie Dean ghi 60 bàn mùa 1927-28, kỷ lục chưa ai phá · Cúp C2 1985 · derby Merseyside với Liverpool · rời Goodison Park sau 132 năm để sang sân mới bên sông Mersey năm 2025"
+      },
+      {
+        "so": 8,
+        "ten": "Newcastle United",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1892,
+        "san": "St James' Park (52.300)",
+        "danh_hieu": "4 vô địch Anh · 6 FA Cup · 1 Inter-Cities Fairs Cup (1969)",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1892 · St James' Park (52.300)",
+        "dau_an": "Ba chức vô địch Anh thập niên 1900 · đội Kevin Keegan mùa 1995-96 dẫn 12 điểm rồi bị Man Utd lật ngược · Alan Shearer ghi 206 bàn · quỹ đầu tư Ả Rập mua lại 2021 · Cúp Liên đoàn 2025 chấm dứt 70 năm không danh hiệu quốc nội"
+      },
+      {
+        "so": 9,
+        "ten": "Aston Villa",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1874,
+        "san": "Villa Park (42.700)",
+        "danh_hieu": "7 vô địch Anh · 7 FA Cup · 1 Cúp C1 (1982)",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1874 · Villa Park (42.700)",
+        "dau_an": "Một trong 12 đội sáng lập giải vô địch Anh năm 1888 · vô địch Cúp C1 năm 1982 trước Bayern · tụt xuống hạng ba năm 2016 · Unai Emery đưa trở lại Champions League 2024 sau 41 năm"
+      },
+      {
+        "so": 10,
+        "ten": "Leeds United",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1919,
+        "san": "Elland Road (37.600)",
+        "danh_hieu": "3 vô địch Anh · 1 FA Cup · 2 Inter-Cities Fairs Cup",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1919 · Elland Road (37.600)",
+        "dau_an": "Don Revie dựng đội mạnh thập niên 1960-70 · vào chung kết Cúp C1 1975 · bán kết Champions League 2001 rồi phá sản tài chính, rơi xuống hạng ba · trở lại Ngoại hạng Anh 2020 cùng Marcelo Bielsa"
+      },
+      {
+        "so": 11,
+        "ten": "Nottingham Forest",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1865,
+        "san": "City Ground (30.400)",
+        "danh_hieu": "1 vô địch Anh · 2 Cúp C1 liên tiếp (1979, 1980) · 2 FA Cup",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1865 · City Ground (30.400)",
+        "dau_an": "Brian Clough đưa đội mới lên hạng lên ngôi vô địch Anh 1978 rồi đoạt Cúp C1 hai năm liên tiếp 1979, 1980 — kỳ tích chưa đội nào lặp lại · vắng mặt 23 năm, trở lại Ngoại hạng Anh 2022"
+      },
+      {
+        "so": 12,
+        "ten": "West Ham United",
+        "giai": "Ngoại hạng Anh",
+        "nam": 1895,
+        "san": "London Stadium (62.500)",
+        "danh_hieu": "3 FA Cup · 1 Cúp C2 (1965) · 1 Conference League (2023)",
+        "ghi_chu": "Ngoại hạng Anh · thành lập 1895 · London Stadium (62.500)",
+        "dau_an": "Bobby Moore, Geoff Hurst, Martin Peters — ba trụ cột tuyển Anh vô địch World Cup 1966 đều từ đây · Cúp C2 1965 · rời Boleyn Ground sang London Stadium 2016 · Conference League 2023 chấm dứt 43 năm trắng tay"
+      },
+      {
+        "so": 13,
+        "ten": "Real Madrid",
+        "giai": "La Liga",
+        "nam": 1902,
+        "san": "Santiago Bernabéu (78.300)",
+        "danh_hieu": "36 vô địch TBN · 15 Champions League (kỷ lục) · 20 Copa del Rey",
+        "ghi_chu": "La Liga · thành lập 1902 · Santiago Bernabéu (78.300)",
+        "dau_an": "FIFA bầu chọn là câu lạc bộ xuất sắc nhất thế kỷ 20 · năm Cúp C1 liên tiếp 1956-1960 cùng Di Stéfano và Puskás · Galácticos đầu 2000 · ba Champions League liên tiếp 2016-2018 dưới Zidane · Champions League thứ 15 năm 2024 · Mbappé gia nhập 2024"
+      },
+      {
+        "so": 14,
+        "ten": "Barcelona",
+        "giai": "La Liga",
+        "nam": 1899,
+        "san": "Camp Nou (99.300)",
+        "danh_hieu": "28 vô địch TBN · 5 Champions League · 32 Copa del Rey · 2 cú ăn ba",
+        "ghi_chu": "La Liga · thành lập 1899 · Camp Nou (99.300)",
+        "dau_an": "Johan Cruyff với Dream Team đầu thập niên 1990 · lò La Masia sản sinh Messi, Xavi, Iniesta, Puyol · Pep Guardiola và cú ăn sáu 2009 · Messi ghi 672 bàn rồi rời đi 2021 giữa khủng hoảng nợ · Hansi Flick vô địch La Liga 2025 cùng lứa trẻ Yamal"
+      },
+      {
+        "so": 15,
+        "ten": "Atlético Madrid",
+        "giai": "La Liga",
+        "nam": 1903,
+        "san": "Metropolitano (68.400)",
+        "danh_hieu": "11 vô địch TBN · 3 Europa League · 1 Cúp C2",
+        "ghi_chu": "La Liga · thành lập 1903 · Metropolitano (68.400)",
+        "dau_an": "Diego Simeone từ 2011 dựng lối chơi phòng ngự trứ danh · vô địch La Liga 2014 và 2021 giữa thời Real-Barca thống trị · thua hai trận chung kết Champions League 2014 và 2016 đều trước Real · chuyển sang sân Metropolitano 2017"
+      },
+      {
+        "so": 16,
+        "ten": "Sevilla",
+        "giai": "La Liga",
+        "nam": 1890,
+        "san": "Ramón Sánchez-Pizjuán (43.800)",
+        "danh_hieu": "1 vô địch TBN · 7 Europa League (kỷ lục) · 5 Copa del Rey",
+        "ghi_chu": "La Liga · thành lập 1890 · Ramón Sánchez-Pizjuán (43.800)",
+        "dau_an": "Vua của Europa League với 7 lần vô địch, kỷ lục tuyệt đối · Monchi nổi tiếng với tài mua rẻ bán đắt · ba chức vô địch Europa League liên tiếp 2014-2016"
+      },
+      {
+        "so": 17,
+        "ten": "Valencia",
+        "giai": "La Liga",
+        "nam": 1919,
+        "san": "Mestalla (49.400)",
+        "danh_hieu": "6 vô địch TBN · 8 Copa del Rey · 1 Cúp C2 · 1 UEFA Cup",
+        "ghi_chu": "La Liga · thành lập 1919 · Mestalla (49.400)",
+        "dau_an": "Hai lần vào chung kết Champions League liên tiếp 2000, 2001 đều thua · vô địch La Liga 2002 và 2004 dưới Rafa Benítez · sa sút tài chính kéo dài sau 2010"
+      },
+      {
+        "so": 18,
+        "ten": "Athletic Bilbao",
+        "giai": "La Liga",
+        "nam": 1898,
+        "san": "San Mamés (53.300)",
+        "danh_hieu": "8 vô địch TBN · 24 Copa del Rey · chỉ dùng cầu thủ xứ Basque",
+        "ghi_chu": "La Liga · thành lập 1898 · San Mamés (53.300)",
+        "dau_an": "Chỉ dùng cầu thủ sinh ra hoặc trưởng thành ở xứ Basque — nguyên tắc giữ suốt hơn một thế kỷ · một trong ba đội chưa từng xuống hạng ở Tây Ban Nha · Copa del Rey 2024 chấm dứt 40 năm chờ đợi"
+      },
+      {
+        "so": 19,
+        "ten": "Real Sociedad",
+        "giai": "La Liga",
+        "nam": 1909,
+        "san": "Reale Arena (39.500)",
+        "danh_hieu": "2 vô địch TBN · 3 Copa del Rey",
+        "ghi_chu": "La Liga · thành lập 1909 · Reale Arena (39.500)",
+        "dau_an": "Vô địch La Liga hai năm liên tiếp 1981, 1982 · từng theo nguyên tắc chỉ dùng cầu thủ Basque tới 1989 · Copa del Rey 2020 thắng kình địch Athletic Bilbao trong trận chung kết hoãn một năm vì dịch"
+      },
+      {
+        "so": 20,
+        "ten": "Real Betis",
+        "giai": "La Liga",
+        "nam": 1907,
+        "san": "Benito Villamarín (60.700)",
+        "danh_hieu": "1 vô địch TBN · 3 Copa del Rey",
+        "ghi_chu": "La Liga · thành lập 1907 · Benito Villamarín (60.700)",
+        "dau_an": "Vô địch La Liga 1935 · cổ động viên trung thành bậc nhất Tây Ban Nha dù đội lên xuống hạng nhiều lần · Copa del Rey 2022 · Manuel Pellegrini đưa đội dự cúp châu Âu đều đặn"
+      },
+      {
+        "so": 21,
+        "ten": "Villarreal",
+        "giai": "La Liga",
+        "nam": 1923,
+        "san": "Estadio de la Cerámica (23.000)",
+        "danh_hieu": "1 Europa League (2021) · bán kết Champions League 2006, 2022",
+        "ghi_chu": "La Liga · thành lập 1923 · Estadio de la Cerámica (23.000)",
+        "dau_an": "Đội bóng thị trấn 50.000 dân · bán kết Champions League 2006 và 2022 · vô địch Europa League 2021 thắng Man Utd sau loạt luân lưu 11-10 · biệt danh Tàu ngầm vàng"
+      },
+      {
+        "so": 22,
+        "ten": "Juventus",
+        "giai": "Serie A",
+        "nam": 1897,
+        "san": "Allianz Stadium (41.500)",
+        "danh_hieu": "36 Scudetto (kỷ lục) · 2 Champions League · 15 Coppa Italia",
+        "ghi_chu": "Serie A · thành lập 1897 · Allianz Stadium (41.500)",
+        "dau_an": "Gia đình Agnelli sở hữu từ 1923 · thảm hoạ Heysel 1985 · bê bối Calciopoli 2006 bị tước hai Scudetto và đẩy xuống Serie B · chín Scudetto liên tiếp 2012-2020 · Del Piero, Buffon, Nedvěd"
+      },
+      {
+        "so": 23,
+        "ten": "AC Milan",
+        "giai": "Serie A",
+        "nam": 1899,
+        "san": "San Siro (75.800)",
+        "danh_hieu": "19 Scudetto · 7 Champions League · 5 Coppa Italia",
+        "ghi_chu": "Serie A · thành lập 1899 · San Siro (75.800)",
+        "dau_an": "Kỷ nguyên Sacchi và Capello cuối 1980 đầu 1990 với bộ ba Hà Lan Gullit-Rijkaard-Van Basten · bất bại 58 trận liên tiếp · chung kết Champions League 2005 thua Liverpool sau khi dẫn 3-0, rồi phục thù 2007 · Maldini, Baresi"
+      },
+      {
+        "so": 24,
+        "ten": "Inter Milan",
+        "giai": "Serie A",
+        "nam": 1908,
+        "san": "San Siro (75.800)",
+        "danh_hieu": "20 Scudetto · 3 Champions League · 9 Coppa Italia · cú ăn ba 2010",
+        "ghi_chu": "Serie A · thành lập 1908 · San Siro (75.800)",
+        "dau_an": "Grande Inter thập niên 1960 với Helenio Herrera · cú ăn ba 2010 dưới Mourinho, đội Ý duy nhất làm được · derby Milano trên cùng một sân San Siro · vào chung kết Champions League 2023 và 2025"
+      },
+      {
+        "so": 25,
+        "ten": "Napoli",
+        "giai": "Serie A",
+        "nam": 1926,
+        "san": "Diego Armando Maradona (54.700)",
+        "danh_hieu": "4 Scudetto · 6 Coppa Italia · 1 UEFA Cup (1989) · kỷ nguyên Maradona",
+        "ghi_chu": "Serie A · thành lập 1926 · Diego Armando Maradona (54.700)",
+        "dau_an": "Diego Maradona đến năm 1984 đưa đội từ vùng trũng lên hai Scudetto 1987 và 1990 · sân đổi tên thành Diego Armando Maradona sau khi ông mất năm 2020 · Scudetto 2023 sau 33 năm chờ đợi · vô địch tiếp năm 2025"
+      },
+      {
+        "so": 26,
+        "ten": "AS Roma",
+        "giai": "Serie A",
+        "nam": 1927,
+        "san": "Stadio Olimpico (70.600)",
+        "danh_hieu": "3 Scudetto · 9 Coppa Italia · 1 Conference League (2022)",
+        "ghi_chu": "Serie A · thành lập 1927 · Stadio Olimpico (70.600)",
+        "dau_an": "Francesco Totti gắn bó 25 năm, ghi 307 bàn, chỉ khoác áo một câu lạc bộ · Scudetto 2001 · José Mourinho đem về Conference League 2022, danh hiệu châu Âu đầu tiên của đội"
+      },
+      {
+        "so": 27,
+        "ten": "Lazio",
+        "giai": "Serie A",
+        "nam": 1900,
+        "san": "Stadio Olimpico (70.600)",
+        "danh_hieu": "2 Scudetto · 7 Coppa Italia · 1 Cúp C2 (1999)",
+        "ghi_chu": "Serie A · thành lập 1900 · Stadio Olimpico (70.600)",
+        "dau_an": "Scudetto 1974 và 2000 · Cúp C2 1999 · derby della Capitale với Roma là trận derby căng thẳng bậc nhất châu Âu"
+      },
+      {
+        "so": 28,
+        "ten": "Fiorentina",
+        "giai": "Serie A",
+        "nam": 1926,
+        "san": "Artemio Franchi (43.100)",
+        "danh_hieu": "2 Scudetto · 6 Coppa Italia · 1 Cúp C2 (1961)",
+        "ghi_chu": "Serie A · thành lập 1926 · Artemio Franchi (43.100)",
+        "dau_an": "Hai Scudetto 1956 và 1969 · Cúp C2 1961 · Gabriel Batistuta ghi 168 bàn trong 9 năm · phá sản năm 2002 phải làm lại từ hạng tư"
+      },
+      {
+        "so": 29,
+        "ten": "Atalanta",
+        "giai": "Serie A",
+        "nam": 1907,
+        "san": "Gewiss Stadium (24.900)",
+        "danh_hieu": "1 Coppa Italia · 1 Europa League (2024)",
+        "ghi_chu": "Serie A · thành lập 1907 · Gewiss Stadium (24.900)",
+        "dau_an": "Gian Piero Gasperini từ 2016 biến đội tỉnh lẻ thành thế lực · tứ kết Champions League 2020 · Europa League 2024 thắng Leverkusen 3-0, chấm dứt chuỗi bất bại 51 trận của đối thủ"
+      },
+      {
+        "so": 30,
+        "ten": "Torino",
+        "giai": "Serie A",
+        "nam": 1906,
+        "san": "Stadio Olimpico Grande Torino (28.000)",
+        "danh_hieu": "7 Scudetto · thảm hoạ Superga 1949",
+        "ghi_chu": "Serie A · thành lập 1906 · Stadio Olimpico Grande Torino (28.000)",
+        "dau_an": "Il Grande Torino thống trị thập niên 1940 với 5 Scudetto liên tiếp · thảm hoạ máy bay Superga năm 1949 khiến cả đội thiệt mạng, trong đó có 10 tuyển thủ Ý · derby della Mole với Juventus"
+      },
+      {
+        "so": 31,
+        "ten": "Bayern Munich",
+        "giai": "Bundesliga",
+        "nam": 1900,
+        "san": "Allianz Arena (75.000)",
+        "danh_hieu": "33 vô địch Đức · 6 Champions League · 20 Cúp QG Đức · 2 cú ăn ba",
+        "ghi_chu": "Bundesliga · thành lập 1900 · Allianz Arena (75.000)",
+        "dau_an": "Kỷ nguyên Beckenbauer với ba Cúp C1 liên tiếp 1974-1976 · 11 chức vô địch Đức liên tiếp 2013-2023, kỷ lục châu Âu · cú ăn ba 2013 và 2020 · thắng Barcelona 8-2 năm 2020 · Müller, Lahm, Neuer"
+      },
+      {
+        "so": 32,
+        "ten": "Borussia Dortmund",
+        "giai": "Bundesliga",
+        "nam": 1909,
+        "san": "Signal Iduna Park (81.400)",
+        "danh_hieu": "8 vô địch Đức · 1 Champions League (1997) · 5 Cúp QG · khán đài Bức tường vàng",
+        "ghi_chu": "Bundesliga · thành lập 1909 · Signal Iduna Park (81.400)",
+        "dau_an": "Bức tường vàng 25.000 chỗ đứng, khán đài lớn nhất châu Âu · Cúp C1 1997 thắng Juventus · Jürgen Klopp 2008-2015 với hai chức vô địch Đức · suýt phá sản năm 2005 · chung kết Champions League 2013 và 2024 đều thua"
+      },
+      {
+        "so": 33,
+        "ten": "Bayer Leverkusen",
+        "giai": "Bundesliga",
+        "nam": 1904,
+        "san": "BayArena (30.200)",
+        "danh_hieu": "1 vô địch Đức (2024, bất bại) · 1 UEFA Cup (1988)",
+        "ghi_chu": "Bundesliga · thành lập 1904 · BayArena (30.200)",
+        "dau_an": "Biệt danh Neverkusen vì về nhì ba giải trong một mùa 2002 · Xabi Alonso đưa đội vô địch Bundesliga 2024 với 34 trận bất bại — lần đầu trong 120 năm lịch sử câu lạc bộ"
+      },
+      {
+        "so": 34,
+        "ten": "RB Leipzig",
+        "giai": "Bundesliga",
+        "nam": 2009,
+        "san": "Red Bull Arena (47.000)",
+        "danh_hieu": "2 Cúp QG Đức · thành lập 2009, lên Bundesliga sau 7 năm",
+        "ghi_chu": "Bundesliga · thành lập 2009 · Red Bull Arena (47.000)",
+        "dau_an": "Thành lập 2009 do Red Bull đầu tư · lên Bundesliga sau 7 năm · bán kết Champions League 2020 · bị cổ động viên các đội truyền thống phản đối vì mô hình sở hữu"
+      },
+      {
+        "so": 35,
+        "ten": "Schalke 04",
+        "giai": "Bundesliga",
+        "nam": 1904,
+        "san": "Veltins-Arena (62.300)",
+        "danh_hieu": "7 vô địch Đức · 5 Cúp QG · 1 UEFA Cup (1997)",
+        "ghi_chu": "Bundesliga · thành lập 1904 · Veltins-Arena (62.300)",
+        "dau_an": "Đội thợ mỏ vùng Ruhr · bảy chức vô địch Đức nhưng lần cuối từ 1958 · derby Ruhr với Dortmund · UEFA Cup 1997 · khủng hoảng tài chính đẩy xuống hạng hai từ 2021"
+      },
+      {
+        "so": 36,
+        "ten": "Hamburger SV",
+        "giai": "Bundesliga",
+        "nam": 1887,
+        "san": "Volksparkstadion (57.000)",
+        "danh_hieu": "6 vô địch Đức · 1 Cúp C1 (1983) · 1 Cúp C2",
+        "ghi_chu": "Bundesliga · thành lập 1887 · Volksparkstadion (57.000)",
+        "dau_an": "Đội duy nhất dự Bundesliga liên tục từ 1963 tới 2018 — chiếc đồng hồ đếm năm trên sân phải gỡ xuống khi xuống hạng · Cúp C1 1983 thắng Juventus · Kevin Keegan hai lần giành Quả bóng vàng khi ở đây"
+      },
+      {
+        "so": 37,
+        "ten": "Werder Bremen",
+        "giai": "Bundesliga",
+        "nam": 1899,
+        "san": "Weserstadion (42.100)",
+        "danh_hieu": "4 vô địch Đức · 6 Cúp QG · 1 Cúp C2 (1992)",
+        "ghi_chu": "Bundesliga · thành lập 1899 · Weserstadion (42.100)",
+        "dau_an": "Bốn chức vô địch Đức · Cúp C2 1992 · mùa 2003-04 đoạt cú đúp quốc nội · Otto Rehhagel dẫn dắt 14 năm"
+      },
+      {
+        "so": 38,
+        "ten": "Borussia Mönchengladbach",
+        "giai": "Bundesliga",
+        "nam": 1900,
+        "san": "Borussia-Park (54.000)",
+        "danh_hieu": "5 vô địch Đức · 2 UEFA Cup · thời hoàng kim thập niên 1970",
+        "ghi_chu": "Bundesliga · thành lập 1900 · Borussia-Park (54.000)",
+        "dau_an": "Die Fohlen — Những chú ngựa non · năm chức vô địch Đức thập niên 1970 cạnh tranh trực tiếp với Bayern · hai UEFA Cup · Berti Vogts, Günter Netzer"
+      },
+      {
+        "so": 39,
+        "ten": "VfB Stuttgart",
+        "giai": "Bundesliga",
+        "nam": 1893,
+        "san": "MHPArena (60.400)",
+        "danh_hieu": "5 vô địch Đức · 3 Cúp QG Đức",
+        "ghi_chu": "Bundesliga · thành lập 1893 · MHPArena (60.400)",
+        "dau_an": "Năm chức vô địch Đức, gần nhất 2007 · lò đào tạo cho ra Klinsmann, Schneider, Gündoğan, Kimmich · về nhì Bundesliga 2024 gây bất ngờ"
+      },
+      {
+        "so": 40,
+        "ten": "Paris Saint-Germain",
+        "giai": "Ligue 1",
+        "nam": 1970,
+        "san": "Parc des Princes (47.900)",
+        "danh_hieu": "13 vô địch Pháp · 1 Champions League (2025) · 15 Cúp QG Pháp",
+        "ghi_chu": "Ligue 1 · thành lập 1970 · Parc des Princes (47.900)",
+        "dau_an": "Quỹ đầu tư Qatar mua lại 2011 · Ibrahimović, Neymar, Mbappé, Messi · thua chung kết Champions League 2020 · Mbappé ghi 256 bàn rồi sang Real 2024 · vô địch Champions League 2025, danh hiệu châu Âu đầu tiên sau 14 năm đầu tư"
+      },
+      {
+        "so": 41,
+        "ten": "Olympique Marseille",
+        "giai": "Ligue 1",
+        "nam": 1899,
+        "san": "Stade Vélodrome (67.400)",
+        "danh_hieu": "9 vô địch Pháp · 1 Champions League (1993) · 10 Cúp QG",
+        "ghi_chu": "Ligue 1 · thành lập 1899 · Stade Vélodrome (67.400)",
+        "dau_an": "Đội Pháp duy nhất vô địch Champions League — năm 1993 thắng AC Milan · ngay sau đó bị tước chức vô địch quốc nội và đẩy xuống hạng vì bê bối dàn xếp tỉ số · Vélodrome 67.400 chỗ"
+      },
+      {
+        "so": 42,
+        "ten": "Olympique Lyonnais",
+        "giai": "Ligue 1",
+        "nam": 1950,
+        "san": "Groupama Stadium (59.200)",
+        "danh_hieu": "7 vô địch Pháp liên tiếp (2002-2008) · 5 Cúp QG",
+        "ghi_chu": "Ligue 1 · thành lập 1950 · Groupama Stadium (59.200)",
+        "dau_an": "Bảy chức vô địch Pháp liên tiếp 2002-2008, kỷ lục quốc gia · bán kết Champions League 2010 và 2020 · đội nữ Lyon thống trị châu Âu với 8 Champions League"
+      },
+      {
+        "so": 43,
+        "ten": "AS Monaco",
+        "giai": "Ligue 1",
+        "nam": 1924,
+        "san": "Stade Louis II (18.500)",
+        "danh_hieu": "8 vô địch Pháp · 5 Cúp QG · á quân Champions League 2004",
+        "ghi_chu": "Ligue 1 · thành lập 1924 · Stade Louis II (18.500)",
+        "dau_an": "Sân Louis II chỉ 18.500 chỗ, nhỏ nhất trong các đội lớn châu Âu · chung kết Champions League 2004 · lứa 2017 vô địch Pháp với Mbappé, Bernardo Silva, Fabinho rồi bán gần hết"
+      },
+      {
+        "so": 44,
+        "ten": "Saint-Étienne",
+        "giai": "Ligue 1",
+        "nam": 1919,
+        "san": "Geoffroy-Guichard (41.900)",
+        "danh_hieu": "10 vô địch Pháp (kỷ lục) · 6 Cúp QG",
+        "ghi_chu": "Ligue 1 · thành lập 1919 · Geoffroy-Guichard (41.900)",
+        "dau_an": "Mười chức vô địch Pháp, kỷ lục quốc gia · chung kết Cúp C1 1976 thua Bayern, hai lần dội xà ngang vuông ở Glasgow đi vào huyền thoại · Les Verts"
+      },
+      {
+        "so": 45,
+        "ten": "Lille",
+        "giai": "Ligue 1",
+        "nam": 1944,
+        "san": "Stade Pierre-Mauroy (50.100)",
+        "danh_hieu": "4 vô địch Pháp · 6 Cúp QG",
+        "ghi_chu": "Ligue 1 · thành lập 1944 · Stade Pierre-Mauroy (50.100)",
+        "dau_an": "Vô địch Pháp 2011 và 2021 — lần 2021 vượt PSG đúng vòng cuối · mô hình mua rẻ bán đắt: Hazard, Pépé, Osimhen, Leão"
+      },
+      {
+        "so": 46,
+        "ten": "Nantes",
+        "giai": "Ligue 1",
+        "nam": 1943,
+        "san": "Stade de la Beaujoire (37.500)",
+        "danh_hieu": "8 vô địch Pháp · 4 Cúp QG",
+        "ghi_chu": "Ligue 1 · thành lập 1943 · Stade de la Beaujoire (37.500)",
+        "dau_an": "Tám chức vô địch Pháp · lối chơi jeu à la nantaise nổi tiếng thập niên 1960-80 · lò đào tạo cho ra Deschamps, Desailly, Karembeu"
+      },
+      {
+        "so": 47,
+        "ten": "Benfica",
+        "giai": "Primeira Liga",
+        "nam": 1904,
+        "san": "Estádio da Luz (64.600)",
+        "danh_hieu": "38 vô địch BĐN · 2 Cúp C1 (1961, 1962) · 26 Cúp QG",
+        "ghi_chu": "Primeira Liga · thành lập 1904 · Estádio da Luz (64.600)",
+        "dau_an": "Eusébio và hai Cúp C1 liên tiếp 1961, 1962 · lời nguyền Béla Guttmann khiến đội thua 8 trận chung kết châu Âu liên tiếp sau đó · 38 chức vô địch Bồ Đào Nha · lò đào tạo bán cầu thủ đi khắp châu Âu"
+      },
+      {
+        "so": 48,
+        "ten": "FC Porto",
+        "giai": "Primeira Liga",
+        "nam": 1893,
+        "san": "Estádio do Dragão (50.000)",
+        "danh_hieu": "30 vô địch BĐN · 2 Champions League (1987, 2004) · 2 Europa League",
+        "ghi_chu": "Primeira Liga · thành lập 1893 · Estádio do Dragão (50.000)",
+        "dau_an": "Cúp C1 1987 thắng Bayern · José Mourinho đoạt UEFA Cup 2003 và Champions League 2004 — bệ phóng cho sự nghiệp của ông · 30 chức vô địch Bồ Đào Nha · Deco, Pepe, Falcao"
+      },
+      {
+        "so": 49,
+        "ten": "Sporting Lisbon",
+        "giai": "Primeira Liga",
+        "nam": 1906,
+        "san": "José Alvalade (50.100)",
+        "danh_hieu": "21 vô địch BĐN · 1 Cúp C2 (1964) · lò đào tạo Ronaldo, Figo",
+        "ghi_chu": "Primeira Liga · thành lập 1906 · José Alvalade (50.100)",
+        "dau_an": "Lò đào tạo Alcochete cho ra Figo, Ronaldo, Nani, Quaresma, Rúben Neves · Ronaldo rời đi năm 2003 sau trận giao hữu với Man Utd · vô địch Bồ Đào Nha 2021 chấm dứt 19 năm chờ đợi, và 2024 dưới Rúben Amorim"
+      },
+      {
+        "so": 50,
+        "ten": "Braga",
+        "giai": "Primeira Liga",
+        "nam": 1921,
+        "san": "Estádio Municipal de Braga (30.300)",
+        "danh_hieu": "3 Cúp QG BĐN · á quân Europa League 2011",
+        "ghi_chu": "Primeira Liga · thành lập 1921 · Estádio Municipal de Braga (30.300)",
+        "dau_an": "Biệt danh Os Arsenalistas vì màu áo học theo Arsenal · sân đục vào vách núi đá, kiến trúc nổi tiếng thế giới · chung kết Europa League 2011 thua Porto"
+      },
+      {
+        "so": 51,
+        "ten": "Vitória Guimarães",
+        "giai": "Primeira Liga",
+        "nam": 1922,
+        "san": "Estádio D. Afonso Henriques (30.000)",
+        "danh_hieu": "1 Cúp QG BĐN (2013)",
+        "ghi_chu": "Primeira Liga · thành lập 1922 · Estádio D. Afonso Henriques (30.000)",
+        "dau_an": "Câu lạc bộ của thành phố khai sinh Bồ Đào Nha · cổ động viên đông bậc nhất ngoài ba đội lớn · Cúp quốc gia 2013"
+      },
+      {
+        "so": 52,
+        "ten": "Ajax Amsterdam",
+        "giai": "Eredivisie",
+        "nam": 1900,
+        "san": "Johan Cruyff Arena (55.500)",
+        "danh_hieu": "36 vô địch Hà Lan · 4 Cúp C1 · 1 UEFA Cup · bóng đá tổng lực",
+        "ghi_chu": "Eredivisie · thành lập 1900 · Johan Cruyff Arena (55.500)",
+        "dau_an": "Bóng đá tổng lực của Rinus Michels và Johan Cruyff · ba Cúp C1 liên tiếp 1971-1973 · lứa trẻ 1995 vô địch Champions League với tuổi trung bình 23 · bán kết Champions League 2019 với De Ligt, De Jong · lò De Toekomst"
+      },
+      {
+        "so": 53,
+        "ten": "PSV Eindhoven",
+        "giai": "Eredivisie",
+        "nam": 1913,
+        "san": "Philips Stadion (35.000)",
+        "danh_hieu": "26 vô địch Hà Lan · 1 Cúp C1 (1988) · 1 UEFA Cup (1978)",
+        "ghi_chu": "Eredivisie · thành lập 1913 · Philips Stadion (35.000)",
+        "dau_an": "Đội của hãng Philips · Cúp C1 1988 cùng cú ăn ba dưới Guus Hiddink · Ronaldo Nazário, Romário, Ruud van Nistelrooy, Arjen Robben đều khởi nghiệp châu Âu tại đây"
+      },
+      {
+        "so": 54,
+        "ten": "Feyenoord",
+        "giai": "Eredivisie",
+        "nam": 1908,
+        "san": "De Kuip (51.100)",
+        "danh_hieu": "16 vô địch Hà Lan · 1 Cúp C1 (1970) · 2 UEFA Cup · 1 Conference League",
+        "ghi_chu": "Eredivisie · thành lập 1908 · De Kuip (51.100)",
+        "dau_an": "Đội Hà Lan đầu tiên vô địch Cúp C1 — năm 1970 · De Kuip là sân bóng có tiếng vang lớn bậc nhất châu Âu · Conference League 2002 · Arne Slot vô địch Hà Lan 2023 trước khi sang Liverpool"
+      },
+      {
+        "so": 55,
+        "ten": "AZ Alkmaar",
+        "giai": "Eredivisie",
+        "nam": 1967,
+        "san": "AFAS Stadion (19.500)",
+        "danh_hieu": "2 vô địch Hà Lan · 4 Cúp QG Hà Lan",
+        "ghi_chu": "Eredivisie · thành lập 1967 · AFAS Stadion (19.500)",
+        "dau_an": "Vô địch Hà Lan 1981 và 2009 · chung kết UEFA Cup 1981 · Louis van Gaal dẫn dắt giai đoạn 2005-2009 · mái sân sập năm 2019 may mắn không có người"
+      },
+      {
+        "so": 56,
+        "ten": "FC Twente",
+        "giai": "Eredivisie",
+        "nam": 1965,
+        "san": "De Grolsch Veste (30.200)",
+        "danh_hieu": "1 vô địch Hà Lan (2010) · 3 Cúp QG",
+        "ghi_chu": "Eredivisie · thành lập 1965 · De Grolsch Veste (30.200)",
+        "dau_an": "Vô địch Hà Lan 2010 dưới Steve McClaren — lần đầu và duy nhất · chung kết UEFA Cup 1975 · khủng hoảng tài chính suýt bị xoá sổ năm 2016"
+      },
+      {
+        "so": 57,
+        "ten": "FC Utrecht",
+        "giai": "Eredivisie",
+        "nam": 1970,
+        "san": "Stadion Galgenwaard (23.700)",
+        "danh_hieu": "3 Cúp QG Hà Lan",
+        "ghi_chu": "Eredivisie · thành lập 1970 · Stadion Galgenwaard (23.700)",
+        "dau_an": "Chưa từng vô địch Hà Lan nhưng ba lần đoạt cúp quốc gia · sân Galgenwaard nổi tiếng với bầu không khí sát rạt mặt sân"
+      }
+    ],
+    "quy_trinh": [
+      "Chạy: .venv/bin/python -m pipeline.run_daily --topic clb",
+      "MỖI LẦN CHẠY dựng đúng 1 video cho 1 câu lạc bộ kế tiếp.",
+      "Muốn nhiều hơn trong một lệnh: --count 3.",
+      "Lộ trình và trạng thái nằm ở bảng `series_items` trong CSDL.",
+      "Sửa file này xong thì nạp lại: cd cms && php artisan series:import clb",
+      "KIỂM CHỨNG trước khi đăng, nhất là các mốc gần đây."
+    ],
+    "videos_moi_ngay": 1,
+    "giai_dau": [
+      "Ngoại hạng Anh",
+      "La Liga",
+      "Serie A",
+      "Bundesliga",
+      "Ligue 1",
+      "Primeira Liga",
+      "Eredivisie"
+    ]
+  },
+  "khong_pha_tro": [],
+  "nhom_tu_khoa": [],
+  "styles": {
+    "tu_lieu": {
+      "ten": "tư liệu (trầm, chắc, có nhịp)",
+      "hooks": [
+        "Hồ sơ câu lạc bộ, phần tiếp theo.",
+        "Những đội bóng và bộ sưu tập danh hiệu của họ.",
+        "Mỗi đội một câu chuyện, bắt đầu từ ngày thành lập."
+      ],
+      "connectors": [
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "connector_cuoi": "",
+      "reactions": {
+        "chung": []
+      },
+      "outros": [
+        "Tập sau tới lượt những đội nào? Theo dõi để xem tiếp.",
+        "Còn nhiều đội nữa ở tập sau. Bấm theo dõi kẻo lỡ.",
+        "Đội bạn yêu thích đã có chưa? Còm men để mình làm trước."
+      ],
+      "tieu_de_intro": "HỒ SƠ CÂU LẠC BỘ",
+      "tieu_de_outro": "THEO DÕI ĐỂ XEM TẬP TIẾP THEO"
+    }
+  }
+}

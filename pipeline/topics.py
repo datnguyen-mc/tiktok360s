@@ -49,7 +49,7 @@ def load(slug: str | None, base: dict) -> dict:
 
     if not path.exists():
         found = available()
-        raise SystemExit(
+        raise FileNotFoundError(
             f"Không có chủ đề {slug!r}.\n"
             f"  Các chủ đề hiện có: {', '.join(found) or '(chưa có file nào trong topics/)'}\n"
             f"  Thêm chủ đề mới: tạo topics/{slug}.json"
@@ -62,6 +62,11 @@ def load(slug: str | None, base: dict) -> dict:
     return cfg
 
 
-def output_dir(cfg: dict, date: str) -> Path:
-    """output/<chủ đề>/<ngày>/ — mỗi chủ đề một nhánh riêng, khỏi lẫn."""
-    return ROOT / "output" / cfg.get("topic", DEFAULT_TOPIC) / date
+def output_dir(cfg: dict, date: str, episode: int = 0) -> Path:
+    """output/<chủ đề>/<ngày>/ — mỗi chủ đề một nhánh riêng, khỏi lẫn.
+
+    Kênh ra nhiều video mỗi ngày thì thêm một nhánh con `tap-07`: không tách thì
+    video thứ hai ghi đè lên video thứ nhất, cả file lẫn ảnh bìa.
+    """
+    base = ROOT / "output" / cfg.get("topic", DEFAULT_TOPIC) / date
+    return base / f"tap-{episode:02d}" if episode else base

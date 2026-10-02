@@ -48788,7 +48788,7 @@ const _sfc_main$o = {
       }, 300);
     }, { deep: true });
     function toggle(a, field, value) {
-      router.patch(`/admin/articles/${a.id}/doi`, { field, value }, { preserveScroll: true });
+      router.patch(`/admin/articles/${a.id}/toggle`, { field, value }, { preserveScroll: true });
     }
     function remove2(a) {
       if (confirm(`Xoá “${a.title.slice(0, 60)}…”?`)) {

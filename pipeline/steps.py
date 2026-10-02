@@ -6,6 +6,10 @@ Mỗi bước được đẩy lên CMS NGAY khi xong, không đợi tới cuối
 
 CMS tắt hay mạng hỏng cũng không sao — mọi lỗi gửi đều bị nuốt, dây chuyền chạy tiếp.
 Bản ghi vẫn còn đủ trong log của tiến trình.
+
+Bắt `BaseException` chứ không phải `Exception`: `SystemExit` và `KeyboardInterrupt`
+không kế thừa `Exception`. Bắt hụt chúng thì bước nằm mãi ở trạng thái "đang chạy"
+trong CMS — người xem thấy một video treo giữa chừng mà không có dòng lỗi nào.
 """
 from __future__ import annotations
 
@@ -36,10 +40,13 @@ BUOC = {
 class StepTracker:
     """Đo thời gian và báo cáo từng bước."""
 
-    def __init__(self, cfg: dict, run_date: str, enabled: bool = True):
+    def __init__(self, cfg: dict, run_date: str, enabled: bool = True, episode: int = 0):
         self.cfg = cfg
         self.topic = cfg.get("topic", "showbiz")
         self.run_date = run_date
+        # Kênh series ra nhiều video mỗi ngày, nên (chủ đề, ngày) không đủ để
+        # phân biệt — thiếu số tập là video sau ghi đè lên video trước.
+        self.episode = episode
         self.enabled = enabled
         self.seq = 0
         self.history: list[dict] = []
@@ -64,7 +71,11 @@ class StepTracker:
 
         try:
             yield box
-        except Exception as e:
+        except BaseException as e:
+            # BaseException chứ không phải Exception: `SystemExit` và
+            # `KeyboardInterrupt` KHÔNG kế thừa Exception. Bắt hụt chúng thì bước
+            # này nằm mãi ở trạng thái "đang chạy" trong CMS — người xem thấy một
+            # video treo giữa chừng mà không có dòng lỗi nào giải thích.
             self._send(seq, key, label, "failed", started=started, t0=t0,
                        detail=f"{type(e).__name__}: {e}"[:1000], meta=box.meta)
             raise
@@ -76,6 +87,7 @@ class StepTracker:
         payload = {
             "topic": self.topic,
             "run_date": self.run_date,
+            "episode": self.episode,
             "sequence": seq,
             "step": key,
             "label": label,

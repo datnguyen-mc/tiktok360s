@@ -16,9 +16,14 @@ class DatabaseSeeder extends Seeder
      *
      * `content_paragraphs` phải khai rõ: để mặc định 0 thì chuyên mục không bao
      * giờ lấy nội dung, và trang tin chỉ còn những bài trơ mỗi cái sapo.
+     *
+     * Slug dùng tiếng Anh; `topic` thì không — đó là tên tệp trong topics/ của
+     * dây chuyền video, đổi là dây chuyền không tìm thấy cấu hình kênh.
      */
     public function run(): void
     {
+        $this->call(PageSeeder::class);
+
         $categories = [
             [
                 'slug' => 'showbiz', 'name' => 'Showbiz', 'topic' => 'showbiz',
@@ -32,7 +37,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'bongda', 'name' => 'Bóng đá', 'topic' => 'bongda',
+                'slug' => 'football', 'name' => 'Bóng đá', 'topic' => 'bongda',
                 'color' => '#00A650', 'sort' => 20, 'content_paragraphs' => 6,
                 'description' => 'Tin bóng đá Việt Nam và quốc tế',
                 'sources' => [
@@ -53,7 +58,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'cong-nghe', 'name' => 'Công nghệ',
+                'slug' => 'technology', 'name' => 'Công nghệ',
                 'color' => '#0A9CB0', 'sort' => 30, 'content_paragraphs' => 6,
                 'description' => 'Điện thoại, máy tính, AI và chuyển đổi số',
                 'sources' => [
@@ -64,7 +69,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'kinh-doanh', 'name' => 'Kinh doanh',
+                'slug' => 'business', 'name' => 'Kinh doanh',
                 'color' => '#7C3AED', 'sort' => 40, 'content_paragraphs' => 6,
                 'description' => 'Thị trường, doanh nghiệp và tài chính',
                 'sources' => [
@@ -74,7 +79,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'the-gioi', 'name' => 'Thế giới',
+                'slug' => 'world', 'name' => 'Thế giới',
                 'color' => '#2563EB', 'sort' => 50, 'content_paragraphs' => 6,
                 'description' => 'Tin quốc tế nổi bật',
                 'sources' => [
@@ -83,7 +88,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'doi-song', 'name' => 'Đời sống',
+                'slug' => 'life', 'name' => 'Đời sống',
                 'color' => '#EA580C', 'sort' => 60, 'content_paragraphs' => 6,
                 'description' => 'Gia đình, ẩm thực, du lịch và nhịp sống',
                 'sources' => [
@@ -92,7 +97,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
-                'slug' => 'suc-khoe', 'name' => 'Sức khoẻ',
+                'slug' => 'health', 'name' => 'Sức khoẻ',
                 'color' => '#059669', 'sort' => 70, 'content_paragraphs' => 6,
                 'description' => 'Y tế, dinh dưỡng và phòng bệnh',
                 'sources' => [

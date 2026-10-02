@@ -9,15 +9,23 @@ set -eu
 SCHEDULE_TIME="${SCHEDULE_TIME:-07:30}"
 RUN_ON_START="${RUN_ON_START:-false}"
 
+# Các kênh chạy mỗi ngày. Kênh phim nhiều tập (chomeo) nằm chung ở đây: nó cũng
+# ra một video mỗi ngày, chỉ khác ở chỗ nội dung do AI viết tiếp thay vì lấy từ RSS.
+TOPICS="${TOPICS:-showbiz bongda drama chomeo clb}"
+
 log() { echo "[$(date '+%F %T %Z')] $*"; }
 
 run_pipeline() {
-  log "▶ Bắt đầu dựng video"
-  if python -m pipeline.run_daily; then
-    log "✓ Xong"
-  else
-    log "✗ Thất bại (mã $?) — thử lại vào ngày mai"
-  fi
+  # Chạy từng kênh riêng và KHÔNG dừng khi một kênh hỏng: một nguồn RSS chết
+  # không được phép làm mất video của hai kênh còn lại.
+  for topic in $TOPICS; do
+    log "▶ Dựng video kênh ${topic}"
+    if python -m pipeline.run_daily --topic "$topic"; then
+      log "  ✓ ${topic} xong"
+    else
+      log "  ✗ ${topic} thất bại (mã $?) — các kênh khác vẫn chạy tiếp"
+    fi
+  done
 }
 
 log "Bộ hẹn giờ khởi động · múi giờ ${TZ:-UTC} · chạy lúc ${SCHEDULE_TIME} mỗi ngày"

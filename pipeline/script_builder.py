@@ -98,6 +98,8 @@ def build_scenes(items: list[dict], cfg: dict, seed: int | None = None,
                                                        dur=_duration_phrase(cfg))),
         "image": picked[0]["image"] if picked else "",
         "source": "", "url": "",
+        # Kênh tư liệu: mỗi tập một CLB, khâu dựng hình lấy tên ở đây để gắn logo
+        "the_thong_tin": picked[0].get("the_thong_tin") if picked else None,
     }
 
     rut = _rut_cam_than(cfg, st, rng)
@@ -121,6 +123,9 @@ def build_scenes(items: list[dict], cfg: dict, seed: int | None = None,
             "score": it.get("score"),
             "topic": styles.nhom_cua(cfg, it["title"], " ".join(it.get("sentences", [])[:1])),
             "reaction": react,        # giữ lại để CMS hiển thị, không chỉ nằm trong lời đọc
+            # Dữ kiện đi kèm (kênh tư liệu): khâu dựng hình vẽ thành bảng thông tin
+            "the_thong_tin": it.get("the_thong_tin"),
+            "noi_bat": it.get("noi_bat"),
             "_conn": conn,
             "_title": to_spoken(it["title"]),
             "_extra": it.get("sentences", []),
@@ -261,11 +266,26 @@ def build(cfg: dict, items: list[dict] | None = None, seed: int | None = None,
     ngay = datetime.strptime(date, "%Y-%m-%d") if date else datetime.now()
     items = items if items is not None else collect(cfg, date)
     if not items:
-        raise SystemExit("Không lấy được tin nào — kiểm tra mạng hoặc nguồn RSS trong config.json")
+        # RuntimeError chứ không phải SystemExit: SystemExit dành cho tầng CLI
+        # ngoài cùng. Ném từ trong thư viện thì nó lách qua mọi `except Exception`
+        # của người gọi, và lỗi biến mất không dấu vết.
+        raise RuntimeError(
+            f"Không có tin nào để dựng kịch bản cho chủ đề "
+            f"“{cfg.get('topic_name') or cfg.get('topic') or '?'}”.\n"
+            f"  Kiểm tra topics/{cfg.get('topic', '?')}.json: mục `sources` có nguồn RSS chưa, "
+            f"và `nhom_tu_khoa` có lọc quá chặt không."
+        )
 
     scenes = fit_length(build_scenes(items, cfg, seed, ngay), cfg)
     estimated = scenes[0].pop("_estimated_sec", None)
     news = [s for s in scenes if s["kind"] == "news"]
+
+    # Bước này không gọi AI: câu mở, câu nối, câu chốt đều rút từ mẫu câu có sẵn.
+    # Ghi rõ ra để khỏi phải đoán khi xem log.
+    log(f"không gọi AI · ghép mẫu câu styles.{cfg['script'].get('style', 'chuan')} "
+        f"trong topics/{cfg.get('topic', '?')}.json")
+    log(f"  mở: {scenes[0]['vo']}")
+    log(f"  chốt: {scenes[-1]['vo']}")
     return {
         "estimated_sec": estimated,
         "style": cfg["script"].get("style", "chuan"),

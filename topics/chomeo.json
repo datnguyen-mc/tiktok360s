@@ -68,11 +68,322 @@
     "prompt_bible": "3D Pixar-style animation, vertical 9:16, warm golden-hour lighting, Vietnamese small-town alley setting with tin-roof houses and a big old banyan tree. CHARACTERS (keep exactly identical in every shot): BO is a male golden retriever, honey-gold fur, floppy ears, brown leather collar with a bone-shaped tag, faded blue t-shirt, walks upright. MIU is a female calico cat, white fur with orange and black patches, green eyes, long curved tail, red neck scarf, walks upright. No text, no subtitles, no watermark. Scene: {tieu_de}",
     "negative_prompt": "text, subtitles, watermark, logo, extra characters, deformed paws, human faces, photorealistic, horror, blood",
     "quy_trinh": [
-      "1. Viết kịch bản tập: output/chomeo/<ngày>/script.json (xem content/05-series-cho-meo-40-tap.md).",
-      "2. Mỗi cảnh dùng kind='news', headline = mô tả hành động cho AI vẽ, vo = lời kể.",
-      "3. Chạy: .venv/bin/python -m pipeline.run_daily --topic chomeo --script <đường dẫn script.json>",
-      "4. Bật engine Veo/Kling trong CMS và dán prompt_bible vào ô prompt của kênh."
-    ]
+      "Chạy: .venv/bin/python -m pipeline.run_daily --topic chomeo",
+      "AI đọc tập hôm trước rồi viết tập kế tiếp, bám theo `dan_bai` nếu còn.",
+      "Hết 40 tập thì AI tự viết tiếp, giữ nguyên nhân vật và bối cảnh.",
+      "Khoá Gemini lấy từ cấu hình CMS (gemini_api_key), hoặc từ engine Veo đang bật."
+    ],
+    "phan": [
+      {
+        "ten": "Phần 1 · Gặp gỡ",
+        "tu": 1,
+        "den": 8
+      },
+      {
+        "ten": "Phần 2 · Yêu nhau",
+        "tu": 9,
+        "den": 16
+      },
+      {
+        "ten": "Phần 3 · Cầu hôn & đám cưới",
+        "tu": 17,
+        "den": 24
+      },
+      {
+        "ten": "Phần 4 · Vợ chồng son",
+        "tu": 25,
+        "den": 32
+      },
+      {
+        "ten": "Phần 5 · Làm cha mẹ",
+        "tu": 33,
+        "den": 40
+      }
+    ],
+    "dan_bai": [
+      {
+        "so": 1,
+        "ten": "Ngày Bơ dọn về xóm Mây",
+        "hook": "Ngày đầu tiên ở xóm mới, Bơ làm đổ nguyên thùng cá của người ta.",
+        "nhip": "Bơ kéo xe đồ vào hẻm → vấp dây điện, thùng cá đổ tung → Miu đứng nhìn, không nói một tiếng, quay lưng đi.",
+        "chot": "Ấn tượng đầu tiên coi như xong. Mà xóm này có mỗi một con hẻm thôi."
+      },
+      {
+        "so": 2,
+        "ten": "Con mèo hay giận",
+        "hook": "Bơ mua cá đền, ba lần bấm chuông, ba lần cửa đóng.",
+        "nhip": "Bơ tập câu xin lỗi trước gương → bấm chuông, Miu không mở → Bơ để túi cá trước cửa rồi về.",
+        "chot": "Sáng hôm sau, túi cá không còn ở đó nữa."
+      },
+      {
+        "so": 3,
+        "ten": "Cơn mưa đầu tiên",
+        "hook": "Mưa xóm Mây đổ cái ào, không báo trước bao giờ.",
+        "nhip": "Miu ôm rổ cá chạy mưa → Bơ chạy theo, đưa áo mưa của mình → Bơ ướt sũng đứng cười.",
+        "chot": "Miu nói 'cảm ơn'. Hai chữ thôi, mà Bơ vui nguyên tuần."
+      },
+      {
+        "so": 4,
+        "ten": "Nồi cháo cháy",
+        "hook": "Miu ốm. Bơ quyết định nấu cháo. Đó là một quyết định sai.",
+        "nhip": "Bơ loay hoay trong bếp → khói bốc mù, chuông báo cháy kêu → Miu ra xem, thấy Bơ mặt lem nhem.",
+        "chot": "Lần đầu tiên Bơ thấy Miu cười. Đáng giá một cái nồi."
+      },
+      {
+        "so": 5,
+        "ten": "Bơ mất việc",
+        "hook": "Hôm đó Bơ về sớm hơn thường lệ. Không ai hỏi vì sao.",
+        "nhip": "Bơ ngồi bệt ở bến xe, ôm cái mũ bảo hiểm → Miu đi chợ về, thấy → Miu ngồi xuống cạnh, không nói gì, mở gói xôi ra chia đôi.",
+        "chot": "Có những lúc người ta không cần lời khuyên. Chỉ cần có ai ngồi cạnh."
+      },
+      {
+        "so": 6,
+        "ten": "Nửa ổ bánh mì",
+        "hook": "Cuối tháng. Trong nhà Bơ còn đúng một ổ bánh mì.",
+        "nhip": "Bơ đếm tiền lẻ → Miu sang mượn muối, thấy cảnh đó → hai đứa chia đôi ổ bánh, ngồi bậc thềm.",
+        "chot": "Nghèo thì nghèo, mà bữa đó ăn ngon nhất xóm."
+      },
+      {
+        "so": 7,
+        "ten": "Cả xóm đồn",
+        "hook": "Bà Bảy bán tạp hoá hỏi một câu, cả hẻm nghe thấy.",
+        "nhip": "Bà Bảy: \"Hai đứa bây yêu nhau hả?\" → Bơ chối, Miu chối, cả hai đỏ mặt → hai đứa đi hai hướng khác nhau rồi cùng quay lại nhìn.",
+        "chot": "Chối thì dễ. Khó là cái lúc quay đầu nhìn lại."
+      },
+      {
+        "so": 8,
+        "ten": "Đêm pháo hoa",
+        "hook": "Bơ tập nói câu đó suốt một tuần. Rồi pháo hoa nổ.",
+        "nhip": "Hai đứa lên sân thượng coi pháo hoa → Bơ quay sang nói \"Anh thích em\" → tiếng pháo át đi, Miu hỏi \"Hả? Anh nói gì?\"",
+        "chot": "Bơ lắc đầu: 'Không có gì.' Tập sau: Bơ có nói lại được không?"
+      },
+      {
+        "so": 9,
+        "ten": "Lời chưa nói",
+        "hook": "Nói trước gương thì trôi chảy. Đứng trước Miu thì quên sạch.",
+        "nhip": "Bơ tập tỏ tình với cái gối → tập với con chó hàng xóm → gặp Miu thật thì chỉ nói được \"Ừ… ăn cơm chưa?\"",
+        "chot": "Ba mươi tuổi đầu rồi mà còn sợ một câu bốn chữ."
+      },
+      {
+        "so": 10,
+        "ten": "Anh mèo Xiêm",
+        "hook": "Hôm đó có một chiếc xe hơi đậu ngay đầu hẻm.",
+        "nhip": "Mèo Xiêm sang trọng tới chợ tìm Miu → mời Miu đi ăn nhà hàng → Bơ đứng bên kia đường, tay còn cầm hộp cơm hộp.",
+        "chot": "Bơ nhìn xuống cái hộp cơm trong tay. Rồi đi về."
+      },
+      {
+        "so": 11,
+        "ten": "Bơ lùi lại",
+        "hook": "Bơ bắt đầu tránh mặt. Vòng đường xa hơn ba trăm mét để khỏi đi ngang nhà Miu.",
+        "nhip": "Bơ đi đường vòng → Miu đợi ở hàng rào, không thấy → Bơ tự nói: \"Người ta xứng đáng hơn.\"",
+        "chot": "Cái tội lớn nhất của người hiền là tự quyết định thay người khác."
+      },
+      {
+        "so": 12,
+        "ten": "Miu đi tìm",
+        "hook": "Miu đi hết xóm Mây trong mưa để tìm một con chó.",
+        "nhip": "Miu hỏi bà Bảy, hỏi quán cà phê → tìm thấy Bơ ngồi dưới gốc bàng → Miu tát yêu một cái: \"Ai cho anh tự bỏ cuộc?\"",
+        "chot": "Bơ ngẩng lên. Lần này không có pháo hoa nào để đổ lỗi."
+      },
+      {
+        "so": 13,
+        "ten": "Gốc bàng",
+        "hook": "Câu nói một tuần không ra được, giờ ra trong ba giây.",
+        "nhip": "Bơ đứng dậy, ướt nhẹp → \"Anh thích em. Lâu rồi.\" → Miu quay mặt đi, nói nhỏ: \"Biết rồi. Lâu rồi.\"",
+        "chot": "Cây bàng đầu hẻm hôm đó có thêm một vết khắc."
+      },
+      {
+        "so": 14,
+        "ten": "Buổi hẹn đầu tiên",
+        "hook": "Bơ dành dụm một tháng cho buổi hẹn này.",
+        "nhip": "Bơ dẫn Miu tới quán sang, đọc thực đơn rồi tái mặt → hai đứa lẳng lặng đi ra → ngồi ăn ốc vỉa hè, cười muốn sặc.",
+        "chot": "Miu nói: 'Lần sau khỏi cố. Em thích chỗ này hơn.'"
+      },
+      {
+        "so": 15,
+        "ten": "Cãi nhau lần đầu",
+        "hook": "Bơ quên sinh nhật Miu. Chỉ có vậy thôi.",
+        "nhip": "Miu nấu sẵn hai phần cơm, ngồi đợi → Bơ về trễ, tay không → Miu không la, chỉ dọn một phần cơm đi.",
+        "chot": "Ba ngày không ai nói với ai. Im lặng nặng hơn cãi nhau nhiều."
+      },
+      {
+        "so": 16,
+        "ten": "Đứng dưới cửa sổ",
+        "hook": "Bơ đứng dưới cửa sổ nhà Miu từ mười giờ tối tới sáng.",
+        "nhip": "Bơ đứng im, trời đổ sương → hàng xóm thò đầu ra coi → sáng ra, Miu mở cửa sổ, ném xuống một cái khăn.",
+        "chot": "'Vô nhà đi, lạnh chết bây giờ.' Đó là cách Miu nói 'em tha thứ'."
+      },
+      {
+        "so": 17,
+        "ten": "Ba công việc một lúc",
+        "hook": "Bơ muốn mua một chiếc nhẫn. Bơ nhận thêm hai việc.",
+        "nhip": "Sáng giao hàng, chiều phụ hồ, tối rửa chén → Bơ ngủ gục trên xe → Miu thấy vết chai trên tay Bơ, không hỏi.",
+        "chot": "Miu đếm lại tiền dành dụm của mình. Rồi cất đi, không nói."
+      },
+      {
+        "so": 18,
+        "ten": "Ra mắt",
+        "hook": "Mẹ Miu nói một câu ngay ở cửa: 'Nhà này chưa bao giờ nuôi chó.'",
+        "nhip": "Bơ mang giỏ trái cây tới → mẹ Miu nhìn từ đầu tới chân → không mời ngồi.",
+        "chot": "Bơ vẫn cười. Bơ đứng suốt buổi đó."
+      },
+      {
+        "so": 19,
+        "ten": "Cái bát vỡ",
+        "hook": "Bữa cơm ra mắt lần hai. Bơ làm vỡ cái bát gia truyền.",
+        "nhip": "Bơ cố giành phần rửa chén → tuột tay, bát rơi → cả nhà im phăng phắc, mẹ Miu đứng dậy đi vào phòng.",
+        "chot": "Miu nắm tay Bơ dưới gầm bàn. Chỉ vậy thôi."
+      },
+      {
+        "so": 20,
+        "ten": "Đêm mẹ Miu ngã",
+        "hook": "Hai giờ sáng, nhà Miu có tiếng động.",
+        "nhip": "Mẹ Miu trượt chân ở bậc thềm → Bơ nghe tiếng, chạy sang cõng bà đi bệnh viện → Bơ ngồi ngoài hành lang tới sáng.",
+        "chot": "Bà tỉnh dậy, thấy đôi dép của Bơ ở cửa phòng. Chỉ một chiếc — chiếc kia rơi dọc đường."
+      },
+      {
+        "so": 21,
+        "ten": "Chiếc nhẫn cũ",
+        "hook": "Mẹ Miu gọi Bơ vô phòng. Lần đầu tiên.",
+        "nhip": "Bà mở hộp gỗ cũ → lấy ra chiếc nhẫn của chính bà ngày trước → \"Nhà này giờ nuôi chó rồi đó.\"",
+        "chot": "Bơ khóc. Bơ nói là tại bụi."
+      },
+      {
+        "so": 22,
+        "ten": "Cầu hôn",
+        "hook": "Vẫn cây bàng đó. Vẫn hai đứa đó. Khác mỗi cái hộp nhỏ trong túi.",
+        "nhip": "Bơ dẫn Miu ra gốc bàng, chỉ vết khắc năm xưa → quỳ xuống, tay run → Miu chưa kịp trả lời thì cả xóm nấp sau gốc cây reo lên.",
+        "chot": "Miu gật đầu. Bà Bảy khóc to hơn cả cô dâu."
+      },
+      {
+        "so": 23,
+        "ten": "Cả xóm làm đám cưới",
+        "hook": "Không đủ tiền thuê nhà hàng. Nên cả xóm xắn tay vô.",
+        "nhip": "Bà Bảy lo bàn ghế, quán cà phê lo nhạc → Bơ đi thử vest, ống quần dài lê thê → đêm trước cưới, rạp bị gió thổi sập.",
+        "chot": "Bốn giờ sáng, cả xóm ra dựng lại. Không ai than một tiếng."
+      },
+      {
+        "so": 24,
+        "ten": "Ngày cưới",
+        "hook": "Đúng ngày cưới thì trời mưa. Dĩ nhiên rồi.",
+        "nhip": "Mưa xối xả, khách chạy tán loạn → cả xóm giương ô làm thành một đường hầm từ đầu hẻm tới rạp → Miu bước qua đường hầm ô đó.",
+        "chot": "Bơ đứng cuối đường hầm. Đợi tám tập rồi, giờ mới tới lượt."
+      },
+      {
+        "so": 25,
+        "ten": "Đêm tân hôn dọn nhà",
+        "hook": "Đêm tân hôn của Bơ và Miu trôi qua trong… bụi.",
+        "nhip": "Căn trọ chín mét vuông, đồ chất đầy → hai đứa dọn tới nửa đêm → ngủ gục trên đống thùng các-tông.",
+        "chot": "Nhà bé xíu. Mà lần đầu tiên có chữ 'nhà mình'."
+      },
+      {
+        "so": 26,
+        "ten": "Sạch và bừa",
+        "hook": "Miu xếp dép thẳng hàng. Bơ thì… có dép là tốt rồi.",
+        "nhip": "Miu lau nhà ba lần một ngày → Bơ để tất trên bàn ăn → trận cãi nhau về cái khăn lau.",
+        "chot": "Sống chung không khó vì chuyện lớn. Khó vì cái khăn lau."
+      },
+      {
+        "so": 27,
+        "ten": "Hoá đơn tháng đầu",
+        "hook": "Tờ hoá đơn tiền điện đầu tiên dán lên tủ lạnh như một lời cảnh cáo.",
+        "nhip": "Hai đứa ngồi tính từng khoản → Bơ đề nghị bỏ tiền cà phê sáng → Miu bỏ tiền son.",
+        "chot": "Cả hai giấu nhau, cả hai đều bỏ. Tháng đó dư được hai trăm ngàn."
+      },
+      {
+        "so": 28,
+        "ten": "Cái tủ lạnh cũ",
+        "hook": "Bơ được lên thợ chính. Lương thêm một triệu hai.",
+        "nhip": "Bơ chạy về khoe → hai đứa đi mua tủ lạnh cũ ở tiệm ve chai → khiêng lên lầu ba, thở không ra hơi.",
+        "chot": "Tối đó hai đứa mở tủ lạnh ra ngắm. Trong tủ có đúng hai quả trứng."
+      },
+      {
+        "so": 29,
+        "ten": "Hai vạch",
+        "hook": "Miu đứng trong nhà tắm lâu hơn bình thường.",
+        "nhip": "Miu cầm que thử, tay run → mở cửa ra, đưa cho Bơ → Bơ nhìn, rồi ngồi bệt xuống sàn.",
+        "chot": "Bơ không nói được câu nào. Bơ chỉ ôm cái đầu gối của Miu."
+      },
+      {
+        "so": 30,
+        "ten": "Hai giờ sáng",
+        "hook": "Miu thèm bánh tráng trộn. Lúc hai giờ sáng.",
+        "nhip": "Bơ đạp xe khắp xóm, quán nào cũng đóng → Bơ tự mua nguyên liệu về trộn → làm dở tệ, Miu vẫn ăn hết.",
+        "chot": "Bơ hỏi ngon không. Miu nói dở. Rồi xin thêm phần nữa."
+      },
+      {
+        "so": 31,
+        "ten": "Nhịp tim",
+        "hook": "Lần đầu tiên hai đứa nghe được tiếng của một người thứ ba.",
+        "nhip": "Phòng siêu âm, máy chạy → tiếng tim đập vang lên → Bơ nín thở, Miu bụm miệng.",
+        "chot": "Ra khỏi phòng khám, hai đứa đi bộ về. Không ai nói gì suốt đường."
+      },
+      {
+        "so": 32,
+        "ten": "Cái cũi",
+        "hook": "Bơ quyết định tự đóng cũi cho con. Bơ là thợ mộc mà.",
+        "nhip": "Bản vẽ nguệch ngoạc → hỏng lần một, lần hai, lần ba → lần thứ năm thì đứng được.",
+        "chot": "Cũi hơi xiêu. Mà Bơ đánh bóng cái xiêu đó tới sáng."
+      },
+      {
+        "so": 33,
+        "ten": "Nửa đêm",
+        "hook": "Miu lay Bơ dậy lúc ba giờ sáng. 'Anh ơi, chắc là tới rồi.'",
+        "nhip": "Bơ bật dậy, chạy vòng quanh phòng → quên cả mặc áo, quên luôn túi đồ đã chuẩn bị → cả xóm bật đèn, xe ôm bà Bảy chở đi.",
+        "chot": "Bơ tới bệnh viện mới phát hiện mình đi có một chiếc dép. Lại nữa."
+      },
+      {
+        "so": 34,
+        "ten": "Bé Sữa",
+        "hook": "Sáu giờ mười bảy phút sáng.",
+        "nhip": "Tiếng khóc đầu tiên → y tá bế ra, một sinh linh nhỏ tai cụp mắt xanh → Bơ đưa tay ra rồi rụt lại, sợ làm đau.",
+        "chot": "Miu đặt tên là Sữa. Bơ đồng ý trước khi nghe hết câu."
+      },
+      {
+        "so": 35,
+        "ten": "Đêm đầu tiên",
+        "hook": "Đêm đầu tiên làm cha mẹ. Không ai ngủ được một phút.",
+        "nhip": "Sữa khóc, Bơ bế đi vòng quanh phòng → Miu pha sữa, đổ hai lần → bốn giờ sáng, Sữa ngủ, hai đứa nhìn nhau cười ngơ ngác.",
+        "chot": "Mệt muốn chết. Mà không ai muốn đi ngủ, sợ lỡ mất."
+      },
+      {
+        "so": 36,
+        "ten": "Quầng thâm",
+        "hook": "Bơ đi làm với hai quầng thâm to bằng cái chén.",
+        "nhip": "Bơ ngủ gật ở xưởng → thợ cùng xưởng trêu → Bơ mở điện thoại khoe ảnh con, cười toe.",
+        "chot": "Ai làm cha rồi cũng vậy: mệt thì mệt, khoe thì vẫn phải khoe."
+      },
+      {
+        "so": 37,
+        "ten": "Tiếng đầu tiên",
+        "hook": "Sữa gọi 'ba' trước. Miu dỗi ba ngày.",
+        "nhip": "Sữa bập bẹ \"ba ba\" → Bơ mừng quýnh, gọi điện cho cả xóm → Miu ngồi một góc, mặt xị.",
+        "chot": "Tối đó Sữa gọi 'mẹ'. Miu khóc còn to hơn lúc Bơ cầu hôn."
+      },
+      {
+        "so": 38,
+        "ten": "Đêm bệnh viện",
+        "hook": "Sữa sốt bốn mươi độ. Hai giờ sáng, lại là hai giờ sáng.",
+        "nhip": "Hai đứa thay nhau chườm khăn → hành lang bệnh viện, Miu ngồi dựa vai Bơ → Bơ nắm tay Miu, không nói gì.",
+        "chot": "Sáng ra Sữa hạ sốt. Bơ mới dám thở."
+      },
+      {
+        "so": 39,
+        "ten": "Sinh nhật một tuổi",
+        "hook": "Cả xóm Mây lại kéo tới. Lần này là mừng thôi nôi.",
+        "nhip": "Bà Bảy làm bánh, quán cà phê cho mượn loa → Sữa bốc trúng cây bút → cả xóm hò reo.",
+        "chot": "Mẹ Miu ngồi góc nhà, nhìn Bơ, gật đầu một cái. Vậy là đủ."
+      },
+      {
+        "so": 40,
+        "ten": "Trở lại gốc bàng",
+        "hook": "Một buổi chiều, ba người ra đầu hẻm.",
+        "nhip": "Bơ chỉ cho Sữa vết khắc trên thân cây → Miu tựa vai Bơ → Bơ hỏi: \"Nếu được chọn lại, em còn chọn anh không?\"",
+        "chot": "Miu không trả lời. Miu chỉ nắm chặt tay Bơ hơn. — Hết phần một. Phần hai: ngày Sữa đi học."
+      }
+    ],
+    "so_canh": 8,
+    "model": "gemini-3.6-flash"
   },
   "khong_pha_tro": [],
   "nhom_tu_khoa": [],
@@ -107,5 +418,6 @@
       "tieu_de_intro": "CHUYỆN NHÀ BƠ & MIU",
       "tieu_de_outro": "THEO DÕI ĐỂ XEM TẬP TIẾP THEO"
     }
-  }
+  },
+  "mode": "series"
 }

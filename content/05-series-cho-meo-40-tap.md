@@ -4,9 +4,24 @@ Kênh phim hoạt hình nhiều tập: chó Bơ và mèo Miu, từ lúc gặp nh
 Chủ đề đã tạo sẵn ở [`topics/chomeo.json`](../topics/chomeo.json).
 
 > **Khác hẳn hai kênh kia.** Showbiz và bóng đá lấy tin từ RSS rồi máy tự dựng kịch bản.
-> Kênh này **không có nguồn tin nào tự chảy vào** — mỗi tập là một kịch bản viết tay.
-> Dây chuyền vẫn dùng lại được y nguyên từ khâu giọng đọc trở đi, nhưng khâu "lấy tin →
-> dựng kịch bản" thì bị thay bằng bàn tay người. Xem mục [Quy trình sản xuất](#quy-trình-sản-xuất).
+> Kênh này **không có nguồn tin nào tự chảy vào** — mỗi ngày **Gemini đọc tập hôm trước
+> rồi viết tập kế tiếp**. Dây chuyền dùng lại y nguyên từ khâu giọng đọc trở đi; chỉ khâu
+> "lấy tin" bị thay bằng khâu "viết tập".
+>
+> ```bash
+> .venv/bin/python -m pipeline.run_daily --topic chomeo
+> ```
+>
+> Ba thứ giữ cho mạch chuyện không đứt qua 40 tập:
+>
+> 1. **Bản mô tả nhân vật là gốc, chép nguyên văn vào prompt mỗi lần.** Model không nhớ
+>    gì giữa các lần gọi — đổi một chữ là sang tập sau con chó đã khác con chó.
+> 2. **Tập trước được đọc lại từ CMS** (bảng `series_episodes`) và đưa vào prompt: tóm
+>    tắt, câu chốt bỏ lửng, và trạng thái quan hệ hai nhân vật sau tập đó.
+> 3. **Khung 40 tập ở dưới đã nạp vào `topics/chomeo.json`** (khoá `series.dan_bai`). AI
+>    bám khung chứ không tự bịa hướng đi; hết khung mới viết tiếp tự do.
+>
+> Mất bảng `series_episodes` là mất trí nhớ của series — tập nào cũng sẽ như tập một.
 
 ## Vì sao làm series dài
 
