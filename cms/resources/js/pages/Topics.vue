@@ -1,4 +1,5 @@
 <script setup>
+import SeriesProgress from '../components/SeriesProgress.vue'
 /*
  * Quản lý chủ đề. Mỗi chủ đề là một file topics/<slug>.json của dây chuyền —
  * trang này sửa thẳng file đó, có sao lưu bản cũ trước mỗi lần ghi.
@@ -192,7 +193,8 @@ const hz  = (n) => `${n >= 0 ? '+' : ''}${n}Hz`
           </tr>
         </thead>
         <tbody class="divide-y divide-line">
-          <tr v-for="t in topics" :key="t.slug" class="transition hover:bg-surface-2">
+          <template v-for="t in topics" :key="t.slug">
+          <tr class="transition hover:bg-surface-2">
             <td class="px-5 py-2.5">
               <span class="flex items-center gap-3">
                 <span class="grid size-9 shrink-0 place-items-center rounded-lg text-xs font-bold text-white"
@@ -242,6 +244,14 @@ const hz  = (n) => `${n >= 0 ? '+' : ''}${n}Hz`
               </span>
             </td>
           </tr>
+
+          <!-- Kênh series: hàng phụ hiện tiến độ lộ trình và nút đặt lại -->
+          <tr v-if="t.mode === 'series'">
+            <td colspan="6" class="border-t-0 px-5 pb-3 pt-0">
+              <SeriesProgress :topic="t.slug" @toast="toast = $event" />
+            </td>
+          </tr>
+          </template>
         </tbody>
       </table>
     </div>

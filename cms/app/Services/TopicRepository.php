@@ -55,6 +55,9 @@ class TopicRepository
                 // hai kênh dùng chung một giọng vẫn phải phân biệt được.
                 'voice'        => $data['voice'] ?? [],
                 'sources'      => count($data['sources'] ?? []),
+                // Kênh series không lấy tin từ RSS mà tự sinh nội dung — giao
+                // diện cần biết để hiện tiến độ lộ trình thay vì số nguồn.
+                'mode'         => $data['mode'] ?? 'news',
                 'style'        => $data['script']['style'] ?? null,
                 'styles'       => array_keys($data['styles'] ?? []),
                 'hashtags'     => count($data['hashtags'] ?? []),

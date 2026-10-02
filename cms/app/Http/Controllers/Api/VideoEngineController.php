@@ -52,9 +52,23 @@ class VideoEngineController extends Controller
     {
         $data = $this->validated($request);
 
-        // Ô khoá hiện dấu chấm nghĩa là người dùng không đổi — giữ khoá cũ.
+        /*
+         * Không bao giờ xoá một khoá đã lưu chỉ vì biểu mẫu gửi lên chuỗi rỗng.
+         *
+         * API giấu khoá thật (`$hidden`) nên giao diện chỉ nhận được cờ
+         * `has_api_key`. Bất kỳ đường nào gửi lên ô khoá trống — form mở từ
+         * trạng thái rỗng, gọi API bằng tay, script — đều sẽ xoá sạch khoá mà
+         * không ai biết, và dây chuyền chết ở lần chạy kế tiếp với một lỗi
+         * chẳng liên quan gì tới việc vừa làm.
+         *
+         * Muốn xoá thật thì phải nói rõ bằng cờ `clear_api_key`.
+         */
         foreach (['api_key', 'api_secret'] as $secret) {
-            if (($data[$secret] ?? null) === '••••••••') {
+            if ($request->boolean('clear_'.$secret)) {
+                $data[$secret] = null;
+                continue;
+            }
+            if (blank($data[$secret] ?? null) || ($data[$secret] ?? null) === '••••••••') {
                 unset($data[$secret]);
             }
         }

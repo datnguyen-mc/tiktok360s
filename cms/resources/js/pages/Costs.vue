@@ -46,6 +46,14 @@ onMounted(load)
 watch(filters, () => { page.value = 1; load() }, { deep: true })
 watch(page, load)
 
+/** Màu cho mã HTTP: xanh là ổn, đỏ là máy chủ từ chối, xám là không tới nơi. */
+function httpTone(code) {
+  if (code === 0) return { background: 'rgba(148,148,160,.18)', color: '#9494a0' }
+  if (code >= 200 && code < 400) return { background: 'rgba(16,185,129,.16)', color: '#34d399' }
+  if (code === 429) return { background: 'rgba(245,158,11,.18)', color: '#fbbf24' }
+  return { background: 'rgba(240,141,141,.16)', color: '#f08d8d' }
+}
+
 // BarChart nhận {source, total} — gộp provider + model thành một nhãn đọc được.
 const modelBars = computed(() => (data.value?.by_model || []).map((r) => ({
   source: `${r.provider}/${(r.model || '—').replace(/-generate-preview$/, '')}`,
@@ -195,6 +203,7 @@ function reset() {
               <th class="px-3 py-3 text-right font-semibold">Cảnh</th>
               <th class="px-3 py-3 text-right font-semibold">Giây</th>
               <th class="px-3 py-3 text-right font-semibold">Tiền</th>
+              <th class="px-3 py-3 text-right font-semibold">Mất</th>
               <th class="px-5 py-3 font-semibold">Kết quả</th>
             </tr>
           </thead>
@@ -219,24 +228,46 @@ function reset() {
                 <td class="tnum px-3 py-2.5 text-right text-[12px]">{{ c.scene_index ?? '—' }}</td>
                 <td class="tnum px-3 py-2.5 text-right text-[12px] text-ink-2">{{ c.seconds ?? '—' }}s</td>
                 <td class="tnum px-3 py-2.5 text-right font-semibold">{{ usd(c.cost_usd) }}</td>
+                <td class="tnum px-3 py-2.5 text-right text-[12px] text-ink-2">
+                  {{ c.duration_ms ? (c.duration_ms / 1000).toFixed(1) + 's' : '—' }}
+                  <span v-if="c.requests" class="block text-[10px] text-ink-muted">
+                    {{ c.requests }} request
+                  </span>
+                </td>
                 <td class="px-5 py-2.5">
-                  <StatusPill :label="c.status === 'failed' ? 'Thất bại' : 'Thành công'"
-                              :tone="c.status === 'failed' ? 'critical' : 'good'" />
+                  <div class="flex items-center gap-1.5">
+                    <StatusPill :label="c.status === 'failed' ? 'Thất bại' : 'Thành công'"
+                                :tone="c.status === 'failed' ? 'critical' : 'good'" />
+                    <!-- Mã HTTP là thứ đầu tiên cần nhìn khi soi lỗi: 429 là vượt
+                         hạn mức, 400 là prompt bị chặn, 0 là không chạm được máy chủ. -->
+                    <code v-if="c.http_status !== null && c.http_status !== undefined"
+                          class="rounded px-1.5 py-0.5 text-[10.5px] font-semibold"
+                          :style="httpTone(c.http_status)">
+                      {{ c.http_status === 0 ? 'không kết nối được' : c.http_status }}
+                    </code>
+                  </div>
                 </td>
               </tr>
               <!-- Mở ra để đọc prompt và lý do hỏng: prompt là thứ duy nhất
                    sửa được khi một cảnh cứ hỏng mãi. -->
               <tr v-if="expanded === c.id">
-                <td colspan="7" class="bg-surface-2 px-5 py-3">
+                <td colspan="8" class="bg-surface-2 px-5 py-3">
                   <p v-if="c.error_message" class="mb-2 text-[12px]" style="color:#f08d8d">
                     {{ c.error_message }}
                   </p>
                   <p class="mb-1 text-[10px] uppercase tracking-wide text-ink-muted">Prompt đã gửi</p>
                   <pre class="whitespace-pre-wrap text-[12px] leading-relaxed text-ink-2">{{ c.prompt || '—' }}</pre>
-                  <p v-if="c.cost_per_second" class="mt-2 text-[11px] text-ink-muted">
-                    Đơn giá {{ usd(c.cost_per_second) }}/giây
+                  <p class="mt-2 text-[11px] text-ink-muted">
+                    <template v-if="c.cost_per_second">
+                      Đơn giá {{ usd(c.cost_per_second) }}/giây
+                    </template>
                     <span v-if="c.resolution">· {{ c.resolution }}</span>
                     <span v-if="c.engine">· engine “{{ c.engine.name }}”</span>
+                    <span v-if="c.http_status !== null && c.http_status !== undefined">
+                      · HTTP {{ c.http_status }}
+                    </span>
+                    <span v-if="c.requests">· {{ c.requests }} lần gọi API</span>
+                    <span v-if="c.duration_ms">· mất {{ (c.duration_ms / 1000).toFixed(1) }}s</span>
                   </p>
                 </td>
               </tr>

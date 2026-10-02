@@ -26,6 +26,7 @@ class Setting extends Model
     public const SECRETS = [
         'tiktok.client_secret',
         'google.client_secret',
+        'gemini.api_key',
     ];
 
     /** Khoá nào lấy từ .env khi bảng chưa có giá trị. */

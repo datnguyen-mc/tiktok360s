@@ -186,3 +186,71 @@ CMS này mặc định dựng cho máy cá nhân. Đưa ra ngoài thì làm đ�
 - Đổi mật khẩu MySQL trong `docker-compose.yml` và `.env`.
 - Sinh `INGEST_TOKEN` mới (`openssl rand -hex 24`) và cập nhật cả hai nơi.
 - Sao lưu `APP_KEY` — mất là mất toàn bộ token đã mã hoá.
+
+## Nhật ký hoạt động
+
+Mọi action trong CMS đều được ghi lại — không có ngoại lệ.
+
+Hai nguồn ghi vào bảng `activity_logs`:
+
+1. **Controller tự gọi `ActivityLog::write()`** với thông điệp tiếng Việt dễ đọc
+   (`Đăng nhập: ban@vidu.vn`, `Xoá video Bóng đá ngày 22/09/2026`).
+2. **Middleware `LogActivity`** ghi mọi request ghi dữ liệu mà (1) bỏ sót, cộng
+   mọi request trả về lỗi.
+
+Nhờ (2), thêm endpoint mới mà quên ghi log thì vẫn có dấu vết. Middleware không
+ghi đè lên dòng của controller — nó chỉ bổ sung mã HTTP và thời gian vào đúng
+những dòng đó.
+
+Ba chi tiết đáng nói:
+
+- **Middleware đặt ở ngoài cùng** (`prepend`, không phải `append`).
+  `SubstituteBindings` nằm trong nhóm `web` và ném 404 khi không tìm thấy bản
+  ghi; đặt sau nó thì exception văng ra trước khi tới lượt ghi log, và **mọi lỗi
+  404 biến mất khỏi nhật ký**.
+- **Bắt cả exception.** `$next($request)` ném thì mọi dòng phía sau không chạy —
+  nghĩa là 404, 500, lỗi CSRF đều không được ghi, trong khi đó mới là thứ cần soi.
+- **Nhớ id dòng đã ghi, không lấy "dòng mới nhất".** Hai người bấm cùng lúc thì
+  dòng mới nhất có thể là của người kia, và request này sẽ ghi đè thời gian lên
+  nhật ký của họ.
+
+Mật khẩu, khoá API, token, mã OTP bị thay bằng `***` trước khi lưu, ở mọi tầng
+của dữ liệu gửi lên. Chuỗi dài hơn 500 ký tự bị cắt bớt.
+
+### Xem trên dòng lệnh
+
+```bash
+php artisan log:watch                      # theo dõi liên tục, như tail -f
+php artisan log:watch --once --last=50     # xem 50 dòng gần nhất rồi thoát
+php artisan log:watch --errors             # chỉ lỗi và cảnh báo
+php artisan log:watch --event=publish      # lọc theo sự kiện
+php artisan log:watch --user=ban@vidu.vn   # lọc theo người thực hiện
+php artisan log:watch --path=video-engines # lọc theo đường dẫn
+php artisan log:watch --full               # hiện cả dữ liệu gửi lên
+```
+
+`composer dev` chạy sẵn một cửa sổ **actions** bên cạnh server, queue và vite —
+khởi động app là thấy log chạy luôn:
+
+```
+server   | INFO  Server running on [http://127.0.0.1:8000]
+actions  | 14:22:07 ✓ auth.login          Đăng nhập: ban@vidu.vn
+         |          bởi ban · HTTP 200 · 94ms
+actions  | 14:22:19 ! runs.failed         DELETE /api/runs/88 lỗi 404 (ban@vidu.vn)
+         |          bởi ban · HTTP 404 · 27ms
+```
+
+Cửa sổ **errors** (`artisan pail`) là thứ khác: nó đọc log tệp của Laravel
+(exception, stack trace). **actions** đọc nhật ký nghiệp vụ — ai làm gì, lúc nào,
+kết quả ra sao.
+
+### Dọn nhật ký
+
+Mỗi request ghi dữ liệu là một dòng nên bảng này lớn nhanh nhất hệ thống.
+`log:prune` chạy hằng ngày lúc 03:30: giữ dòng lỗi **180 ngày**, dòng thông tin
+**30 ngày** — lỗi là thứ người ta tìm lại sau nhiều tháng, còn "ai bấm nút gì hôm
+thứ ba" thì không.
+
+```bash
+php artisan log:prune --dry     # chỉ đếm, không xoá
+```

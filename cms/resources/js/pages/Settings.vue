@@ -141,6 +141,37 @@ async function copy(text) {
       </div>
     </section>
 
+    <!-- Gemini: viết kịch bản cho kênh phim nhiều tập -->
+    <section class="card p-5">
+      <h2 class="text-sm font-bold">Gemini · viết kịch bản series</h2>
+      <p class="mt-1 text-[12px] leading-relaxed text-ink-muted">
+        Kênh phim nhiều tập không lấy tin từ RSS — mỗi ngày AI đọc tập hôm trước rồi viết
+        tập kế tiếp. Lấy khoá ở
+        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener"
+           class="text-ink-2 underline decoration-dotted">Google AI Studio</a>.
+      </p>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1.5">
+          <label class="label">Khoá API</label>
+          <input v-model="form['gemini.api_key']" type="password" class="input font-mono !text-xs"
+                 placeholder="AIza…" autocomplete="off" />
+          <p class="text-[11px] leading-relaxed text-ink-muted">
+            Bỏ trống thì hệ thống <strong class="text-ink-2">mượn khoá của engine Veo</strong>
+            đang bật — cùng một khoá Google AI Studio dùng được cho cả hai.
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <label class="label">Model</label>
+          <input v-model="form['gemini.model']" class="input font-mono !text-xs"
+                 placeholder="gemini-3.6-flash" />
+          <p class="text-[11px] leading-relaxed text-ink-muted">
+            Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <div class="flex justify-end gap-2">
       <button class="btn" @click="load">Hoàn tác</button>
       <button class="btn btn-primary" :disabled="busy" @click="save">

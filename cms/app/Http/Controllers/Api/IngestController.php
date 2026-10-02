@@ -87,6 +87,7 @@ class IngestController extends Controller
             'caption'       => ['nullable', 'string'],
             'clip_provider' => ['nullable', 'string', 'max:20'],
             'prompt_template' => ['nullable', 'string'],
+            'episode'             => ['nullable', 'integer', 'min:0', 'max:65000'],
             'generation_cost_usd' => ['nullable', 'numeric', 'min:0'],
             'started_at'    => ['nullable', 'date'],
             'finished_at'   => ['nullable', 'date'],
@@ -119,6 +120,9 @@ class IngestController extends Controller
             'clip_calls.*.seconds'          => ['nullable', 'integer', 'min:0'],
             'clip_calls.*.cost_per_second'  => ['nullable', 'numeric', 'min:0'],
             'clip_calls.*.cost_usd'         => ['nullable', 'numeric', 'min:0'],
+            'clip_calls.*.http_status'      => ['nullable', 'integer', 'min:0', 'max:599'],
+            'clip_calls.*.duration_ms'      => ['nullable', 'integer', 'min:0'],
+            'clip_calls.*.requests'         => ['nullable', 'integer', 'min:0'],
             'clip_calls.*.status'           => ['nullable', Rule::in(['success', 'failed'])],
             'clip_calls.*.error_message'    => ['nullable', 'string'],
             'clip_calls.*.clip_url'         => ['nullable', 'string', 'max:1000'],
@@ -130,14 +134,18 @@ class IngestController extends Controller
 
         // Kịch bản cũ (trước khi có chủ đề) gửi topic = null. Để nguyên thì câu
         // UPDATE sẽ ghi đè cột thành null và vi phạm ràng buộc NOT NULL.
-        $data['topic'] = $data['topic'] ?: 'showbiz';
-        $data['topic_name'] = $data['topic_name'] ?: ucfirst($data['topic']);
+        // Dùng ?? chứ không phải ?: — `validate()` chỉ trả về những khoá CÓ MẶT
+        // trong request, nên khoá vắng mặt làm `?:` ném "Undefined array key".
+        $data['topic'] = ($data['topic'] ?? null) ?: 'showbiz';
+        $data['topic_name'] = ($data['topic_name'] ?? null) ?: ucfirst($data['topic']);
 
         $run = DB::transaction(function () use ($data, $items, $calls) {
             // Chạy lại cùng chủ đề + cùng ngày thì ghi đè, không tạo bản trùng.
             // Phải có cả `topic`: hai chủ đề chạy cùng ngày là hai video khác nhau.
             $run = Run::updateOrCreate(
-                ['topic' => $data['topic'], 'run_date' => $data['run_date']],
+                ['topic'    => $data['topic'],
+                 'run_date' => $data['run_date'],
+                 'episode'  => $data['episode'] ?? 0],
                 $data
             );
             $run->items()->delete();
@@ -151,8 +159,25 @@ class IngestController extends Controller
              * Tạo lại một video là gọi API lần nữa và tốn tiền lần nữa; xoá lượt
              * gọi cũ đi thì tổng chi phí tháng sẽ thiếu đúng phần đã tiêu. Đây là
              * chỗ duy nhất trong hàm này cố tình không ghi đè.
+             *
+             * Dây chuyền đã gửi từng lần gọi lên `/api/ingest/generation-call`
+             * ngay lúc nó xảy ra. Lần gửi cuối lượt này là lưới an toàn cho
+             * trường hợp CMS lúc đó không nhận được — nên phải bỏ qua bản đã có,
+             * nếu không mỗi lần gọi bị đếm tiền hai lần.
              */
             foreach ($calls as $call) {
+                $already = GenerationCall::where('topic', $run->topic)
+                    ->where('run_id', $run->id)
+                    ->whereDate('run_date', $run->run_date)
+                    ->where('scene_index', $call['scene_index'] ?? null)
+                    ->where('provider', $call['provider'])
+                    ->where('created_at', '>=', now()->subHours(6))
+                    ->exists();
+
+                if ($already) {
+                    continue;
+                }
+
                 GenerationCall::create(array_merge($call, [
                     'run_id'    => $run->id,
                     'topic'     => $run->topic,
@@ -162,6 +187,13 @@ class IngestController extends Controller
                     'cost_usd'  => $call['cost_usd'] ?? 0,
                 ]));
             }
+
+            // Bản gửi ngay lúc đó chưa biết run_id (lượt chạy chưa được nạp).
+            // Nối lại ở đây để trang chi tiết video hiện đủ nhật ký.
+            GenerationCall::whereNull('run_id')
+                ->where('topic', $run->topic)
+                ->whereDate('run_date', $run->run_date)
+                ->update(['run_id' => $run->id, 'run_title' => $run->title]);
 
             return $run;
         });

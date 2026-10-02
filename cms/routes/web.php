@@ -7,13 +7,16 @@ use App\Http\Controllers\Api\CreateVideoController;
 use App\Http\Controllers\Api\GenerationCostController;
 use App\Http\Controllers\Api\RegenerateVideoController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\GenerationCallController;
 use App\Http\Controllers\Api\IngestController;
 use App\Http\Controllers\Api\PipelineConfigController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\PipelineJobController;
 use App\Http\Controllers\Api\PromptPresetController;
 use App\Http\Controllers\Api\PublishJobController;
 use App\Http\Controllers\Api\RunController;
 use App\Http\Controllers\Api\TopicController;
+use App\Http\Controllers\Api\SeriesController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\StepController;
 use App\Http\Controllers\Api\TwoFactorController;
@@ -43,6 +46,22 @@ Route::prefix('api')->group(function () {
         ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
         ->middleware(VerifyIngestToken::class);
 
+    // Trí nhớ của kênh phim nhiều tập: dây chuyền hỏi tập trước rồi gửi tập mới
+    Route::get('pipeline/series/{topic}/last', [SeriesController::class, 'last'])
+        ->middleware(VerifyIngestToken::class);
+    Route::get('pipeline/series/{topic}/next', [SeriesController::class, 'next'])
+        ->middleware(VerifyIngestToken::class);
+    Route::get('pipeline/series-key', [SeriesController::class, 'key'])
+        ->middleware(VerifyIngestToken::class);
+    Route::post('ingest/series-episode', [SeriesController::class, 'store'])
+        ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+        ->middleware(VerifyIngestToken::class);
+
+    // Nhật ký gọi API sinh cảnh — gửi ngay khi mỗi clip xong, không đợi cuối lượt
+    Route::post('ingest/generation-call', GenerationCallController::class)
+        ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
+        ->middleware(VerifyIngestToken::class);
+
     Route::post('ingest/run', [IngestController::class, 'store'])
         ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])
         ->middleware(VerifyIngestToken::class);
@@ -62,6 +81,15 @@ Route::prefix('api')->group(function () {
 
         // Bấm "Tạo video" ở trang Video
         Route::post('videos/create', CreateVideoController::class);
+
+        // Điều khiển tiến trình dựng video đang chạy
+        Route::get('pipeline-jobs', [PipelineJobController::class, 'index']);
+        Route::post('pipeline-jobs/{job}/stop', [PipelineJobController::class, 'stop']);
+        Route::post('pipeline-jobs/{job}/resume', [PipelineJobController::class, 'resume']);
+
+        // Kênh series: tiến độ lộ trình và đặt lại từ đầu
+        Route::get('series/{topic}/progress', [SeriesController::class, 'progress']);
+        Route::post('series/{topic}/reset', [SeriesController::class, 'reset']);
 
         // Thư viện prompt
         Route::get('prompt-presets', [PromptPresetController::class, 'index']);

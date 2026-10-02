@@ -13,6 +13,10 @@ class SettingsController extends Controller
     private const KEYS = [
         'tiktok' => ['tiktok.client_key', 'tiktok.client_secret', 'tiktok.redirect_uri', 'tiktok.post_mode'],
         'google' => ['google.client_id', 'google.client_secret', 'google.redirect_uri', 'google.allowed_domain'],
+        // Gemini viết kịch bản cho kênh phim nhiều tập. Cùng một khoá Google AI
+        // Studio dùng được cho cả Veo, nên để trống thì hệ thống tự mượn khoá
+        // của engine Veo đang bật.
+        'gemini' => ['gemini.api_key', 'gemini.model'],
     ];
 
     public function index()
@@ -40,13 +44,22 @@ class SettingsController extends Controller
             'google.client_secret'  => ['nullable', 'string', 'max:255'],
             'google.redirect_uri'   => ['nullable', 'url', 'max:500'],
             'google.allowed_domain' => ['nullable', 'string', 'max:120'],
+            'gemini.api_key'        => ['nullable', 'string', 'max:255'],
+            'gemini.model'          => ['nullable', 'string', 'max:60'],
         ]);
 
         foreach (self::KEYS as $group => $keys) {
             foreach ($keys as $key) {
                 $value = data_get($data, $key);
+
                 // Ô bí mật hiện dấu chấm — bỏ qua để không ghi đè bằng chuỗi giả.
+                // Chuỗi RỖNG cũng bỏ qua nếu đây là khoá bí mật: biểu mẫu gửi ô
+                // trống không có nghĩa là "xoá khoá đi", mà thường chỉ là người
+                // dùng không đụng vào ô đó.
                 if ($value === null || $value === '••••••••') {
+                    continue;
+                }
+                if ($value === '' && in_array($key, Setting::SECRETS, true)) {
                     continue;
                 }
                 Setting::put($key, $value, $group);

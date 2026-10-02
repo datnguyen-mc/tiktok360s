@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ActivityLog;
+use App\Models\PipelineJob;
 use App\Models\VideoEngine;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -76,17 +77,38 @@ class VideoEngineRunner
 
         $full = trim($command.' '.implode(' ', $args));
 
-        // Chạy nền: render mất khoảng một phút nên không giữ request lại chờ.
-        $process = Process::fromShellCommandline($full.' >> logs/cms-trigger.log 2>&1 &', $cwd);
-        $process->setTimeout(10);
+        /*
+         * Chạy nền và GIỮ LẠI PID. `echo $!` in ra mã tiến trình vừa đẩy xuống nền.
+         *
+         * Không giữ PID thì CMS bắn lệnh rồi quên — không có cách nào dừng một
+         * lượt render đang chạy, và người dùng chỉ còn cách ssh vào máy chủ.
+         */
+        $process = Process::fromShellCommandline(
+            'nohup '.$full.' >> logs/cms-trigger.log 2>&1 & echo $!', $cwd);
+        $process->setTimeout(15);
 
+        $pid = null;
         try {
             $process->run();
+            $pid = (int) trim($process->getOutput()) ?: null;
         } catch (ProcessTimedOutException) {
             // Chạy nền nên hết giờ chờ ở đây là bình thường.
         }
 
-        return ['mode' => 'local', 'command' => $full,
+        $job = PipelineJob::create([
+            'pid'             => $pid,
+            'topic'           => $options['topic'] ?? null,
+            'run_date'        => $options['date'] ?? now()->toDateString(),
+            'command'         => $full,
+            'working_dir'     => $cwd,
+            'status'          => $pid ? 'running' : 'failed',
+            'video_engine_id' => $engine->id,
+            'user_id'         => request()->user()?->id,
+            'started_at'      => now(),
+            'note'            => $pid ? null : 'Không lấy được mã tiến trình',
+        ]);
+
+        return ['mode' => 'local', 'command' => $full, 'pid' => $pid, 'job_id' => $job->id,
                 'message' => 'Đã chạy nền — dữ liệu sẽ tự xuất hiện khi render xong.'];
     }
 
