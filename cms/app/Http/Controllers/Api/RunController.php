@@ -105,32 +105,32 @@ class RunController extends Controller
     }
 
     /**
-     * Phát video. Ưu tiên file ngay trên máy chạy dây chuyền — nhanh hơn và
-     * không tốn băng thông R2. File không còn (CMS chạy máy khác, hoặc output/
-     * đã dọn) thì chuyển hướng sang bản trên R2.
+     * Phát video. Ưu tiên bản trên R2 — đó là bản phát cho người xem, và là bản
+     * duy nhất khi CMS chạy máy khác với máy render. File dưới máy chỉ dùng khi
+     * chưa kịp lên R2, hoặc R2 chưa bật.
      */
     public function video(Run $run): BinaryFileResponse|StreamedResponse|RedirectResponse
     {
-        if ($run->hasLocalVideo()) {
-            return response()->file($run->absoluteVideoPath(), [
-                'Content-Type'  => 'video/mp4',
-                'Accept-Ranges' => 'bytes',
-            ]);
+        if ($run->video_url) {
+            return redirect()->away($run->video_url);
         }
 
-        abort_unless((bool) $run->video_url, 404, 'Không tìm thấy file video');
+        abort_unless($run->hasLocalVideo(), 404, 'Không tìm thấy file video');
 
-        return redirect()->away($run->video_url);
+        return response()->file($run->absoluteVideoPath(), [
+            'Content-Type'  => 'video/mp4',
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
     public function thumbnail(Run $run): BinaryFileResponse|RedirectResponse
     {
-        if ($run->hasLocalThumbnail()) {
-            return response()->file($run->absoluteThumbnailPath(), ['Content-Type' => 'image/jpeg']);
+        if ($run->thumbnail_url) {
+            return redirect()->away($run->thumbnail_url);
         }
 
-        abort_unless((bool) $run->thumbnail_url, 404);
+        abort_unless($run->hasLocalThumbnail(), 404);
 
-        return redirect()->away($run->thumbnail_url);
+        return response()->file($run->absoluteThumbnailPath(), ['Content-Type' => 'image/jpeg']);
     }
 }

@@ -73,8 +73,13 @@ def render_scene(idx: int, bg: Path, ui: Path, dur: float, cfg: dict, dest: Path
          "-crf", str(cfg["video"]["crf"]), "-pix_fmt", "yuv420p", str(dest)])
 
 
-def build_caption_sequence(visuals: dict, total: float, cfg: dict, workdir: Path) -> Path:
-    """Tạo thư mục 1 ảnh/khung hình bằng symlink (không nhân bản dữ liệu)."""
+def build_caption_sequence(visuals: dict, total: float, cfg: dict, workdir: Path,
+                           offset: float = 0.0) -> Path:
+    """Tạo thư mục 1 ảnh/khung hình bằng symlink (không nhân bản dữ liệu).
+
+    `offset` là đoạn đầu không có phụ đề — màn hình mời theo dõi nằm trước phần
+    đọc, nên mốc thời gian của phụ đề phải lùi lại đúng bằng đoạn đó.
+    """
     fps = cfg["video"]["fps"]
     w, h = cfg["video"]["width"], cfg["video"]["height"]
     seq = workdir / "capseq"
@@ -89,10 +94,10 @@ def build_caption_sequence(visuals: dict, total: float, cfg: dict, workdir: Path
 
     cap_dir = Path(visuals["caption_dir"])
     states = visuals["captions"]
-    n_frames = max(1, int(round(total * fps)))
+    n_frames = max(1, int(round((total + offset) * fps)))
     ptr = 0
     for f in range(n_frames):
-        t = f / fps
+        t = f / fps - offset
         while ptr < len(states) and states[ptr]["end"] <= t:
             ptr += 1
         src = blank
@@ -104,7 +109,12 @@ def build_caption_sequence(visuals: dict, total: float, cfg: dict, workdir: Path
     return seq
 
 
-def mux(base: Path, seq: Path, audio: Path, cfg: dict, dest: Path) -> None:
+def mux(base: Path, seq: Path, audio: Path, cfg: dict, dest: Path,
+        delay: float = 0.0) -> None:
+    """`delay`: lùi tiếng nói đúng bằng đoạn mở đầu đã chèn trước phần hình.
+
+    Nhạc nền không lùi — nó vào ngay từ khung đầu, nên màn hình mời theo dõi
+    không bị câm."""
     fps = cfg["video"]["fps"]
     music_path = cfg["music"].get("file", "")
     music = rel(music_path) if music_path else None
@@ -115,11 +125,13 @@ def mux(base: Path, seq: Path, audio: Path, cfg: dict, dest: Path) -> None:
         inputs += ["-stream_loop", "-1", "-i", str(music)]
 
     vfilt = "[0:v][1:v]overlay=0:0:format=auto:shortest=1,format=yuv420p[v]"
+    ms = max(0, round(delay * 1000))
+    lui = f"adelay={ms}|{ms}," if ms else ""
     if has_music:
         gain, duck = cfg["music"]["gain_db"], cfg["music"]["duck_db"]
         afilt = (
             f"[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,"
-            f"asplit=2[vo][key];"
+            f"{lui}asplit=2[vo][key];"
             f"[3:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,"
             f"volume={gain}dB[bed];"
             f"[bed][key]sidechaincompress=threshold=0.02:ratio=8:attack=8:release=320,"
@@ -129,7 +141,7 @@ def mux(base: Path, seq: Path, audio: Path, cfg: dict, dest: Path) -> None:
         )
     else:
         afilt = ("[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo,"
-                 "loudnorm=I=-14:TP=-1.0:LRA=11[a]")
+                 f"loudnorm=I=-14:TP=-1.0:LRA=11,{lui}anull[a]")
 
     run([*FFMPEG, *inputs, "-filter_complex", f"{vfilt};{afilt}",
          "-map", "[v]", "-map", "[a]", "-shortest",
@@ -155,14 +167,26 @@ def build(voice: dict, visuals: dict, cfg: dict, workdir: Path, dest: Path) -> P
         parts.append(out)
         log(f"cảnh {i} ({s['kind']}) · {dur:.2f}s{' · clip AI' if clip else ''}")
 
+    # ---- màn hình mời theo dõi, ghép vào TRƯỚC cảnh đầu
+    hook_sec = float(visuals.get("hook_sec") or 0)
+    if visuals.get("hook") and hook_sec > 0:
+        trong = workdir / "hook_ui.png"
+        if not trong.exists():
+            Image.new("RGBA", (cfg["video"]["width"], cfg["video"]["height"]),
+                      (0, 0, 0, 0)).save(trong)
+        hook_mp4 = workdir / "scene_hook.mp4"
+        render_scene(0, Path(visuals["hook"]), trong, hook_sec, cfg, hook_mp4)
+        parts.insert(0, hook_mp4)
+        log(f"màn hình theo dõi · {hook_sec:.2f}s")
+
     listfile = workdir / "scenes.txt"
     listfile.write_text("".join(f"file '{p.name}'\n" for p in parts), encoding="utf-8")
     base = workdir / "base.mp4"
     run([*FFMPEG, "-f", "concat", "-safe", "0", "-i", str(listfile), "-c", "copy", str(base)])
 
-    seq = build_caption_sequence(visuals, total, cfg, workdir)
+    seq = build_caption_sequence(visuals, total, cfg, workdir, offset=hook_sec)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    mux(base, seq, Path(voice["audio"]), cfg, dest)
+    mux(base, seq, Path(voice["audio"]), cfg, dest, delay=hook_sec)
 
     size_mb = dest.stat().st_size / 1e6
     log(f"✓ {dest.name} · {size_mb:.1f} MB")

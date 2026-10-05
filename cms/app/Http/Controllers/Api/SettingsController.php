@@ -17,6 +17,11 @@ class SettingsController extends Controller
         // Studio dùng được cho cả Veo, nên để trống thì hệ thống tự mượn khoá
         // của engine Veo đang bật.
         'gemini' => ['gemini.api_key', 'gemini.model'],
+        'openai' => ['openai.api_key', 'openai.model'],
+        // Cloudflare R2: nơi chứa video sau khi dựng. Thiếu khoá thì dây chuyền
+        // bỏ qua bước tải lên và video vẫn nằm trong output/ như cũ.
+        'r2' => ['r2.enabled', 'r2.bucket', 'r2.endpoint', 'r2.public_url',
+                 'r2.prefix', 'r2.access_key_id', 'r2.secret_access_key'],
     ];
 
     public function index()
@@ -45,7 +50,16 @@ class SettingsController extends Controller
             'google.redirect_uri'   => ['nullable', 'url', 'max:500'],
             'google.allowed_domain' => ['nullable', 'string', 'max:120'],
             'gemini.api_key'        => ['nullable', 'string', 'max:255'],
+            'openai.api_key'        => ['nullable', 'string', 'max:255'],
+            'openai.model'          => ['nullable', 'string', 'max:80'],
             'gemini.model'          => ['nullable', 'string', 'max:60'],
+            'r2.enabled'            => ['nullable', 'boolean'],
+            'r2.bucket'             => ['nullable', 'string', 'max:120'],
+            'r2.endpoint'           => ['nullable', 'string', 'max:300'],
+            'r2.public_url'         => ['nullable', 'string', 'max:300'],
+            'r2.prefix'             => ['nullable', 'string', 'max:120'],
+            'r2.access_key_id'      => ['nullable', 'string', 'max:255'],
+            'r2.secret_access_key'  => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach (self::KEYS as $group => $keys) {

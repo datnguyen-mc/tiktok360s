@@ -1,0 +1,579 @@
+{
+  "name": "Việt Nam 365",
+  "description": "Mỗi tập một vùng đất Việt Nam: cảnh quan, văn hoá và các mốc lịch sử hình thành.",
+  "mode": "series",
+  "brand": {
+    "name": "VIỆT NAM 365",
+    "handle": "@vietnam365d",
+    "tagline": "Mỗi ngày một vùng đất",
+    "accent": "#DA251D",
+    "accent2": "#FFCD00",
+    "bg": "#0B1A14"
+  },
+  "voice": {
+    "id": "vi-VN-NamMinhNeural",
+    "rate": "+10%",
+    "pitch": "-8Hz",
+    "volume": "+0%",
+    "rate_min_pct": 0,
+    "rate_max_pct": 25,
+    "_ghi_chu": "edge-tts của Microsoft, miễn phí. Hai giọng tiếng Việt: vi-VN-NamMinhNeural (nam), vi-VN-HoaiMyNeural (nữ)."
+  },
+  "video": {
+    "target_min_sec": 90,
+    "target_max_sec": 120,
+    "min_scene_sec": 6.0
+  },
+  "captions": {
+    "chip_label": "VÙNG",
+    "font_size": 62,
+    "max_words_per_card": 3,
+    "y_ratio": 0.76
+  },
+  "sources": [],
+  "ranking": {
+    "require_keywords": [],
+    "exclude_keywords": [],
+    "hot_keywords": [],
+    "block_keywords": [],
+    "max_per_source": 0
+  },
+  "hashtags": [
+    "#vietnam365",
+    "#dulichvietnam",
+    "#vietnam",
+    "#dialy",
+    "#canhdep",
+    "#disan",
+    "#lichsu",
+    "#vanhoa",
+    "#khampha",
+    "#xuhuong"
+  ],
+  "script": {
+    "style": "tu_lieu",
+    "items_per_video": 12,
+    "min_items_per_video": 10,
+    "max_detail_sentences": 1,
+    "headline_max_chars": 60,
+    "reaction_every": 0
+  },
+  "series": {
+    "moi_tap": 1,
+    "so_canh": 12,
+    "model": "gemini-3.6-flash",
+    "videos_moi_ngay": 1,
+    "vung": [
+      "Đông Bắc Bộ",
+      "Tây Bắc Bộ",
+      "Đồng bằng sông Hồng",
+      "Bắc Trung Bộ",
+      "Nam Trung Bộ",
+      "Tây Nguyên",
+      "Đông Nam Bộ",
+      "Đồng bằng sông Cửu Long"
+    ],
+    "ho_so": {
+      "don_vi": "vùng đất",
+      "linh_vuc": "tư liệu địa lý và văn hoá Việt Nam",
+      "nhom_nhan": "Vùng",
+      "truong": [
+        {
+          "khoa": "nam",
+          "nhan": "Mốc hình thành"
+        },
+        {
+          "khoa": "san",
+          "nhan": "Cảnh quan"
+        },
+        {
+          "khoa": "danh_hieu",
+          "nhan": "Di sản · danh hiệu",
+          "tach": "·"
+        }
+      ],
+      "dan_dat": "- Cả {n_canh} cảnh dành trọn cho MỘT {don_vi} này. Phân bổ đại khái:\n    · 1 cảnh mở, gọi tên vùng đất và một câu định vị nó nằm ở đâu\n    · 2 cảnh: địa hình và cảnh quan — núi, biển, hang, rừng, sông nước; nói\n      được vì sao nó có hình hài như vậy (kiến tạo, phù sa, núi lửa, karst)\n    · 3 cảnh: các mốc lịch sử hình thành, theo đúng thứ tự thời gian\n    · 2 cảnh: văn hoá và con người — lễ hội, nghề truyền thống, kiến trúc,\n      món ăn, cộng đồng dân tộc sinh sống ở đó\n    · 2 cảnh: di sản và danh hiệu đã được công nhận, kèm NĂM công nhận\n    · 1 cảnh: vùng đất hôm nay, tính tới năm 2026\n    · 1 cảnh chốt\n- Phần \"Dấu ấn\" ở trên đã liệt kê sẵn các mốc. Rải chúng vào các cảnh tương ứng,\n  KHÔNG dồn hết vào một cảnh.\n- Mỗi cảnh nói một ý riêng. Không lặp lại ý của cảnh trước bằng từ khác.\n- Không viết như quảng cáo tour. Đây là tư liệu, không phải lời mời chào.",
+      "dau_hieu": {
+        "danh_hieu": [
+          "di sản",
+          "unesco",
+          "công nhận",
+          "ghi danh",
+          "xếp hạng",
+          "dự trữ sinh quyển",
+          "ramsar",
+          "công viên địa chất",
+          "danh thắng",
+          "di tích quốc gia",
+          "kỳ quan"
+        ],
+        "nam": [
+          "hình thành",
+          "kiến tạo",
+          "triệu năm",
+          "thế kỷ",
+          "ra đời",
+          "khai khẩn",
+          "khởi nguồn",
+          "lập nên",
+          "dựng nên",
+          "thành lập",
+          "từ năm",
+          "vào năm"
+        ],
+        "san": [
+          "cảnh quan",
+          "địa hình",
+          "hang",
+          "thác",
+          "đèo",
+          "vịnh",
+          "cao nguyên",
+          "ruộng bậc thang",
+          "rừng nguyên sinh",
+          "bãi"
+        ]
+      }
+    },
+    "quy_trinh": [
+      "Chạy: .venv/bin/python -m pipeline.run_daily --topic dialy",
+      "MỖI LẦN CHẠY dựng đúng 1 video cho 1 vùng đất kế tiếp.",
+      "Muốn nhiều hơn trong một lệnh: --count 3.",
+      "Lộ trình và trạng thái nằm ở bảng `series_items` trong CSDL.",
+      "Sửa file này xong thì nạp lại: cd cms && php artisan series:import dialy",
+      "KIỂM CHỨNG trước khi đăng, nhất là năm công nhận di sản và các mốc lịch sử.",
+      "Lộ trình dùng VÙNG CẢNH QUAN chứ không dùng đơn vị hành chính: Việt Nam sáp nhập tỉnh thành năm 2025 (63 còn 34), lộ trình theo tỉnh sẽ lạc hậu ngay."
+    ],
+    "dan_bai": [
+      {
+        "so": 1,
+        "ten": "Vịnh Hạ Long",
+        "giai": "Đông Bắc Bộ",
+        "san": "Gần 2.000 đảo đá vôi nhô lên trên mặt vịnh, hang Sửng Sốt, hang Đầu Gỗ",
+        "danh_hieu": "Di sản thiên nhiên thế giới 1994 (cảnh quan) · Mở rộng tiêu chí địa chất 2000 · Mở rộng sang quần đảo Cát Bà 2023",
+        "dau_an": "Vùng vịnh hình thành qua hơn 500 triệu năm kiến tạo karst · Sông Bạch Đằng gần đó ghi ba trận thắng quân xâm lược các năm 938, 981 và 1288 · UNESCO công nhận 1994",
+        "nam": 1994
+      },
+      {
+        "so": 2,
+        "ten": "Quần đảo Cát Bà",
+        "giai": "Đông Bắc Bộ",
+        "san": "Đảo đá vôi lớn nhất vịnh Bắc Bộ, rừng nguyên sinh trên núi đá và vịnh Lan Hạ",
+        "danh_hieu": "Khu dự trữ sinh quyển thế giới 2004 · Thuộc Di sản thiên nhiên thế giới từ 2023",
+        "dau_an": "Nơi sinh sống của voọc Cát Bà, loài đặc hữu chỉ còn ở đây · Vườn quốc gia thành lập 1986",
+        "nam": 2004
+      },
+      {
+        "so": 3,
+        "ten": "Cao nguyên đá Đồng Văn",
+        "giai": "Đông Bắc Bộ",
+        "san": "Cao nguyên đá vôi ở độ cao 1.000–1.600m, đèo Mã Pì Lèng nhìn xuống hẻm Tu Sản",
+        "danh_hieu": "Công viên địa chất toàn cầu UNESCO 2010",
+        "dau_an": "Đá vôi nơi đây hình thành từ kỷ Devon, hơn 400 triệu năm trước · Dinh thự họ Vương xây đầu thế kỷ 20 · Cột cờ Lũng Cú đánh dấu cực Bắc",
+        "nam": 2010
+      },
+      {
+        "so": 4,
+        "ten": "Non nước Cao Bằng",
+        "giai": "Đông Bắc Bộ",
+        "san": "Thác Bản Giốc trên sông Quây Sơn, hồ Thang Hen, động Ngườm Ngao",
+        "danh_hieu": "Công viên địa chất toàn cầu UNESCO 2018",
+        "dau_an": "Khu di tích Pác Bó gắn với thời kỳ 1941 · Rừng Trần Hưng Đạo là nơi thành lập Đội Việt Nam Tuyên truyền Giải phóng quân ngày 22/12/1944",
+        "nam": 2018
+      },
+      {
+        "so": 5,
+        "ten": "Hồ Ba Bể",
+        "giai": "Đông Bắc Bộ",
+        "san": "Hồ nước ngọt tự nhiên trên núi đá vôi, dài hơn 8km, bao quanh là rừng nguyên sinh",
+        "danh_hieu": "Khu Ramsar 2011 · Vườn quốc gia 1992",
+        "dau_an": "Một trong những hồ nước ngọt tự nhiên lớn nhất Việt Nam · Hình thành do sụt lún karst",
+        "nam": 1992
+      },
+      {
+        "so": 6,
+        "ten": "Sa Pa và Fansipan",
+        "giai": "Tây Bắc Bộ",
+        "san": "Ruộng bậc thang Mường Hoa, đỉnh Fansipan cao 3.143m — nóc nhà Đông Dương",
+        "danh_hieu": "Ruộng bậc thang Sa Pa là Danh thắng quốc gia",
+        "dau_an": "Người Pháp lập trạm nghỉ dưỡng năm 1903 · Bãi đá cổ Sa Pa khắc hình từ hàng nghìn năm trước · Cáp treo Fansipan vận hành 2016",
+        "nam": 1903
+      },
+      {
+        "so": 7,
+        "ten": "Ruộng bậc thang Mù Cang Chải",
+        "giai": "Tây Bắc Bộ",
+        "san": "Hơn 2.000 ha ruộng bậc thang trên sườn núi Hoàng Liên Sơn, đẹp nhất mùa nước đổ và mùa lúa chín",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2019",
+        "dau_an": "Do người H'Mông khai khẩn qua nhiều thế hệ · Được xếp hạng Danh thắng quốc gia năm 2007",
+        "nam": 2007
+      },
+      {
+        "so": 8,
+        "ten": "Mộc Châu",
+        "giai": "Tây Bắc Bộ",
+        "san": "Cao nguyên ở độ cao khoảng 1.050m, đồi chè trái tim, thác Dải Yếm, rừng thông bản Áng",
+        "danh_hieu": "Khu du lịch quốc gia",
+        "dau_an": "Nông trường Mộc Châu thành lập 1958, mở đầu nghề nuôi bò sữa ở miền Bắc"
+      },
+      {
+        "so": 9,
+        "ten": "Điện Biên Phủ",
+        "giai": "Tây Bắc Bộ",
+        "san": "Thung lũng Mường Thanh giữa vòng núi, cánh đồng lúa lớn nhất Tây Bắc",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2009",
+        "dau_an": "Chiến dịch Điện Biên Phủ kết thúc ngày 07/05/1954 · Các cứ điểm A1, Him Lam, hầm De Castries còn nguyên",
+        "nam": 1954
+      },
+      {
+        "so": 10,
+        "ten": "Hoàng thành Thăng Long",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "Khu trung tâm với Đoan Môn, điện Kính Thiên, Hậu Lâu và tầng tầng di chỉ khảo cổ",
+        "danh_hieu": "Di sản văn hoá thế giới 2010",
+        "dau_an": "Vua Lý Thái Tổ dời đô về Thăng Long năm 1010 · Liên tục là trung tâm quyền lực suốt 13 thế kỷ · Khai quật khảo cổ lớn năm 2002 phát lộ nền móng nhiều triều đại",
+        "nam": 1010
+      },
+      {
+        "so": 11,
+        "ten": "Phố cổ Hà Nội",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "36 phố phường, nhà ống mái ngói, hồ Hoàn Kiếm và đền Ngọc Sơn",
+        "danh_hieu": "Di tích quốc gia",
+        "dau_an": "Hình thành từ các phường thủ công quanh kinh thành Thăng Long · Tên phố còn giữ nghề cũ: Hàng Bạc, Hàng Mã, Hàng Đào"
+      },
+      {
+        "so": 12,
+        "ten": "Văn Miếu – Quốc Tử Giám",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "Năm lớp sân, hồ Thiên Quang, nhà bia tiến sĩ dưới tán cổ thụ",
+        "danh_hieu": "Di tích quốc gia đặc biệt · 82 bia tiến sĩ là Di sản tư liệu thế giới 2011",
+        "dau_an": "Dựng năm 1070 thờ Khổng Tử · Quốc Tử Giám lập năm 1076, được coi là trường đại học đầu tiên của Việt Nam · 82 bia ghi tên tiến sĩ các khoa thi từ 1442 đến 1779",
+        "nam": 1070
+      },
+      {
+        "so": 13,
+        "ten": "Tràng An – Ninh Bình",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "Núi đá vôi mọc giữa đồng nước, hang xuyên thuỷ nối các thung, Tam Cốc – Bích Động",
+        "danh_hieu": "Di sản hỗn hợp văn hoá và thiên nhiên thế giới 2014 — di sản hỗn hợp đầu tiên của Đông Nam Á",
+        "dau_an": "Hoa Lư là kinh đô của nhà Đinh và Tiền Lê từ năm 968 · Dấu vết người tiền sử cư trú trong hang hơn 30.000 năm",
+        "nam": 2014
+      },
+      {
+        "so": 14,
+        "ten": "Chùa Hương",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "Suối Yến dẫn vào quần thể chùa hang giữa núi đá, động Hương Tích",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2017",
+        "dau_an": "Động Hương Tích được chúa Trịnh Sâm đề 'Nam thiên đệ nhất động' năm 1770 · Lễ hội kéo dài suốt ba tháng mùa xuân"
+      },
+      {
+        "so": 15,
+        "ten": "Vườn quốc gia Cúc Phương",
+        "giai": "Đồng bằng sông Hồng",
+        "san": "Rừng mưa nhiệt đới trên núi đá vôi, cây chò ngàn năm, động Người Xưa",
+        "danh_hieu": "Vườn quốc gia đầu tiên của Việt Nam",
+        "dau_an": "Thành lập năm 1962 · Trong động Người Xưa tìm thấy mộ táng và công cụ của người tiền sử khoảng 7.000 năm trước",
+        "nam": 1962
+      },
+      {
+        "so": 16,
+        "ten": "Thành nhà Hồ",
+        "giai": "Bắc Trung Bộ",
+        "san": "Toà thành đá với bốn cổng vòm ghép từ những khối đá nặng hàng chục tấn",
+        "danh_hieu": "Di sản văn hoá thế giới 2011",
+        "dau_an": "Hồ Quý Ly cho xây năm 1397 chỉ trong khoảng ba tháng · Là kinh đô nhà Hồ 1400–1407 · Kỹ thuật ghép đá khô không dùng chất kết dính",
+        "nam": 1397
+      },
+      {
+        "so": 17,
+        "ten": "Yên Tử",
+        "giai": "Đông Bắc Bộ",
+        "san": "Dãy núi cao hơn 1.000m, chùa Đồng trên đỉnh, rừng trúc và tùng cổ ven đường hành hương",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2012",
+        "dau_an": "Vua Trần Nhân Tông nhường ngôi, lên Yên Tử tu hành và lập thiền phái Trúc Lâm năm 1299 · Chùa Đồng hiện nay đúc năm 2007",
+        "nam": 1299
+      },
+      {
+        "so": 18,
+        "ten": "Phong Nha – Kẻ Bàng",
+        "giai": "Bắc Trung Bộ",
+        "san": "Khối karst rộng lớn với hàng trăm hang động; Sơn Đoòng là hang tự nhiên lớn nhất thế giới",
+        "danh_hieu": "Di sản thiên nhiên thế giới 2003 (địa chất) · Mở rộng tiêu chí đa dạng sinh học 2015",
+        "dau_an": "Đá vôi hình thành từ khoảng 400 triệu năm trước · Hang Sơn Đoòng được người địa phương tìm thấy năm 1991 và khảo sát năm 2009 · Đường Hồ Chí Minh đi qua vùng này thời chiến",
+        "nam": 2003
+      },
+      {
+        "so": 19,
+        "ten": "Quần thể di tích Cố đô Huế",
+        "giai": "Bắc Trung Bộ",
+        "san": "Kinh thành bên sông Hương, Ngọ Môn, điện Thái Hoà, lăng tẩm các vua Nguyễn giữa đồi thông",
+        "danh_hieu": "Di sản văn hoá thế giới 1993 · Nhã nhạc cung đình Huế là Di sản phi vật thể 2003",
+        "dau_an": "Nhà Nguyễn chọn Phú Xuân làm kinh đô năm 1802 · Kinh thành khởi công 1805 · Là kinh đô cho tới năm 1945",
+        "nam": 1993
+      },
+      {
+        "so": 20,
+        "ten": "Thành cổ Quảng Trị",
+        "giai": "Bắc Trung Bộ",
+        "san": "Toà thành vuông bên sông Thạch Hãn, nay là thảm cỏ và đài tưởng niệm",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2013",
+        "dau_an": "Xây dưới triều Nguyễn đầu thế kỷ 19 · Trận chiến 81 ngày đêm mùa hè năm 1972 · Địa đạo Vịnh Mốc gần đó đào sâu trong lòng đất tránh bom",
+        "nam": 1972
+      },
+      {
+        "so": 21,
+        "ten": "Phố cổ Hội An",
+        "giai": "Nam Trung Bộ",
+        "san": "Dãy nhà gỗ mái ngói rêu, Chùa Cầu, đèn lồng soi xuống sông Hoài",
+        "danh_hieu": "Di sản văn hoá thế giới 1999",
+        "dau_an": "Là thương cảng quốc tế sầm uất thế kỷ 16–17, nơi gặp nhau của thương nhân Nhật, Hoa và phương Tây · Chùa Cầu do thương nhân Nhật dựng khoảng đầu thế kỷ 17",
+        "nam": 1999
+      },
+      {
+        "so": 22,
+        "ten": "Thánh địa Mỹ Sơn",
+        "giai": "Nam Trung Bộ",
+        "san": "Hơn 70 đền tháp gạch Chăm nằm trong thung lũng kín bao quanh bởi núi",
+        "danh_hieu": "Di sản văn hoá thế giới 1999",
+        "dau_an": "Là trung tâm tôn giáo của vương quốc Chăm Pa từ thế kỷ 4 đến thế kỷ 13 · Kỹ thuật xây gạch không mạch vữa đến nay chưa giải thích trọn vẹn",
+        "nam": 1999
+      },
+      {
+        "so": 23,
+        "ten": "Cù Lao Chàm",
+        "giai": "Nam Trung Bộ",
+        "san": "Cụm tám hòn đảo ngoài khơi Hội An, rạn san hô và rừng nguyên sinh",
+        "danh_hieu": "Khu dự trữ sinh quyển thế giới 2009",
+        "dau_an": "Từng là điểm dừng của thuyền buôn trên đường tới Hội An · Nổi tiếng với chủ trương nói không với túi ni lông từ năm 2009",
+        "nam": 2009
+      },
+      {
+        "so": 24,
+        "ten": "Bán đảo Sơn Trà và Ngũ Hành Sơn",
+        "giai": "Nam Trung Bộ",
+        "san": "Núi rừng sát biển ở Sơn Trà, năm ngọn núi đá vôi Ngũ Hành Sơn với hang động và chùa cổ",
+        "danh_hieu": "Ngũ Hành Sơn là Di tích quốc gia đặc biệt 2018",
+        "dau_an": "Sơn Trà là nơi sinh sống của voọc chà vá chân nâu · Làng đá mỹ nghệ Non Nước dưới chân núi có hơn 400 năm tuổi"
+      },
+      {
+        "so": 25,
+        "ten": "Đảo Lý Sơn",
+        "giai": "Nam Trung Bộ",
+        "san": "Đảo núi lửa với miệng núi Thới Lới, cánh đồng tỏi trên nền cát trắng, cổng Tò Vò bằng đá bazan",
+        "danh_hieu": "Công viên địa chất",
+        "dau_an": "Hình thành từ hoạt động núi lửa cách nay vài triệu năm · Là nơi xuất phát của Hải đội Hoàng Sa dưới triều Nguyễn · Lễ Khao lề thế lính Hoàng Sa được giữ tới nay"
+      },
+      {
+        "so": 26,
+        "ten": "Gành Đá Đĩa",
+        "giai": "Nam Trung Bộ",
+        "san": "Ghềnh đá bazan hình lăng trụ xếp khít nhau như chồng đĩa, trải dài sát mép sóng",
+        "danh_hieu": "Danh thắng quốc gia đặc biệt 2020",
+        "dau_an": "Hình thành khi dung nham núi lửa gặp nước biển và nguội co lại, cách nay khoảng 200 triệu năm"
+      },
+      {
+        "so": 27,
+        "ten": "Vịnh Nha Trang",
+        "giai": "Nam Trung Bộ",
+        "san": "Vịnh biển với 19 hòn đảo, nước trong, rạn san hô ở Hòn Mun",
+        "danh_hieu": "Khu bảo tồn biển đầu tiên của Việt Nam",
+        "dau_an": "Tháp Bà Ponagar do người Chăm dựng từ thế kỷ 8 vẫn còn trên đồi Cù Lao · Khu bảo tồn biển Hòn Mun lập năm 2001",
+        "nam": 2003
+      },
+      {
+        "so": 28,
+        "ten": "Tháp Chăm Ninh Thuận",
+        "giai": "Nam Trung Bộ",
+        "san": "Tháp Po Klong Garai trên đồi Trầu, đồi cát Nam Cương, vùng khô hạn nhất cả nước",
+        "danh_hieu": "Tháp Po Klong Garai là Di tích quốc gia đặc biệt 2016 · Nghệ thuật gốm Chăm Bàu Trúc là Di sản phi vật thể cần bảo vệ khẩn cấp 2022",
+        "dau_an": "Tháp xây cuối thế kỷ 13 đầu thế kỷ 14 · Cộng đồng Chăm ở đây vẫn giữ lễ hội Katê hằng năm"
+      },
+      {
+        "so": 29,
+        "ten": "Mũi Né – Bàu Trắng",
+        "giai": "Nam Trung Bộ",
+        "san": "Đồi cát bay đổi hình theo gió, bàu nước ngọt giữa cát, bờ biển dài với hàng dừa",
+        "danh_hieu": "Khu du lịch quốc gia",
+        "dau_an": "Suối Tiên chảy qua tầng cát đỏ tạo thành hẻm nhỏ · Trở thành điểm đến quốc tế sau sự kiện nhật thực toàn phần năm 1995"
+      },
+      {
+        "so": 30,
+        "ten": "Đà Lạt",
+        "giai": "Tây Nguyên",
+        "san": "Thành phố trên cao nguyên Lâm Viên ở độ cao 1.500m, hồ Xuân Hương, rừng thông và thác Datanla",
+        "danh_hieu": "Thành phố Festival Hoa · Mộc bản triều Nguyễn lưu tại đây là Di sản tư liệu thế giới 2009",
+        "dau_an": "Bác sĩ Alexandre Yersin đặt chân tới cao nguyên này năm 1893 · Ga Đà Lạt xây 1932–1938 theo kiến trúc Art Deco",
+        "nam": 1893
+      },
+      {
+        "so": 31,
+        "ten": "Không gian văn hoá Cồng chiêng Tây Nguyên",
+        "giai": "Tây Nguyên",
+        "san": "Vùng cao nguyên bazan trải từ Kon Tum tới Lâm Đồng, buôn làng nhà rông, nhà dài",
+        "danh_hieu": "Kiệt tác truyền khẩu và Di sản phi vật thể của nhân loại 2005",
+        "dau_an": "Cồng chiêng gắn với vòng đời và mùa vụ của nhiều dân tộc bản địa · UNESCO ghi danh năm 2005",
+        "nam": 2005
+      },
+      {
+        "so": 32,
+        "ten": "Buôn Ma Thuột và Bản Đôn",
+        "giai": "Tây Nguyên",
+        "san": "Cao nguyên đất đỏ bazan, thác Dray Nur, rừng khộp ven sông Sêrêpôk",
+        "danh_hieu": "Thủ phủ cà phê Việt Nam",
+        "dau_an": "Cây cà phê được đưa vào trồng ở đây từ đầu thế kỷ 20 · Bản Đôn nổi tiếng với nghề săn và thuần dưỡng voi"
+      },
+      {
+        "so": 33,
+        "ten": "Biển Hồ và Chư Đăng Ya",
+        "giai": "Tây Nguyên",
+        "san": "Hồ nước đọng trong miệng núi lửa đã tắt, núi lửa Chư Đăng Ya phủ hoa dã quỳ mỗi cuối năm",
+        "danh_hieu": "Danh thắng quốc gia",
+        "dau_an": "Biển Hồ là miệng núi lửa nguội hàng triệu năm, nay là nguồn nước ngọt chính của Pleiku"
+      },
+      {
+        "so": 34,
+        "ten": "Măng Đen",
+        "giai": "Tây Nguyên",
+        "san": "Cao nguyên ở độ cao khoảng 1.200m, rừng thông, hệ thống hồ và thác giữa rừng nguyên sinh",
+        "danh_hieu": "Khu du lịch sinh thái quốc gia",
+        "dau_an": "Được quy hoạch thành vùng du lịch sinh thái từ năm 2013, giữ gần như nguyên vẹn rừng thông tự nhiên"
+      },
+      {
+        "so": 35,
+        "ten": "Địa đạo Củ Chi",
+        "giai": "Đông Nam Bộ",
+        "san": "Hệ thống đường hầm nhiều tầng dài hàng trăm km dưới lớp đất đỏ bazan",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2015",
+        "dau_an": "Bắt đầu đào từ khoảng năm 1948 và mở rộng liên tục tới 1975 · Có cả bếp, trạm xá và giếng nước trong lòng đất",
+        "nam": 1948
+      },
+      {
+        "so": 36,
+        "ten": "Trung tâm Sài Gòn",
+        "giai": "Đông Nam Bộ",
+        "san": "Nhà thờ Đức Bà, Bưu điện trung tâm, Dinh Độc Lập giữa vườn cây, chợ Bến Thành",
+        "danh_hieu": "Nhiều di tích quốc gia",
+        "dau_an": "Vùng đất được Nguyễn Hữu Cảnh lập phủ Gia Định năm 1698 · Nhà thờ Đức Bà xây 1877–1880 · Dinh Độc Lập hiện nay hoàn thành năm 1966",
+        "nam": 1698
+      },
+      {
+        "so": 37,
+        "ten": "Cần Giờ",
+        "giai": "Đông Nam Bộ",
+        "san": "Rừng ngập mặn rộng hơn 30.000 ha, kênh rạch chằng chịt, đầm dơi và sân chim",
+        "danh_hieu": "Khu dự trữ sinh quyển thế giới 2000 — khu đầu tiên của Việt Nam",
+        "dau_an": "Rừng bị huỷ hoại nặng trong chiến tranh, được trồng lại từ năm 1978 và phục hồi gần như hoàn toàn",
+        "nam": 2000
+      },
+      {
+        "so": 38,
+        "ten": "Côn Đảo",
+        "giai": "Đông Nam Bộ",
+        "san": "Quần đảo 16 hòn giữa biển, rừng nguyên sinh sát bãi cát, vịnh Đầm Tre và bãi rùa đẻ",
+        "danh_hieu": "Di tích quốc gia đặc biệt 2012 · Vườn quốc gia",
+        "dau_an": "Nhà tù Côn Đảo do người Pháp lập năm 1862 và hoạt động tới 1975 · Nghĩa trang Hàng Dương là nơi yên nghỉ của hàng nghìn tù chính trị · Là bãi đẻ rùa biển lớn nhất Việt Nam",
+        "nam": 1862
+      },
+      {
+        "so": 39,
+        "ten": "Vũng Tàu",
+        "giai": "Đông Nam Bộ",
+        "san": "Bán đảo với Núi Lớn, Núi Nhỏ, bãi Sau dài và tượng Chúa Kitô trên đỉnh",
+        "danh_hieu": "Di tích quốc gia",
+        "dau_an": "Hải đăng Vũng Tàu dựng năm 1862, thuộc loại cổ nhất Đông Nam Á · Bạch Dinh xây 1898–1902"
+      },
+      {
+        "so": 40,
+        "ten": "Phú Quốc",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Đảo lớn nhất Việt Nam, rừng nguyên sinh phía bắc, bãi Sao cát trắng, quần đảo An Thới",
+        "danh_hieu": "Khu dự trữ sinh quyển thế giới Kiên Giang 2006",
+        "dau_an": "Nghề làm nước mắm ở đây có hơn 200 năm · Vườn quốc gia Phú Quốc thành lập năm 2001 · Hồ tiêu Phú Quốc là sản vật lâu đời",
+        "nam": 2006
+      },
+      {
+        "so": 41,
+        "ten": "Hà Tiên và quần đảo Nam Du",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Núi đá vôi mọc sát biển, hang Thạch Động, đầm Đông Hồ, chuỗi đảo nhỏ ngoài khơi",
+        "danh_hieu": "Thắng cảnh quốc gia",
+        "dau_an": "Mạc Cửu mở đất Hà Tiên và dâng cho chúa Nguyễn năm 1708 · Tao đàn Chiêu Anh Các lập năm 1736",
+        "nam": 1708
+      },
+      {
+        "so": 42,
+        "ten": "Chợ nổi Cái Răng",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Hàng trăm ghe thuyền họp chợ trên sông từ tờ mờ sáng, 'cây bẹo' treo hàng làm hiệu",
+        "danh_hieu": "Di sản văn hoá phi vật thể quốc gia 2016",
+        "dau_an": "Hình thành từ khi đường bộ còn chưa phát triển, ghe thuyền là phương tiện chính của miền sông nước"
+      },
+      {
+        "so": 43,
+        "ten": "Vườn quốc gia Tràm Chim",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Đồng cỏ ngập nước Đồng Tháp Mười, rừng tràm, bãi năng kim nơi sếu đầu đỏ về kiếm ăn",
+        "danh_hieu": "Khu Ramsar thứ 2.000 của thế giới, năm 2012",
+        "dau_an": "Là mảnh còn sót lại của hệ sinh thái Đồng Tháp Mười nguyên thuỷ · Thành lập vườn quốc gia năm 1998",
+        "nam": 1998
+      },
+      {
+        "so": 44,
+        "ten": "Núi Cấm và Châu Đốc",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Vùng Bảy Núi nhô lên giữa đồng bằng, núi Cấm cao 705m, rừng tràm Trà Sư ngập nước",
+        "danh_hieu": "Miếu Bà Chúa Xứ núi Sam là Di tích quốc gia · Lễ hội Vía Bà là Di sản phi vật thể quốc gia 2014",
+        "dau_an": "Vùng đất gắn với văn hoá Óc Eo, nền văn minh tồn tại từ thế kỷ 1 đến thế kỷ 7 · Thoại Ngọc Hầu cho đào kênh Vĩnh Tế từ năm 1819"
+      },
+      {
+        "so": 45,
+        "ten": "Mũi Cà Mau",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Mũi đất cực Nam, rừng đước lấn biển mỗi năm, bãi bồi và hệ thống kênh rạch",
+        "danh_hieu": "Khu dự trữ sinh quyển thế giới 2009 · Khu Ramsar 2013",
+        "dau_an": "Đất bồi khiến mũi đất tiến ra biển khoảng vài chục mét mỗi năm · Vườn quốc gia Mũi Cà Mau thành lập năm 2003",
+        "nam": 2009
+      },
+      {
+        "so": 46,
+        "ten": "Chùa Khmer Sóc Trăng",
+        "giai": "Đồng bằng sông Cửu Long",
+        "san": "Hơn 90 ngôi chùa Khmer mái cong nhiều tầng, chùa Dơi với đàn dơi quạ trong vườn cổ thụ",
+        "danh_hieu": "Chùa Dơi là Di tích quốc gia · Nghệ thuật Rô băm và Dù kê là Di sản phi vật thể quốc gia",
+        "dau_an": "Chùa Dơi được dựng từ thế kỷ 16 · Lễ hội Oóc Om Bóc và đua ghe ngo diễn ra hằng năm"
+      }
+    ]
+  },
+  "khong_pha_tro": [],
+  "nhom_tu_khoa": [],
+  "styles": {
+    "tu_lieu": {
+      "ten": "tư liệu (trầm, chắc, có nhịp)",
+      "hooks": [
+        "Việt Nam 365, vùng đất tiếp theo.",
+        "Mỗi ngày một vùng đất, hôm nay là nơi này.",
+        "Đất nước mình có những nơi như thế."
+      ],
+      "connectors": [
+        "Rồi",
+        "Và",
+        "Ở đây",
+        "Từ đó",
+        "Đến nay"
+      ],
+      "connector_cuoi": "",
+      "reactions": {
+        "chung": []
+      },
+      "outros": [
+        "Theo dõi để đi tiếp vùng đất sau.",
+        "Mai mình đi nơi khác, nhớ ghé lại.",
+        "Còn nhiều nơi nữa đang chờ."
+      ],
+      "tieu_de_intro": "VIỆT NAM 365",
+      "tieu_de_outro": "THEO DÕI ĐỂ XEM TẬP TIẾP THEO"
+    }
+  }
+}

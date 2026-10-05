@@ -95,10 +95,12 @@ def build_payload(script: dict, voice: dict | None, video: Path | None,
         "duration_sec": (voice or {}).get("total"),
         "estimated_sec": script.get("estimated_sec"),
         "tts_attempts": (voice or {}).get("attempts", 1),
-        # Đường dẫn máy vẫn giữ: R2 hỏng hay chưa bật thì CMS còn chỗ đọc file.
+        # Đường dẫn máy chỉ ghi khi file còn thật dưới đó: R2 hỏng hay chưa bật
+        # thì CMS còn chỗ đọc, còn khi đã lên R2 và dọn máy thì ô này phải rỗng
+        # chứ không trỏ vào chỗ trống.
         "video_url": None,
         "thumbnail_url": None,
-        "video_path": _rel(video) if video else None,
+        "video_path": _rel(video) if video and video.exists() else None,
         "video_bytes": video.stat().st_size if video and video.exists() else None,
         "thumbnail_path": _rel(thumbnail) if thumbnail and thumbnail.exists() else None,
         "caption": script.get("caption"),

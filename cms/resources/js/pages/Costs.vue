@@ -26,6 +26,18 @@ const expanded = ref(null)         // id lần gọi đang mở prompt
 const toast = ref({ message: '', tone: 'good' })
 const filters = ref({ provider: '', model: '', status: '', from: '', to: '' })
 
+/**
+ * Khối lượng của một lần gọi, mỗi loại đo một kiểu: clip video tính bằng giây,
+ * còn viết kịch bản tính bằng token. Trước đây cột này gắn cứng "giây" nên dòng
+ * kịch bản hiện ra "—s".
+ */
+function khoiLuong(r) {
+  const tok = Number(r.tokens ?? (r.tokens_in || 0) + (r.tokens_out || 0))
+  if (tok > 0) return tok.toLocaleString('vi-VN') + ' tok'
+  const gi = Number(r.seconds || 0)
+  return gi > 0 ? gi + 's' : '—'
+}
+
 const usd = (n) => '$' + Number(n || 0).toLocaleString('en-US',
   { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
@@ -127,7 +139,7 @@ function reset() {
                 <th class="py-2 font-semibold">Model</th>
                 <th class="py-2 text-right font-semibold">Lần gọi</th>
                 <th class="py-2 text-right font-semibold">Hỏng</th>
-                <th class="py-2 text-right font-semibold">Giây</th>
+                <th class="py-2 text-right font-semibold">Khối lượng</th>
                 <th class="py-2 text-right font-semibold">Tiền</th>
               </tr>
             </thead>
@@ -139,7 +151,7 @@ function reset() {
                     :style="{ color: Number(r.failed) ? 'var(--color-warning)' : 'var(--color-ink-muted)' }">
                   {{ r.failed }}
                 </td>
-                <td class="tnum py-2 text-right text-ink-2">{{ r.seconds }}s</td>
+                <td class="tnum py-2 text-right text-ink-2">{{ khoiLuong(r) }}</td>
                 <td class="tnum py-2 text-right font-semibold">{{ usd(r.cost) }}</td>
               </tr>
             </tbody>
@@ -201,7 +213,7 @@ function reset() {
               <th class="px-3 py-3 font-semibold">Video</th>
               <th class="px-3 py-3 font-semibold">Model</th>
               <th class="px-3 py-3 text-right font-semibold">Cảnh</th>
-              <th class="px-3 py-3 text-right font-semibold">Giây</th>
+              <th class="px-3 py-3 text-right font-semibold">Khối lượng</th>
               <th class="px-3 py-3 text-right font-semibold">Tiền</th>
               <th class="px-3 py-3 text-right font-semibold">Mất</th>
               <th class="px-5 py-3 font-semibold">Kết quả</th>
@@ -226,7 +238,7 @@ function reset() {
                   <span class="max-w-[170px] truncate">{{ c.provider }}/{{ c.model || '—' }}</span>
                 </td>
                 <td class="tnum px-3 py-2.5 text-right text-[12px]">{{ c.scene_index ?? '—' }}</td>
-                <td class="tnum px-3 py-2.5 text-right text-[12px] text-ink-2">{{ c.seconds ?? '—' }}s</td>
+                <td class="tnum px-3 py-2.5 text-right text-[12px] text-ink-2">{{ khoiLuong(c) }}</td>
                 <td class="tnum px-3 py-2.5 text-right font-semibold">{{ usd(c.cost_usd) }}</td>
                 <td class="tnum px-3 py-2.5 text-right text-[12px] text-ink-2">
                   {{ c.duration_ms ? (c.duration_ms / 1000).toFixed(1) + 's' : '—' }}

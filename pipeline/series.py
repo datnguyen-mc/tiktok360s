@@ -28,87 +28,18 @@ import urllib.request
 from datetime import datetime
 from pathlib import Path
 
+from . import llm
 from .cms import config as cms_config
 from .common import chua_cum, log, step
 
-GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta"
-DEFAULT_MODEL = "gemini-3.6-flash"
-TIMEOUT = 180
 
 
 # ─────────────────────────────────────────────────────────── gọi API có ghi log
 
-def _safe(url: str) -> str:
-    """Che khoá API trước khi ghi log — Gemini nhận khoá qua query string."""
-    base, _, query = url.partition("?")
-    if not query:
-        return base
-    parts = []
-    for kv in query.split("&"):
-        name, sep, _ = kv.partition("=")
-        parts.append(f"{name}={sep and '***'}" if name in ("key", "api_key") else kv)
-    return f"{base}?{'&'.join(parts)}"
-
-
-def _post(url: str, body: dict) -> dict:
-    """Gọi Gemini. Ghi log dù thành công hay thất bại."""
-    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-    req = urllib.request.Request(
-        url, data=data, method="POST",
-        headers={"Content-Type": "application/json", "Accept": "application/json"})
-
-    shown = _safe(url)
-    t0 = time.monotonic()
-    try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
-            raw = resp.read().decode("utf-8")
-            ms = int((time.monotonic() - t0) * 1000)
-            log(f"  ↯ gemini POST {shown} → {resp.status} · {ms} ms · {len(raw)} B")
-            return json.loads(raw)
-    except urllib.error.HTTPError as e:
-        detail = e.read().decode("utf-8", "replace")[:500]
-        ms = int((time.monotonic() - t0) * 1000)
-        log(f"  ✗ gemini POST {shown} → {e.code} · {ms} ms · {detail}")
-        raise RuntimeError(f"Gemini trả về HTTP {e.code}: {detail}") from None
-    except (urllib.error.URLError, TimeoutError, OSError) as e:
-        ms = int((time.monotonic() - t0) * 1000)
-        log(f"  ✗ gemini POST {shown} → 0 · {ms} ms · {type(e).__name__}: {e}")
-        raise RuntimeError(f"Không gọi được Gemini: {e}") from None
-
-
-# ───────────────────────────────────────────────────────────────────── khoá API
-
 def api_key(cfg: dict) -> str:
-    """Khoá Gemini: ưu tiên cấu hình CMS, sau đó tới engine Veo đang bật.
+    """Khoá Gemini, giữ cho mã cũ gọi tới. Uỷ quyền cho llm.api_key."""
+    return llm.api_key(cfg, "gemini")
 
-    Cùng một khoá Google AI Studio dùng được cho cả Gemini (chữ) lẫn Veo (video),
-    nên không bắt người dùng khai hai lần.
-    """
-    conf = cms_config(cfg)
-    if conf["enabled"] and conf["token"]:
-        try:
-            req = urllib.request.Request(
-                f"{conf['url']}/api/pipeline/series-key",
-                headers={"X-Ingest-Token": conf["token"], "Accept": "application/json"})
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                key = json.loads(resp.read().decode("utf-8")).get("key")
-            if key:
-                return key
-        except Exception as e:
-            log(f"  ⚠ không hỏi được khoá Gemini từ CMS: {e}")
-
-    import os
-    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    if not key:
-        raise RuntimeError(
-            "Chưa có khoá Gemini.\n"
-            "  Khai trong CMS ở trang Cài đặt (ô “Khoá Gemini”), hoặc đặt biến "
-            "môi trường GEMINI_API_KEY."
-        )
-    return key
-
-
-# ───────────────────────────────────────────────────────────── tập trước & sau
 
 def last_episode(cfg: dict) -> dict | None:
     """Tập gần nhất đã sinh — lấy từ CMS, đối chiếu với tệp trên đĩa.
@@ -270,17 +201,32 @@ def build_catalog_prompt(cfg: dict, so_tap: int, muc: list[dict],
     n_canh = int(s.get("so_canh") or 8)
     canh_moi_muc = max(1, n_canh // max(1, len(muc)))
 
+    # Mỗi kênh series nói về một loại đối tượng khác nhau — câu lạc bộ, vùng đất,
+    # nhân vật. Từ ngữ và nhãn các trường lấy từ cấu hình, không gắn cứng vào đây,
+    # nếu không thêm kênh nào cũng phải sửa hàm này.
+    hs = s.get("ho_so") or {}
+    don_vi = hs.get("don_vi", "câu lạc bộ")
+    linh_vuc = hs.get("linh_vuc", "tư liệu bóng đá")
+    nhom_nhan = hs.get("nhom_nhan", "Giải")
+    truong = hs.get("truong") or [
+        {"khoa": "nam", "nhan": "Thành lập"},
+        {"khoa": "san", "nhan": "Sân nhà"},
+        {"khoa": "danh_hieu", "nhan": "Danh hiệu"},
+    ]
+
     mot = len(muc) == 1
 
     def _mo_ta(m: dict) -> str:
         """Dữ kiện đã biết về một mục — model dùng cái này thay vì tự nhớ."""
         dong = [f"  Tên: {m.get('ten')}"]
-        if m.get("giai"):      dong.append(f"  Giải: {m['giai']}")
-        if m.get("nam"):       dong.append(f"  Thành lập: {m['nam']}")
-        if m.get("san"):       dong.append(f"  Sân nhà: {m['san']}")
-        if m.get("danh_hieu"): dong.append(f"  Danh hiệu: {m['danh_hieu']}")
-        if m.get("dau_an"):    dong.append(f"  Dấu ấn: {m['dau_an']}")
-        if not m.get("nam") and m.get("ghi_chu"):
+        if m.get("giai"):
+            dong.append(f"  {nhom_nhan}: {m['giai']}")
+        for t in truong:
+            if m.get(t["khoa"]):
+                dong.append(f"  {t['nhan']}: {m[t['khoa']]}")
+        if m.get("dau_an"):
+            dong.append(f"  Dấu ấn: {m['dau_an']}")
+        if m.get("ghi_chu"):
             dong.append(f"  Ghi chú: {m['ghi_chu']}")
         return "\n".join(dong)
 
@@ -296,9 +242,11 @@ def build_catalog_prompt(cfg: dict, so_tap: int, muc: list[dict],
     sau = ", ".join(m.get("ten", "") for m in (tiep_theo or []))
 
     sau_text = (f"Tập sau nói về: {sau}. Nhắc đúng những tên này, không đoán."
-                if sau else "Không nêu tên đội cụ thể vì đây là tập cuối của danh sách.")
+                if sau else f"Không nêu tên {don_vi} cụ thể vì đây là tập cuối của danh sách.")
 
-    if mot:
+    if mot and hs.get("dan_dat"):
+        cach_viet = hs["dan_dat"].format(n_canh=n_canh, don_vi=don_vi)
+    elif mot:
         # Cả video dành cho một đội thì có chỗ kể sâu: không liệt kê danh hiệu
         # khô khan mà dựng thành một mạch từ ngày thành lập tới hôm nay.
         cach_viet = f"""- Cả {n_canh} cảnh dành trọn cho MỘT câu lạc bộ này, kể theo mạch thời gian
@@ -319,45 +267,43 @@ def build_catalog_prompt(cfg: dict, so_tap: int, muc: list[dict],
 - Mỗi câu lạc bộ phải nêu được: năm thành lập, sân nhà, và những danh hiệu lớn
   nhất kèm SỐ LẦN vô địch."""
 
-    return f"""Bạn viết kịch bản video ngắn TikTok tiếng Việt cho một series tư liệu bóng đá.
+    return f"""Bạn viết kịch bản video ngắn TikTok tiếng Việt cho một series {linh_vuc}.
 
 SERIES: {cfg.get('topic_name') or cfg.get('name')}
 {cfg.get('description', '')}
 
 {truoc}
-TẬP {so_tap} nói về {'câu lạc bộ' if mot else f'{len(muc)} câu lạc bộ'} sau (đã đi được {da_dung}/{tong} CLB):
+TẬP {so_tap} nói về {don_vi if mot else f'{len(muc)} {don_vi}'} sau (đã đi được {da_dung}/{tong}):
 {ds}
 
 CÁCH VIẾT
 {cach_viet}
 - Mỗi cảnh có hai phần:
-    "headline": mô tả HÌNH ẢNH nhìn thấy được — logo CLB, sân vận động, khoảnh
-                khắc nâng cúp. Một câu ngắn tiếng Việt. Đây là chỉ dẫn cho máy
-                vẽ hình, không hiện lên màn hình.
+    "headline": mô tả HÌNH ẢNH nhìn thấy được. Một câu ngắn tiếng Việt. Đây là
+                chỉ dẫn cho máy vẽ hình, không hiện lên màn hình.
     "nhan":     nhãn NGẮN hiện trên màn hình, 3–6 chữ, nêu ý chính của cảnh.
                 Ví dụ: "Thành lập năm 1878", "Thánh địa Old Trafford",
                 "20 lần vô địch nước Anh".
     "vo":       lời dẫn 20–30 chữ, giọng nam trầm, chắc, có nhịp. Không đùa cợt.
                 Viết đủ ý, đừng cụt — cả video phải đạt 90 tới 120 giây.
-- Cảnh đầu tiên là câu mở, gọi đúng tên câu lạc bộ ngay từ đầu.
+- Cảnh đầu tiên là câu mở, gọi đúng tên {don_vi} ngay từ đầu.
 - Cảnh cuối chốt bằng câu mời xem tập sau. {sau_text}
 
 ĐỘ CHÍNH XÁC — QUAN TRỌNG NHẤT
-- Năm thành lập, sân nhà, danh hiệu và các mốc dấu ấn đã cho sẵn ở trên.
-  DÙNG ĐÚNG những dữ kiện đó: không sửa số, không làm tròn, không thêm danh
-  hiệu hay sự kiện nào ngoài danh sách.
+- Mọi dữ kiện và mốc dấu ấn đã cho sẵn ở trên. DÙNG ĐÚNG những dữ kiện đó:
+  không sửa số, không làm tròn, không thêm sự kiện nào ngoài danh sách.
 - Chi tiết nào KHÔNG có trong danh sách thì chỉ nêu nếu bạn chắc chắn đúng;
   không chắc thì bỏ qua. Thà thiếu còn hơn sai.
 - Tuyệt đối không bịa sự kiện sau năm 2026.
-- Đây là nội dung về tổ chức có thật, sai số liệu là mất uy tín cả kênh.
+- Đây là nội dung về đối tượng có thật, sai số liệu là mất uy tín cả kênh.
 
 TRẢ VỀ ĐÚNG MỘT KHỐI JSON, không kèm giải thích, không kèm dấu ```:
 {{
   "so_tap": {so_tap},
-  "tieu_de": "tên tập, nêu rõ tên câu lạc bộ",
+  "tieu_de": "tên tập, nêu rõ tên {don_vi}",
   "tom_tat": "một câu tóm tắt nội dung tập này",
   "cau_chot": "câu mời xem tập sau",
-  "trang_thai": "đã đi tới CLB nào, còn bao nhiêu",
+  "trang_thai": "đã đi tới đâu, còn bao nhiêu",
   "canh": [
     {{"headline": "...", "vo": "..."}}
   ]
@@ -547,52 +493,21 @@ def generate(cfg: dict, date: str | None = None) -> tuple[list[dict], dict]:
     else:
         log(f"viết tập {so_tap}" + (f"/{tong}" if tong else ""))
 
-    model = s.get("model") or DEFAULT_MODEL
-    key = api_key(cfg)
     prompt = (build_catalog_prompt(cfg, so_tap, muc, previous, da_dung, len(dan_bai),
                                    _tiep_theo(cfg, da_dung, muc, so_tap))
               if nhieu_muc else build_prompt(cfg, so_tap, previous))
 
-    data = _post(
-        f"{GEMINI_BASE}/models/{model}:generateContent?key={key}",
-        {
-            "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-            "generationConfig": {
-                # Đủ ngẫu nhiên để hai tập không giống nhau, đủ thấp để bám khung
-                "temperature": 0.9,
-                "maxOutputTokens": 8192,
-                "responseMimeType": "application/json",
-            },
-        },
-    )
-
-    try:
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
-    except (KeyError, IndexError):
-        reason = (data.get("promptFeedback") or {}).get("blockReason")
-        raise RuntimeError(
-            f"Gemini không trả về nội dung"
-            + (f" (bị chặn: {reason})" if reason else f": {json.dumps(data)[:300]}")
-        ) from None
+    # Gemini hay OpenAI do `series.provider` quyết — xem pipeline/llm.py.
+    # Nhiệt 0.9: đủ ngẫu nhiên để hai tập không giống nhau, đủ thấp để bám khung.
+    text, model = llm.sinh_json(prompt, cfg, nhiet=0.9)
 
     try:
         ep = _parse(text)
     except RuntimeError as e:
         log(f"  ⚠ {e}")
         log("  thử lại một lần với nhiệt độ thấp hơn…")
-        data = _post(
-            f"{GEMINI_BASE}/models/{model}:generateContent?key={key}",
-            {
-                "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    # Thấp hơn để model bám sát khuôn JSON thay vì sáng tạo
-                    "temperature": 0.4,
-                    "maxOutputTokens": 8192,
-                    "responseMimeType": "application/json",
-                },
-            },
-        )
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        # Thấp hơn để model bám sát khuôn JSON thay vì sáng tạo
+        text, model = llm.sinh_json(prompt, cfg, nhiet=0.4)
         ep = _parse(text)
 
     canh = ep.get("canh") or []
@@ -625,13 +540,17 @@ def generate(cfg: dict, date: str | None = None) -> tuple[list[dict], dict]:
     # Chọn theo NỘI DUNG chứ không theo vị trí cảnh: chia theo vị trí thì cảnh
     # thứ ba luôn nhấn "sân nhà" kể cả khi nó đang kể về danh hiệu, và người xem
     # thấy ngay là chữ với hình nói hai chuyện khác nhau.
-    DAU_HIEU = (
-        ("danh_hieu", ("vô địch", "danh hiệu", "cúp", "chức vô địch", "đăng quang",
-                       "nâng cao", "champions league", "fa cup", "scudetto",
-                       "ăn ba", "kỷ lục")),
-        ("san",       ("sân", "thánh địa", "khán đài", "chảo lửa", "pháo đài")),
-        ("nam",       ("thành lập", "ra đời", "khai sinh", "tiền thân", "khởi nguồn")),
-    )
+    # Từ khoá nhận dạng do kênh tự khai: mỗi kênh nói về một loại đối tượng nên
+    # bộ từ khác nhau. Mặc định là bộ của kênh bóng đá.
+    MAC_DINH = {
+        "danh_hieu": ["vô địch", "danh hiệu", "cúp", "chức vô địch", "đăng quang",
+                      "nâng cao", "champions league", "fa cup", "scudetto",
+                      "ăn ba", "kỷ lục"],
+        "san": ["sân", "thánh địa", "khán đài", "chảo lửa", "pháo đài"],
+        "nam": ["thành lập", "ra đời", "khai sinh", "tiền thân", "khởi nguồn"],
+    }
+    tu_khoa = (cfg.get("series", {}).get("ho_so") or {}).get("dau_hieu") or MAC_DINH
+    DAU_HIEU = tuple(tu_khoa.items())
 
     def _noi_bat(c: dict, i: int, n: int) -> str | None:
         if n <= 2 or i == 0:

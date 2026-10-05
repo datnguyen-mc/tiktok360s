@@ -32,6 +32,10 @@ SCENE_GAP = 0.28        # khoảng lặng tối thiểu giữa hai cảnh (tts.p
 # Mặc định ban đầu; sẽ được thay bằng số khớp từ chính các lần render của bạn.
 DEFAULT = {"syl_per_sec_base": 3.60, "tts_pad": 0.35, "source": "mặc định"}
 
+def khoa_giong(voice: dict) -> str:
+    """Khoá phân biệt từng giọng trong lịch sử đo — mỗi giọng một tốc độ riêng."""
+    return voice.get("id", "?")
+
 # Khoảng hợp lệ — kết quả khớp nằm ngoài đây là dữ liệu bẩn, bỏ qua.
 VALID_RATE = (2.0, 7.0)
 VALID_PAD = (0.0, 1.5)
@@ -70,14 +74,15 @@ def record(voice_id: str, rate: str, syllables: int, scenes: int,
 
 def params(voice_id: str) -> dict:
     """Tham số khớp từ lịch sử của đúng giọng này; thiếu dữ liệu thì dùng mặc định."""
+    mac_dinh = DEFAULT
     samples = [s for s in _load() if s["voice"] == voice_id]
     if len(samples) < 2:
-        return dict(DEFAULT)
+        return dict(mac_dinh)
 
     # phần_đọc = a·x + q·n   với x = âm tiết / hệ_số_tốc_độ, n = số cảnh, a = 1/r0
     samples = [s for s in samples if "speech" in s]
     if len(samples) < 2:
-        return dict(DEFAULT)
+        return dict(mac_dinh)
 
     # Tách được hai ẩn thì cần các mẫu khác nhau về SỐ CẢNH. Nếu mọi lần render đều
     # 12 cảnh thì cột "số cảnh" là hằng số: hệ vẫn giải ra nghiệm, nhưng nghiệm đó
@@ -91,7 +96,7 @@ def params(voice_id: str) -> dict:
             sxx += x * x
             sxd += x * (s["speech"] - q * s["scenes"])
         if sxx <= 0 or sxd <= 0:
-            return dict(DEFAULT)
+            return dict(mac_dinh)
         r0 = sxx / sxd
         if not (VALID_RATE[0] <= r0 <= VALID_RATE[1]):
             return dict(DEFAULT)

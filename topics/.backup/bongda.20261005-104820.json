@@ -10,10 +10,10 @@
     "bg": "#07110C"
   },
   "voice": {
-    "id": "vi-VN-NamMinhNeural",
+    "id": "vi-VN-HoaiMyNeural",
     "alt_id": "vi-VN-NamMinhNeural",
-    "rate": "+29%",
-    "pitch": "+17Hz",
+    "rate": "+42%",
+    "pitch": "+28Hz",
     "volume": "+0%",
     "rate_min_pct": 32,
     "rate_max_pct": 55,
@@ -202,7 +202,7 @@
     "require_strong_keywords": [
       "bóng đá",
       "cầu thủ",
-      "hlv",
+      "hlv ",
       "huấn luyện viên",
       "ghi bàn",
       "bàn thắng",
@@ -218,7 +218,7 @@
       "thẻ vàng",
       "sân cỏ",
       "chuyển nhượng",
-      "clb",
+      "clb ",
       "câu lạc bộ",
       "ngoại hạng",
       "premier league",
@@ -232,7 +232,7 @@
       "cúp c1",
       "cúp c2",
       "world cup",
-      "euro",
+      "euro ",
       "nations league",
       "copa",
       "fa cup",
@@ -704,6 +704,6 @@
     }
   },
   "video": {
-    "min_scene_sec": 4
+    "min_scene_sec": 4.0
   }
 }

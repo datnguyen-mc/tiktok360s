@@ -16,7 +16,8 @@
     "pitch": "+6Hz",
     "volume": "+0%",
     "rate_min_pct": -5,
-    "rate_max_pct": 20
+    "rate_max_pct": 20,
+    "_ghi_chu": "edge-tts của Microsoft, miễn phí. Hai giọng tiếng Việt: vi-VN-NamMinhNeural (nam), vi-VN-HoaiMyNeural (nữ)."
   },
   "video": {
     "target_min_sec": 55,

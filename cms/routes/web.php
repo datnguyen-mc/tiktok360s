@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PipelineConfigController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PipelineJobController;
 use App\Http\Controllers\Api\PromptPresetController;
+use App\Http\Controllers\Api\R2Controller;
 use App\Http\Controllers\Api\PublishJobController;
 use App\Http\Controllers\Api\RunController;
 use App\Http\Controllers\Api\TopicController;
@@ -52,6 +53,8 @@ Route::prefix('api')->group(function () {
     Route::get('pipeline/series/{topic}/next', [SeriesController::class, 'next'])
         ->middleware(VerifyIngestToken::class);
     Route::get('pipeline/series-key', [SeriesController::class, 'key'])
+        ->middleware(VerifyIngestToken::class);
+    Route::get('pipeline/r2', R2Controller::class)
         ->middleware(VerifyIngestToken::class);
     Route::post('ingest/series-episode', [SeriesController::class, 'store'])
         ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class])

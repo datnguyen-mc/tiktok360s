@@ -9,7 +9,8 @@
     "crf": 20,
     "preset": "medium",
     "audio_bitrate": "192k",
-    "min_scene_sec": 6.0
+    "min_scene_sec": 6.0,
+    "hook_sec": 1.6
   },
   "voice": {
     "id": "vi-VN-HoaiMyNeural",
@@ -35,7 +36,7 @@
     "stroke": 10,
     "highlight": "#FFD60A",
     "base_color": "#FFFFFF",
-    "y_ratio": 0.62,
+    "y_ratio": 0.73,
     "gap_break_sec": 0.32
   },
   "music": {
@@ -56,6 +57,13 @@
     "bucket": "",
     "endpoint": "",
     "public_url": "",
-    "prefix": "videos"
+    "prefix": "videos",
+    "_ghi_chu": "Khoá bí mật (R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY) khai trong CMS → Cài đặt, không để ở đây"
+  },
+  "ai": {
+    "gia": {
+      "_ghi_chu": "USD cho mỗi 1 triệu token, dạng [vào, ra]. Model không khai ở đây thì nhật ký vẫn đếm token nhưng để trống phần tiền — không đoán. Đối chiếu giá ở ai.google.dev/pricing và openai.com/api/pricing.",
+      "gemini-3.6-flash": null
+    }
   }
 }

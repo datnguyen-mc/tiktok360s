@@ -3,7 +3,7 @@
   "description": "Drama và ồn ào showbiz Việt trong ngày, có dẫn nguồn, không kết luận",
   "brand": {
     "name": "DRAMA MỖI NGÀY",
-    "handle": "@dramamoingay",
+    "handle": "@showbiz360s",
     "tagline": "Điểm drama trong ngày",
     "accent": "#A855F7",
     "accent2": "#FFD60A",
@@ -14,7 +14,8 @@
     "alt_id": "vi-VN-NamMinhNeural",
     "rate": "+28%",
     "pitch": "-4Hz",
-    "volume": "+0%"
+    "volume": "+0%",
+    "_ghi_chu": "edge-tts của Microsoft, miễn phí. Hai giọng tiếng Việt: vi-VN-NamMinhNeural (nam), vi-VN-HoaiMyNeural (nữ)."
   },
   "sources": [
     {

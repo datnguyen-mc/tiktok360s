@@ -27,6 +27,9 @@ class Setting extends Model
         'tiktok.client_secret',
         'google.client_secret',
         'gemini.api_key',
+        'openai.api_key',
+        'r2.access_key_id',
+        'r2.secret_access_key',
     ];
 
     /** Khoá nào lấy từ .env khi bảng chưa có giá trị. */

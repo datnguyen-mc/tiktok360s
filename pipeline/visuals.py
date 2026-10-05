@@ -22,9 +22,9 @@ UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/
 
 W, H = 1080, 1920
 MARGIN = 90                      # lề trái/phải cho khối nội dung
-CARD_TOP, CARD_H = 330, 680      # thẻ ảnh tin
-HEADLINE_TOP = 1058
-CAPTION_TOP = 1368
+CARD_TOP, CARD_H = 306, 744      # thẻ ảnh tin
+HEADLINE_TOP = 1094
+CAPTION_TOP = 1400               # mặc định; mỗi kênh chỉnh bằng captions.y_ratio
 PROGRESS_Y = 1690
 
 FONTS = {
@@ -150,8 +150,20 @@ def fit_font(draw: ImageDraw.ImageDraw, text: str, kind: str, size: int,
     return fnt, wrap(draw, text, fnt, max_w, max_lines)
 
 
-def pill(draw: ImageDraw.ImageDraw, xy, text: str, fnt, fill, fg=(255, 255, 255), pad=(22, 11)):
+def pill(draw: ImageDraw.ImageDraw, xy, text: str, fnt, fill, fg=(255, 255, 255), pad=(22, 11),
+         max_w: int | None = None):
+    """Nhãn bo tròn. `max_w` là bề ngang tối đa — chữ dài hơn thì cắt bớt, thêm '…'.
+
+    Không có chốt này thì nhãn nguồn (lấy nguyên tiêu đề bài) chạy tràn ra ngoài
+    khung và bị cắt cụt ngay giữa chữ.
+    """
     x, y = xy
+    if max_w is not None:
+        gioi_han = max_w - pad[0] * 2
+        if draw.textlength(text, font=fnt) > gioi_han:
+            while text and draw.textlength(text + "…", font=fnt) > gioi_han:
+                text = text[:-1]
+            text = text.rstrip(" ,.;:-") + "…"
     tw = draw.textlength(text, font=fnt)
     th = fnt.size
     box = (x, y, x + tw + pad[0] * 2, y + th + pad[1] * 2)
@@ -179,15 +191,27 @@ def rounded_photo(photo: Path, w: int, h: int, radius: int = 40) -> Image.Image:
 
 # --------------------------------------------------------------- lớp giao diện
 
-def _the_clb(ui: Image.Image, d: ImageDraw.ImageDraw, the: dict,
-             x: int, y: int, w: int, h: int,
-             accent: tuple, accent2: tuple, noi_bat: str | None = None) -> None:
-    """Bảng thông tin câu lạc bộ, vẽ vào chỗ lẽ ra là ảnh.
+# Nhãn mặc định cho bảng hồ sơ, dùng khi kênh không khai `series.ho_so.truong`.
+# Giữ đúng từ ngữ bóng đá để kênh clb không đổi gì khi nâng cấp.
+TRUONG_MAC_DINH = [
+    {"khoa": "nam", "nhan": "Thành lập"},
+    {"khoa": "san", "nhan": "Sân nhà"},
+    {"khoa": "danh_hieu", "nhan": "Danh hiệu", "tach": "·"},
+]
 
-    Bốn dòng dữ kiện: tên, giải, năm thành lập + sân, danh hiệu. Danh hiệu dài
-    nên tách theo dấu · thành từng dòng — nhồi một dòng dài thì chữ co lại tới
-    mức không đọc nổi trên điện thoại.
+
+def _the_ho_so(ui: Image.Image, d: ImageDraw.ImageDraw, the: dict,
+               x: int, y: int, w: int, h: int,
+               accent: tuple, accent2: tuple, noi_bat: str | None = None,
+               logo: Path | None = None, truong: list[dict] | None = None) -> None:
+    """Bảng hồ sơ một mục, vẽ vào chỗ lẽ ra là ảnh.
+
+    Dòng trên cùng là nhóm (giải đấu, vùng miền…), rồi tên, rồi các dòng dữ kiện
+    do kênh tự khai qua `series.ho_so.truong` — mỗi dòng một cặp {khoa, nhan}.
+    Trường nào có `"tach"` thì tách theo ký tự đó thành danh sách gạch đầu dòng:
+    nhồi một dòng dài thì chữ co lại tới mức không đọc nổi trên điện thoại.
     """
+    truong = truong or TRUONG_MAC_DINH
     d.rounded_rectangle((x, y, x + w, y + h), radius=40, fill=(12, 18, 32, 235))
 
     # Vạch màu bên trái làm điểm tựa cho mắt
@@ -196,6 +220,13 @@ def _the_clb(ui: Image.Image, d: ImageDraw.ImageDraw, the: dict,
     px = x + 74
     pw = w - 108
     cy = y + 52
+
+    # Logo ở góc dưới phải: chỗ đó vốn bỏ trống vì danh hiệu hiếm khi dài hết
+    # bảng, mà huy hiệu đội thì nên thấy suốt video chứ không chỉ ở cảnh mở đầu.
+    dk_logo = 0
+    if logo is not None:
+        dk_logo = min(300, h // 2)
+        _logo(ui, logo, x + w - dk_logo // 2 - 40, y + h - dk_logo // 2 - 36, dk_logo)
 
     # Phần đang được nói tới thì sáng lên, phần còn lại mờ đi. Bảng đứng yên
     # suốt video thì người xem hết nhìn sau năm giây.
@@ -216,37 +247,37 @@ def _the_clb(ui: Image.Image, d: ImageDraw.ImageDraw, the: dict,
     cy += f_ten.size + 26
 
     f_nho = font("body", 32)
-    for nhan, gt in (("Thành lập", the.get("nam")), ("Sân nhà", the.get("san"))):
-        if not gt:
+    f_dh = font("body", 30)
+    # Dòng nào nằm ngang tầm logo thì phải hẹp lại cho khỏi đâm vào huy hiệu.
+    moc_logo = y + h - dk_logo - 36 if dk_logo else y + h
+
+    for t in truong:
+        khoa, nhan, tach = t.get("khoa"), t.get("nhan", ""), t.get("tach")
+        gt = the.get(khoa)
+        if not gt or cy > y + h - 90:
             continue
-        khoa = "nam" if nhan == "Thành lập" else "san"
         a = mo(khoa)
         if khoa == noi_bat:
             # Vạch nhỏ bên trái chỉ đúng dòng đang nói
-            d.rounded_rectangle((px - 24, cy + 4, px - 18, cy + 68), radius=3,
+            day = (y + h - 52) if tach else (cy + 68)
+            d.rounded_rectangle((px - 24, cy + 4, px - 18, day), radius=3,
                                 fill=accent2 + (255,))
-        d.text((px, cy), f"{nhan}", font=font("body", 26),
-               fill=(255, 255, 255, min(a, 150)))
-        cy += 32
-        for dong in wrap(d, str(gt), f_nho, pw, 2):
-            d.text((px, cy), dong, font=f_nho, fill=(255, 255, 255, a))
-            cy += 40
-        cy += 8
+        d.text((px, cy), nhan, font=font("body", 26), fill=(255, 255, 255, min(a, 150)))
+        cy += 32 if not tach else 34
 
-    if the.get("danh_hieu") and cy < y + h - 90:
-        a = mo("danh_hieu")
-        if noi_bat == "danh_hieu":
-            d.rounded_rectangle((px - 24, cy + 4, px - 18, y + h - 52), radius=3,
-                                fill=accent2 + (255,))
-        d.text((px, cy), "Danh hiệu", font=font("body", 26),
-               fill=(255, 255, 255, min(a, 150)))
-        cy += 34
-        f_dh = font("body", 30)
-        for phan in [p.strip() for p in str(the["danh_hieu"]).split("·") if p.strip()]:
+        if not tach:
+            for dong in wrap(d, str(gt), f_nho, pw, 2):
+                d.text((px, cy), dong, font=f_nho, fill=(255, 255, 255, a))
+                cy += 40
+            cy += 8
+            continue
+
+        for phan in [x.strip() for x in str(gt).split(tach) if x.strip()]:
             if cy > y + h - 46:
                 break
+            rong = pw - 30 - (dk_logo + 40 if cy > moc_logo else 0)
             d.ellipse((px + 2, cy + 13, px + 12, cy + 23), fill=accent + (a,))
-            for dong in wrap(d, phan, f_dh, pw - 30, 2):
+            for dong in wrap(d, phan, f_dh, rong, 2):
                 d.text((px + 28, cy), dong, font=f_dh, fill=(255, 255, 255, a))
                 cy += 38
             cy += 4
@@ -309,18 +340,23 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
             # Kênh tư liệu không có ảnh báo để dùng. Thay vì bỏ trống một mảng
             # màu, vẽ thẳng dữ kiện lên đó — đằng nào người xem cũng cần thấy
             # năm thành lập, sân nhà và danh hiệu chứ không chỉ nghe đọc.
-            _the_clb(ui, d, scene["the_thong_tin"], MARGIN, CARD_TOP,
-                     card_w, CARD_H, accent, accent2, scene.get("noi_bat"))
+            _the_ho_so(ui, d, scene["the_thong_tin"], MARGIN, CARD_TOP,
+                       card_w, CARD_H, accent, accent2, scene.get("noi_bat"), logo,
+                       truong=(cfg.get("series", {}).get("ho_so") or {}).get("truong"))
         else:
             d.rounded_rectangle((MARGIN, CARD_TOP, MARGIN + card_w, CARD_TOP + CARD_H),
                                 radius=40, fill=accent + (90,))
         d.rounded_rectangle((MARGIN, CARD_TOP, MARGIN + card_w, CARD_TOP + CARD_H),
                             radius=40, outline=(255, 255, 255, 60), width=3)
 
-        # ---- số thứ tự tin, nằm đè lên góc thẻ
+        # ---- số thứ tự tin, đè lên GÓC PHẢI của thẻ
+        # Đặt bên trái thì nó chồng lên thẻ thương hiệu ngay phía trên, hai khối
+        # màu dính vào nhau trông như lỗi dựng.
         f_idx = font("head", 52)
         chip = f"{chip_label} {scene['index']}/{scene['total']}"
-        pill(d, (MARGIN + 26, CARD_TOP - 30), chip, f_idx, accent2 + (255,), fg=(20, 16, 10))
+        chip_w = d.textlength(chip, font=f_idx) + 44
+        pill(d, (MARGIN + card_w - chip_w - 26, CARD_TOP - 30), chip, f_idx,
+             accent2 + (255,), fg=(20, 16, 10))
 
         # ---- tiêu đề
         f_head, lines = fit_font(d, scene["headline"], "head", 58, content_w, 3, min_size=42)
@@ -332,7 +368,7 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
 
         if scene.get("source"):
             pill(d, (MARGIN, y + 14), f"Nguồn: {scene['source']}", font("body", 28),
-                 (255, 255, 255, 38), fg=(255, 255, 255, 225))
+                 (255, 255, 255, 38), fg=(255, 255, 255, 225), max_w=content_w)
 
     elif scene["kind"] == "news":
         # ---- nền là clip AI: chỉ cần tiêu đề, đặt thấp hơn cho thoáng mặt người
@@ -350,7 +386,7 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
             y += round(f_head.size * 1.22)
         if scene.get("source"):
             pill(d, (MARGIN, y + 14), f"Nguồn: {scene['source']}", font("body", 28),
-                 (255, 255, 255, 38), fg=(255, 255, 255, 225))
+                 (255, 255, 255, 38), fg=(255, 255, 255, 225), max_w=content_w)
 
     else:
         # ---- cảnh mở đầu / kết: chữ lớn giữa khung
@@ -359,9 +395,10 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
         block_h = len(lines) * round(f_big.size * 1.18)
         y = 700 if scene["kind"] == "intro" else 760
         if scene["kind"] == "intro" and logo is not None:
-            # Logo chiếm nửa trên, đẩy khối chữ xuống cho khỏi đè
-            _logo(ui, logo, W // 2, 560, 400)
-            y = 860
+            # Logo là thứ nhận ra ngay trong một giây đầu, nên để to: 560px trên
+            # khung rộng 1080 là hơn nửa bề ngang. Khối chữ lùi xuống tương ứng.
+            _logo(ui, logo, W // 2, 616, 560)
+            y = 976
         d.rounded_rectangle((MARGIN - 26, y - 56, W - MARGIN + 26, y + block_h + 56),
                             radius=48, fill=(0, 0, 0, 96))
         for line in lines:
@@ -382,6 +419,98 @@ def make_ui(scene: dict, photo: Path | None, cfg: dict, date_label: str,
     tw = d.textlength(foot, font=f_foot)
     d.text(((W - tw) / 2, PROGRESS_Y + 40), foot, font=f_foot, fill=(255, 255, 255, 160))
     return ui
+
+
+def _con_tro(d: ImageDraw.ImageDraw, x: int, y: int, cao: int = 128) -> None:
+    """Con trỏ hình bàn tay bấm, vẽ bằng đa giác — không cần file ảnh kèm theo."""
+    k = cao / 128
+    than = [(x, y), (x + 46 * k, y + 92 * k), (x + 25 * k, y + 96 * k),
+            (x + 44 * k, y + 128 * k), (x + 30 * k, y + 136 * k),
+            (x + 12 * k, y + 104 * k), (x - 2 * k, y + 120 * k)]
+    d.polygon(than, fill=(255, 255, 255, 255), outline=(16, 16, 20, 255))
+    d.line(than + [than[0]], fill=(16, 16, 20, 255), width=max(2, round(5 * k)), joint="curve")
+
+
+def make_follow(cfg: dict, logo: Path | None = None, phu: str = "") -> Image.Image:
+    """Màn hình mời theo dõi, chèn trước cảnh mở đầu.
+
+    Người xem lướt tới video này lần đầu thì chưa biết kênh là gì. Một khung
+    đứng yên hơn một giây, có đúng ba thứ — huy hiệu, tên kênh, nút theo dõi —
+    đọc xong trong một nhịp mắt. Nhồi thêm chữ là thành màn hình quảng cáo và
+    người ta vuốt qua.
+
+    `phu` là dòng phụ tuỳ kênh, ví dụ "TẬP 12" — cho người xem biết đây là series.
+    """
+    brand = cfg["brand"]
+    accent = hex_to_rgb(brand["accent"])
+    accent2 = hex_to_rgb(brand["accent2"])
+
+    base = gradient((10, 6, 20), (max(0, accent[0] // 3), 6, 40))
+    glow = Image.new("RGB", (W, H), (0, 0, 0))
+    ImageDraw.Draw(glow).ellipse((-200, 220, W + 200, 1100), fill=accent)
+    base = Image.blend(base, glow.filter(ImageFilter.GaussianBlur(190)), 0.34)
+
+    ui = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(ui)
+
+    # ---- vòng sáng quanh huy hiệu, hai lớp cho có chiều sâu
+    # Khối nội dung đặt cao: giao diện TikTok (chú thích, hàng nút bên phải) phủ
+    # khoảng một phần tư dưới màn hình, chữ rơi vào đó là bị che.
+    cx, cy, dk = W // 2, 620, 440
+    for r, mau in ((dk // 2 + 54, accent2 + (110,)), (dk // 2 + 26, accent2 + (235,))):
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=mau, width=9)
+
+    if logo is not None:
+        _logo(ui, logo, cx, cy, dk)
+    else:
+        # Kênh tin không có huy hiệu đội: dùng chữ cái đầu của tên kênh.
+        r = dk // 2
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(255, 255, 255, 255))
+        chu = (brand["name"].strip() or "?")[0].upper()
+        f = font("head", 220)
+        w_chu = d.textlength(chu, font=f)
+        d.text((cx - w_chu / 2, cy - f.size * 0.72), chu, font=f, fill=accent + (255,))
+
+    # ---- tên kênh
+    f_ten, dong = fit_font(d, brand["name"].upper(), "head", 78, W - MARGIN * 2, 2, min_size=52)
+    y = cy + dk // 2 + 120
+    for line in dong:
+        tw = d.textlength(line, font=f_ten)
+        d.text(((W - tw) / 2 + 4, y + 4), line, font=f_ten, fill=(0, 0, 0, 170))
+        d.text(((W - tw) / 2, y), line, font=f_ten, fill=(255, 255, 255, 255))
+        y += round(f_ten.size * 1.16)
+
+    # ---- handle + dòng phụ
+    f_h = font("body", 40)
+    nhan = brand["handle"] + (f"  ·  {phu}" if phu else "")
+    tw = d.textlength(nhan, font=f_h)
+    d.text(((W - tw) / 2, y + 14), nhan, font=f_h, fill=(255, 255, 255, 205))
+
+    # ---- nút Theo dõi, dáng giống nút thật trong ứng dụng
+    f_nut = font("head", 62)
+    chu_nut = "+  Theo dõi"
+    nw = d.textlength(chu_nut, font=f_nut)
+    bw, bh = nw + 150, 136
+    bx, by = (W - bw) / 2, y + 150
+    ui.alpha_composite(shadow_layer(
+        (W, H), lambda dd: dd.rounded_rectangle((bx, by + 14, bx + bw, by + bh + 14),
+                                                radius=bh // 2, fill=255), blur=30, alpha=170))
+    d.rounded_rectangle((bx, by, bx + bw, by + bh), radius=bh // 2, fill=accent + (255,))
+    d.text(((W - nw) / 2, by + (bh - f_nut.size) / 2 - 8), chu_nut,
+           font=f_nut, fill=(255, 255, 255, 255))
+
+    # ---- con trỏ chỉ vào nút
+    _con_tro(d, int(bx + bw - 86), int(by + bh - 34), 132)
+
+    # ---- khẩu hiệu dưới cùng
+    f_tag = font("body", 36)
+    tw = d.textlength(brand["tagline"], font=f_tag)
+    d.text(((W - tw) / 2, by + bh + 150), brand["tagline"], font=f_tag,
+           fill=(255, 255, 255, 150))
+
+    out = base.convert("RGBA")
+    out.alpha_composite(ui)
+    return out.convert("RGB")
 
 
 def make_progress(ratio: float, cfg: dict) -> Image.Image:
@@ -457,7 +586,9 @@ def render_caption(state: dict, cfg: dict) -> Image.Image:
         widths[-1] += add
 
     lh = round(fnt.size * 1.16)
-    y = CAPTION_TOP
+    # Kênh tư liệu có bảng thông tin cao hơn kênh tin, nên phụ đề phải xuống
+    # thấp hơn để không chạm đáy bảng.
+    y = round(H * c["y_ratio"]) if c.get("y_ratio") else CAPTION_TOP
     for line, lw in zip(lines, widths):
         x = (W - lw) / 2
         for idx in line:
@@ -496,8 +627,11 @@ def build(script: dict, voice: dict, cfg: dict, workdir: Path,
         bg_path = workdir / f"bg_{i:02d}.jpg"
         bg.save(bg_path, quality=92)
 
+        # Tra logo cho MỌI cảnh có dữ kiện CLB, không riêng cảnh mở đầu: bảng
+        # thông tin ở cảnh thường cũng vẽ huy hiệu, thiếu nó thì góc dưới bảng
+        # bỏ trống và cả video chỉ thấy huy hiệu đúng một lần.
         logo = None
-        if scene["kind"] == "intro" and scene.get("the_thong_tin"):
+        if scene.get("the_thong_tin"):
             logo = logos.find(scene["the_thong_tin"].get("ten", ""))
 
         ui = make_ui(scene, photo, cfg, date_label, full_bleed=clip is not None, logo=logo)
@@ -523,7 +657,24 @@ def build(script: dict, voice: dict, cfg: dict, workdir: Path,
     thumb.alpha_composite(Image.open(workdir / f"ui_{first_news:02d}.png"))
     thumb.convert("RGB").save(workdir / "thumbnail.jpg", quality=92)
 
-    return {"scenes": scenes_out, "captions": states, "caption_dir": str(cap_dir)}
+    # ---- màn hình mời theo dõi, chèn trước cảnh mở đầu
+    hook_sec = float(cfg["video"].get("hook_sec", 1.6))
+    hook_path = None
+    if hook_sec > 0:
+        # Huy hiệu lấy của cảnh mở đầu; kênh tin không có thì make_follow() tự
+        # dùng chữ cái đầu tên kênh.
+        lg = None
+        for sc in voice["scenes"]:
+            if sc.get("the_thong_tin"):
+                lg = logos.find(sc["the_thong_tin"].get("ten", ""))
+                break
+        so_tap = script.get("so_tap") or script.get("episode")
+        hook_path = workdir / "hook.jpg"
+        make_follow(cfg, lg, f"TẬP {so_tap}" if so_tap else "").save(hook_path, quality=92)
+        log(f"✓ màn hình theo dõi · {hook_sec:.1f}s")
+
+    return {"scenes": scenes_out, "captions": states, "caption_dir": str(cap_dir),
+            "hook": str(hook_path) if hook_path else None, "hook_sec": hook_sec if hook_path else 0.0}
 
 
 def main() -> None:

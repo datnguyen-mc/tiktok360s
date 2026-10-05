@@ -26,3 +26,12 @@ Schedule::command('stats:rollup')->everyTenMinutes()->withoutOverlapping();
  | không bắn quá nhiều request vào máy chủ của các báo.
  */
 Schedule::command('news:backfill --limit=20')->everyFifteenMinutes()->withoutOverlapping();
+
+/*
+ | Gương ảnh bài viết lên R2, mỗi 15 phút.
+ |
+ | Chạy sau `news:backfill` vì chính lệnh đó mới điền `image_url` cho bài thiếu
+ | ảnh — gương trước thì lượt nào cũng bỏ sót bài vừa có ảnh. Hạn mức nhỏ cùng lý
+ | do: mỗi ảnh là một lượt tải từ CDN của toà soạn.
+ */
+Schedule::command('images:mirror --limit=20')->everyFifteenMinutes()->withoutOverlapping();

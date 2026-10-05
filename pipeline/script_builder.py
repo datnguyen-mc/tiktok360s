@@ -161,7 +161,7 @@ def fit_length(scenes: list[dict], cfg: dict) -> list[dict]:
     target = (lo + hi) / 2
     floor_items = max(1, cfg["script"].get("min_items_per_video", 1))
     rate = cfg["voice"]["rate"]
-    prm = timing.params(cfg["voice"]["id"])
+    prm = timing.params(timing.khoa_giong(cfg["voice"]))
     news = [s for s in scenes if s["kind"] == "news"]
     for s in news:
         s["vo"] = _compose(s)

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import http, { errorMessage } from '../api'
 import Toast from '../components/Toast.vue'
 
@@ -7,6 +7,45 @@ const data = ref(null)
 const form = ref({})
 const busy = ref(false)
 const toast = ref({ message: '', tone: 'good' })
+
+// Gemini và OpenAI nằm chung một tab vì chúng thay thế nhau: chọn bên nào là
+// quyết định một lần, nhìn cạnh nhau mới so được. `nhom` là tiền tố khoá cài
+// đặt thuộc tab đó, dùng để chấm dấu "chưa lưu".
+const TABS = [
+  { id: 'tiktok', nhan: 'TikTok', nhom: ['tiktok'] },
+  { id: 'dangnhap', nhan: 'Đăng nhập', nhom: ['google'] },
+  { id: 'ai', nhan: 'AI viết kịch bản', nhom: ['gemini', 'openai'] },
+  { id: 'luutru', nhan: 'Lưu trữ', nhom: ['r2'] },
+]
+
+const LUU_TAB = 'cms.settings.tab'
+const tab = ref(TABS[0].id)
+try {
+  const d = localStorage.getItem(LUU_TAB)
+  if (TABS.some((t) => t.id === d)) tab.value = d
+} catch { /* chế độ riêng tư chặn localStorage — cứ mở tab đầu */ }
+
+function chonTab(id) {
+  tab.value = id
+  try { localStorage.setItem(LUU_TAB, id) } catch { /* không lưu được thì thôi */ }
+}
+
+/**
+ * Tab nào đang có ô bị sửa mà chưa lưu.
+ *
+ * Có tab rồi thì sửa ở tab này, chuyển sang tab khác là không còn thấy ô vừa
+ * sửa nữa — không đánh dấu thì rất dễ bỏ đi mà tưởng đã lưu.
+ */
+const tabDoi = computed(() => {
+  const goc = data.value?.values || {}
+  const doi = new Set()
+  for (const [k, v] of Object.entries(form.value)) {
+    if (v === goc[k]) continue
+    const t = TABS.find((x) => x.nhom.includes(k.split('.')[0]))
+    if (t) doi.add(t.id)
+  }
+  return doi
+})
 
 async function load() {
   data.value = (await http.get('settings')).data
@@ -45,8 +84,22 @@ async function copy(text) {
   <div v-if="!data" class="grid h-48 place-items-center text-sm text-ink-muted">Đang tải…</div>
 
   <div v-else class="max-w-3xl space-y-4">
+    <nav class="flex flex-wrap gap-1 border-b border-line" role="tablist">
+      <button v-for="t in TABS" :key="t.id" role="tab" :aria-selected="tab === t.id"
+              class="relative -mb-px border-b-2 px-3 py-2 text-[13px] font-semibold transition"
+              :class="tab === t.id
+                ? 'border-accent text-ink-1'
+                : 'border-transparent text-ink-muted hover:text-ink-2'"
+              @click="chonTab(t.id)">
+        {{ t.nhan }}
+        <span v-if="tabDoi.has(t.id)"
+              class="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-amber-400 align-middle"
+              title="Có thay đổi chưa lưu"></span>
+      </button>
+    </nav>
+
     <!-- TikTok -->
-    <section class="card p-5">
+    <section v-show="tab === 'tiktok'" class="card p-5">
       <div class="flex items-start justify-between gap-4">
         <div>
           <h2 class="text-sm font-bold">Khoá TikTok Open API</h2>
@@ -101,7 +154,7 @@ async function copy(text) {
     </section>
 
     <!-- Google -->
-    <section class="card p-5">
+    <section v-show="tab === 'dangnhap'" class="card p-5">
       <h2 class="text-sm font-bold">Đăng nhập Google</h2>
       <p class="mt-1 text-xs leading-relaxed text-ink-muted">
         Tạo OAuth Client (loại Web application) tại
@@ -142,7 +195,7 @@ async function copy(text) {
     </section>
 
     <!-- Gemini: viết kịch bản cho kênh phim nhiều tập -->
-    <section class="card p-5">
+    <section v-show="tab === 'ai'" class="card p-5">
       <h2 class="text-sm font-bold">Gemini · viết kịch bản series</h2>
       <p class="mt-1 text-[12px] leading-relaxed text-ink-muted">
         Kênh phim nhiều tập không lấy tin từ RSS — mỗi ngày AI đọc tập hôm trước rồi viết
@@ -168,6 +221,91 @@ async function copy(text) {
           <p class="text-[11px] leading-relaxed text-ink-muted">
             Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <section v-show="tab === 'ai'" class="card p-5">
+      <h2 class="text-sm font-bold">OpenAI · viết kịch bản series</h2>
+      <p class="mt-1 text-[12px] leading-relaxed text-ink-muted">
+        Dùng thay cho Gemini ở khâu viết kịch bản. Chọn bên nào là khai
+        <code>series.provider</code> trong <code>topics/&lt;kênh&gt;.json</code>:
+        <code>"gemini"</code> hoặc <code>"openai"</code>. Mỗi kênh chọn riêng được.
+        Lấy khoá ở
+        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener"
+           class="text-ink-2 underline decoration-dotted">platform.openai.com</a>.
+      </p>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1.5">
+          <label class="label">Khoá API</label>
+          <input v-model="form['openai.api_key']" type="password" class="input font-mono !text-xs"
+                 placeholder="sk-…" autocomplete="off" />
+          <p class="text-[11px] leading-relaxed text-ink-muted">
+            Chỉ cần khi có kênh đặt <code>provider</code> là <code>openai</code>.
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <label class="label">Model</label>
+          <input v-model="form['openai.model']" class="input font-mono !text-xs"
+                 placeholder="gpt-4o-mini" />
+          <p class="text-[11px] leading-relaxed text-ink-muted">
+            Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>,
+            không khai nữa thì lấy <code>gpt-4o-mini</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cloudflare R2: nơi chứa video sau khi dựng -->
+    <section v-show="tab === 'luutru'" class="card p-5">
+      <h2 class="text-sm font-bold">Cloudflare R2 · lưu video</h2>
+      <p class="mt-1 text-[12px] leading-relaxed text-ink-muted">
+        Video dựng xong được tải lên đây để phát trực tiếp mà không chiếm ổ đĩa máy chủ.
+        Bỏ trống thì dây chuyền bỏ qua bước tải lên, video vẫn nằm trong
+        <code class="font-mono">output/</code> như cũ.
+        Lấy khoá ở
+        <a href="https://dash.cloudflare.com/?to=/:account/r2/api-tokens" target="_blank"
+           rel="noopener" class="text-ink-2 underline decoration-dotted">R2 API Tokens</a>.
+      </p>
+
+      <label class="mt-4 flex cursor-pointer items-center gap-2 text-[13px]">
+        <input v-model="form['r2.enabled']" type="checkbox" class="accent-[#FF2D55]" />
+        Bật tải video lên R2
+      </label>
+
+      <div class="mt-4 grid gap-4 sm:grid-cols-2">
+        <div class="space-y-1.5">
+          <label class="label">Bucket</label>
+          <input v-model="form['r2.bucket']" class="input font-mono !text-xs" placeholder="tiktok360s" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="label">Thư mục trong bucket</label>
+          <input v-model="form['r2.prefix']" class="input font-mono !text-xs" placeholder="videos" />
+        </div>
+        <div class="space-y-1.5 sm:col-span-2">
+          <label class="label">Endpoint</label>
+          <input v-model="form['r2.endpoint']" class="input font-mono !text-xs"
+                 placeholder="https://&lt;account-id&gt;.r2.cloudflarestorage.com" />
+        </div>
+        <div class="space-y-1.5 sm:col-span-2">
+          <label class="label">Tên miền công khai</label>
+          <input v-model="form['r2.public_url']" class="input font-mono !text-xs"
+                 placeholder="https://cdn.tenmien.vn  (hoặc https://pub-xxx.r2.dev)" />
+          <p class="text-[11px] leading-relaxed text-ink-muted">
+            Bỏ trống thì liên kết trả về trỏ thẳng vào endpoint và
+            <strong class="text-ink-2">chỉ mở được khi có chữ ký</strong> — TikTok sẽ không tải được.
+          </p>
+        </div>
+        <div class="space-y-1.5">
+          <label class="label">Access Key ID</label>
+          <input v-model="form['r2.access_key_id']" type="password" class="input font-mono !text-xs"
+                 autocomplete="off" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="label">Secret Access Key</label>
+          <input v-model="form['r2.secret_access_key']" type="password" class="input font-mono !text-xs"
+                 autocomplete="off" />
         </div>
       </div>
     </section>

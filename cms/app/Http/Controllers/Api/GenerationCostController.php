@@ -44,6 +44,7 @@ class GenerationCostController extends Controller
                 ->selectRaw('provider, model, COUNT(*) calls,
                              SUM(status = "failed") failed,
                              SUM(seconds) seconds,
+                             SUM(COALESCE(tokens_in, 0) + COALESCE(tokens_out, 0)) tokens,
                              SUM(cost_usd) cost')
                 ->groupBy('provider', 'model')
                 ->orderByDesc('cost')->get(),

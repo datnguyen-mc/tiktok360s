@@ -8,7 +8,6 @@ import CreateVideoDialog from '../components/CreateVideoDialog.vue'
 import RegenerateDialog from '../components/RegenerateDialog.vue'
 import DeleteRunDialog from '../components/DeleteRunDialog.vue'
 import Toast from '../components/Toast.vue'
-import RunningJobs from '../components/RunningJobs.vue'
 import { fmtBytes, fmtDate, fmtDuration, RUN_STATUS } from '../format'
 
 const route = useRoute()
@@ -21,12 +20,9 @@ const creating = ref(false)
 const regenerating = ref(null)      // bản ghi đang được tạo lại
 const deleting = ref(null)          // bản ghi đang chờ xoá
 const toast = ref({ message: '', tone: 'good' })
-const jobsPanel = ref(null)
 
 function onCreated(res) {
   creating.value = false
-  // Lượt vừa bấm phải hiện ngay ở bảng tiến trình, không đợi vòng hỏi 5 giây
-  jobsPanel.value?.load()
   const cost = res.estimate && res.engine?.model ? ` · ước tính $${res.estimate.per_video}` : ''
   const saved = res.preset ? ` · đã lưu prompt “${res.preset.name}”` : ''
   toast.value = {
@@ -93,9 +89,6 @@ const statuses = [
 
 <template>
   <div class="space-y-4">
-    <!-- Lượt dựng đang chạy: dừng được, và chạy tiếp được sau khi dừng -->
-    <RunningJobs ref="jobsPanel" @toast="toast = $event" />
-
     <!-- Bộ lọc trên một hàng, ngay trên bảng -->
     <div class="flex flex-wrap items-end gap-2.5">
       <div class="min-w-[200px] flex-1 space-y-1.5">

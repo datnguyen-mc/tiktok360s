@@ -175,7 +175,14 @@ class SeriesController extends Controller
                 ->whereNotNull('api_key')->value('api_key');
         }
 
-        return response()->json(['key' => $key ?: null]);
+        // Trả cả hai khoá trong một lượt: dây chuyền chọn nhà cung cấp bằng
+        // cấu hình kênh, hỏi riêng từng khoá thì mỗi lần đổi lại thêm một vòng gọi.
+        return response()->json([
+            'key'          => $key ?: null,
+            'openai_key'   => Setting::get('openai.api_key') ?: null,
+            'gemini_model' => Setting::get('gemini.model') ?: null,
+            'openai_model' => Setting::get('openai.model') ?: null,
+        ]);
     }
 
     private function runFor(array $data): ?int

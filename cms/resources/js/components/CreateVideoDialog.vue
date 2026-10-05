@@ -30,11 +30,26 @@ const form = ref({
   date: '',
   items: '',
   voice: '',
+  ai_provider: '',
   save_as: '',
 })
 
 const engine = computed(() => engines.value.find((e) => e.id === form.value.video_engine_id))
 const isAi = computed(() => !!engine.value?.is_ai)
+
+// Phần lớn lần tạo chỉ động tới tab đầu. Tab prompt chỉ có nghĩa khi engine tự
+// sinh cảnh bằng AI, nên ẩn hẳn với engine dùng ảnh báo — hiện ra một tab rỗng
+// thì người dùng phải bấm vào mới biết là không có gì.
+const tab = ref('coban')
+const tabs = computed(() => [
+  { id: 'coban', nhan: 'Cơ bản' },
+  ...(isAi.value ? [{ id: 'prompt', nhan: 'Prompt hình ảnh' }] : []),
+  { id: 'nangcao', nhan: 'Giọng & AI' },
+])
+
+// Đổi engine từ AI sang không-AI lúc đang đứng ở tab prompt thì tab đó biến mất
+// và hộp thoại trắng trơn; kéo về tab đầu.
+watch(isAi, (v) => { if (!v && tab.value === 'prompt') tab.value = 'coban' })
 
 onMounted(async () => {
   try {
@@ -127,7 +142,17 @@ const usd = (n) => n == null ? '—'
         để thêm một cái.
       </div>
 
-      <div v-else class="mt-5 space-y-4">
+      <div v-else class="mt-5">
+        <nav class="flex gap-1 border-b border-line" role="tablist">
+          <button v-for="t in tabs" :key="t.id" role="tab" :aria-selected="tab === t.id"
+                  class="-mb-px border-b-2 px-3 py-2 text-[13px] font-semibold transition"
+                  :class="tab === t.id
+                    ? 'border-accent text-ink-1'
+                    : 'border-transparent text-ink-muted hover:text-ink-2'"
+                  @click="tab = t.id">{{ t.nhan }}</button>
+        </nav>
+
+        <div v-show="tab === 'coban'" class="mt-4 space-y-4">
         <!-- Chủ đề: quyết định nguồn tin, từ khoá và nhận diện của video -->
         <div v-if="topics.length > 1" class="space-y-1.5">
           <label class="label">Chủ đề</label>
@@ -158,6 +183,20 @@ const usd = (n) => n == null ? '—'
         </div>
 
         <!-- Prompt (chỉ khi engine sinh cảnh bằng AI) -->
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="space-y-1.5">
+              <label class="label" for="d">Ngày bản tin</label>
+              <input id="d" v-model="form.date" type="date" class="input" />
+            </div>
+            <div class="space-y-1.5">
+              <label class="label" for="n">Số tin</label>
+              <input id="n" v-model="form.items" type="number" min="1" max="30" class="input"
+                     placeholder="10" />
+            </div>
+          </div>
+        </div>
+
+        <div v-show="tab === 'prompt'" class="mt-4 space-y-4">
         <template v-if="isAi">
           <div v-if="presets.length" class="space-y-1.5">
             <label class="label">Dùng lại prompt đã lưu</label>
@@ -226,25 +265,34 @@ const usd = (n) => n == null ? '—'
           </div>
         </template>
 
-        <!-- Tuỳ chọn chung -->
-        <div class="grid gap-3 sm:grid-cols-3">
-          <div class="space-y-1.5">
-            <label class="label" for="d">Ngày bản tin</label>
-            <input id="d" v-model="form.date" type="date" class="input" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="label" for="n">Số tin</label>
-            <input id="n" v-model="form.items" type="number" min="1" max="30" class="input"
-                   placeholder="10" />
-          </div>
-          <div class="space-y-1.5">
-            <label class="label" for="v">Giọng đọc</label>
-            <input id="v" v-model="form.voice" class="input font-mono !text-xs" placeholder="mặc định" />
+        </div>
+
+        <div v-show="tab === 'nangcao'" class="mt-4 space-y-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="space-y-1.5">
+              <label class="label" for="v">Giọng đọc</label>
+              <input id="v" v-model="form.voice" class="input font-mono !text-xs"
+                     placeholder="mặc định" />
+              <p class="text-[11px] leading-relaxed text-ink-muted">
+                Bỏ trống thì dùng giọng khai trong file kênh.
+              </p>
+            </div>
+            <div class="space-y-1.5">
+              <label class="label" for="ai">AI viết kịch bản</label>
+              <select id="ai" v-model="form.ai_provider" class="input">
+                <option value="">Theo cấu hình kênh</option>
+                <option value="gemini">Gemini</option>
+                <option value="openai">OpenAI</option>
+              </select>
+              <p class="text-[11px] leading-relaxed text-ink-muted">
+                Chỉ đổi cho lần chạy này, không sửa file kênh. Khoá API khai ở
+                <RouterLink to="/settings" class="underline" @click="$emit('close')">Cài đặt</RouterLink>.
+              </p>
+            </div>
           </div>
         </div>
-        <p class="text-[11px] text-ink-muted">Bỏ trống để dùng thiết lập trong config.json.</p>
 
-        <p v-if="error" class="rounded-lg px-3 py-2 text-xs leading-relaxed"
+        <p v-if="error" class="mt-4 rounded-lg px-3 py-2 text-xs leading-relaxed"
            style="background: rgba(208,59,59,.14); color:#f08d8d">{{ error }}</p>
       </div>
 

@@ -17,7 +17,8 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
-from . import aiclip, cms, r2, render, script_builder, series, tts, visuals, website
+from . import (aiclip, cms, llm, r2, render, script_builder, series, tts,
+               visuals, website)
 from .steps import StepTracker
 from .common import ROOT as ROOT_DIR
 from .common import load_config, log, slugify, step
@@ -84,11 +85,17 @@ def run_many(args: argparse.Namespace) -> int:
 
 
 def run(args: argparse.Namespace) -> int:
+    # Chạy --count 3 thì run() được gọi nhiều lần trong một tiến trình; không xoá
+    # là lượt sau cộng dồn token của lượt trước.
+    llm.xoa_nhat_ky()
     cfg = load_config(args.config, args.topic or None)
     if args.items:
         cfg["script"]["items_per_video"] = args.items
     if args.voice:
         cfg["voice"]["id"] = args.voice
+    if args.ai:
+        # Chọn ngay lúc tạo video, chỉ ảnh hưởng lần chạy này — file kênh không đổi.
+        cfg.setdefault("series", {})["provider"] = args.ai
     if args.items:
         # số tin yêu cầu cũng là mức sàn — không để khâu canh thời lượng cắt bớt
         cfg["script"]["min_items_per_video"] = args.items
@@ -237,8 +244,27 @@ def run(args: argparse.Namespace) -> int:
     urls = {}
     if not args.no_r2:
         with tracker.step("upload") as st:
-            urls = r2.upload_run(video, outdir / "thumbnail.jpg", cfg["topic"], date, cfg)
-            st.note("đã lên R2" if urls else "bỏ qua R2", **urls)
+            # Kênh series ra nhiều tập mỗi ngày, outdir là .../tap-11; nhánh đó
+            # phải vào khoá R2, không thì ảnh bìa các tập đè lên nhau.
+            urls = r2.upload_run(video, outdir / "thumbnail.jpg", cfg["topic"], date, cfg,
+                                 xoa_local=args.delete_local,
+                                 nhom=outdir.name if outdir.name.startswith("tap-") else "")
+            st.note("đã lên R2" if urls.get("video_url") else "bỏ qua R2",
+                    **{k: v for k, v in urls.items() if v is not None})
+
+    # Nhật ký gọi mô hình viết kịch bản, gộp cùng nhật ký clip để trang Chi phí
+    # cộng được tổng thật của một lượt chạy.
+    goi_llm = llm.nhat_ky()
+    if goi_llm:
+        script["clip_calls"] = (script.get("clip_calls") or []) + goi_llm
+        tien = sum(c["cost_usd"] for c in goi_llm if c.get("cost_usd"))
+        tok = sum((c.get("tokens_in") or 0) + (c.get("tokens_out") or 0) for c in goi_llm)
+        chua = [c["model"] for c in goi_llm if c.get("cost_usd") is None and c.get("tokens_in")]
+        log(f"kịch bản: {len(goi_llm)} lần gọi · {tok:,} token · "
+            + (f"${tien:.4f}" if tien else "chưa khai giá cho " + ", ".join(sorted(set(chua)))))
+        if tien:
+            script["generation_cost_usd"] = round(
+                (script.get("generation_cost_usd") or 0) + tien, 4)
 
     # Lưu vào CMS. Đặt sau khi video đã xong để bản ghi luôn phản ánh sản phẩm thật.
     if not args.no_cms:
@@ -251,7 +277,9 @@ def run(args: argparse.Namespace) -> int:
     if not args.keep_work:
         shutil.rmtree(workdir, ignore_errors=True)
 
-    print(f"\n╚═ XONG · {video}")
+    # File dưới máy có thể đã dọn sau khi lên R2 — in địa chỉ thật sự còn đọc được.
+    noi_luu = urls.get("video_url") if urls.get("video_path", "") is None else video
+    print(f"\n╚═ XONG · {noi_luu}")
     print(f"   thời lượng {voice['total']:.1f}s · caption: {outdir / 'caption.txt'}\n")
     return 0
 
@@ -276,6 +304,10 @@ def main() -> None:
     ap.add_argument("--script", default="", help="render từ kịch bản đã sửa tay")
     ap.add_argument("--script-only", action="store_true", help="chỉ dựng kịch bản, chưa render")
     ap.add_argument("--no-r2", action="store_true", help="không tải video lên R2")
+    ap.add_argument("--delete-local", action="store_true",
+                    help="xoá file trong output/ sau khi đã lên R2 (mặc định giữ)")
+    ap.add_argument("--ai", choices=("gemini", "openai"), default="",
+                    help="AI viết kịch bản cho lần chạy này, đè lên series.provider")
     ap.add_argument("--keep-work", action="store_true", help="giữ lại file trung gian để gỡ lỗi")
     ap.add_argument("--no-cms", action="store_true", help="không gửi dữ liệu sang CMS")
     ap.add_argument("--no-web", action="store_true",

@@ -118,6 +118,8 @@ class IngestController extends Controller
             'clip_calls.*.scene_index'      => ['nullable', 'integer', 'min:0'],
             'clip_calls.*.prompt'           => ['nullable', 'string'],
             'clip_calls.*.seconds'          => ['nullable', 'integer', 'min:0'],
+            'clip_calls.*.tokens_in'        => ['nullable', 'integer', 'min:0'],
+            'clip_calls.*.tokens_out'       => ['nullable', 'integer', 'min:0'],
             'clip_calls.*.cost_per_second'  => ['nullable', 'numeric', 'min:0'],
             'clip_calls.*.cost_usd'         => ['nullable', 'numeric', 'min:0'],
             'clip_calls.*.http_status'      => ['nullable', 'integer', 'min:0', 'max:599'],

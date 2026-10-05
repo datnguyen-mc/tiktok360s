@@ -3,7 +3,7 @@
   "description": "Tin giải trí, sao Việt và quốc tế",
   "brand": {
     "name": "SHOWBIZ MỖI NGÀY",
-    "handle": "@showbiz60s",
+    "handle": "@showbiz360s",
     "tagline": "Tin sao mỗi ngày",
     "accent": "#FF2D55",
     "accent2": "#FFD60A",
@@ -14,7 +14,8 @@
     "alt_id": "vi-VN-NamMinhNeural",
     "rate": "+25%",
     "pitch": "+2Hz",
-    "volume": "+0%"
+    "volume": "+0%",
+    "_ghi_chu": "edge-tts của Microsoft, miễn phí. Hai giọng tiếng Việt: vi-VN-NamMinhNeural (nam), vi-VN-HoaiMyNeural (nữ)."
   },
   "sources": [
     {

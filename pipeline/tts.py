@@ -113,42 +113,6 @@ async def _speak_once(text: str, voice: dict, dest: Path) -> list[dict]:
     return words
 
 
-async def _speak_all(scenes: list[dict], voice: dict, workdir: Path) -> list[dict]:
-    """Đọc tất cả các cảnh, có trần số kết nối và giãn cách giữa các lần mở."""
-    gate = asyncio.Semaphore(MAX_PARALLEL)
-    pace = asyncio.Lock()
-    last_open = 0.0
-
-    async def wait_turn() -> None:
-        """Bảo đảm hai lần mở kết nối cách nhau ít nhất OPEN_INTERVAL giây."""
-        nonlocal last_open
-        async with pace:
-            cho = OPEN_INTERVAL - (time.monotonic() - last_open)
-            if cho > 0:
-                await asyncio.sleep(cho)
-            last_open = time.monotonic()
-
-    async def one(i: int, scene: dict) -> list[dict]:
-        async with gate:
-            await wait_turn()
-            return await _speak(scene["vo"], voice, workdir / f"vo_{i:02d}.mp3")
-
-    ket_qua = await asyncio.gather(*(one(i, s) for i, s in enumerate(scenes)),
-                                   return_exceptions=True)
-
-    # Vòng vớt: đoạn nào rớt thì đọc lại từng đoạn một, không song song.
-    rot = [i for i, r in enumerate(ket_qua) if isinstance(r, BaseException)]
-    if rot:
-        log(f"{len(rot)}/{len(scenes)} đoạn rớt khi chạy song song — đọc lại tuần tự")
-        for i in rot:
-            await asyncio.sleep(SERIAL_INTERVAL)
-            ket_qua[i] = await _speak(scenes[i]["vo"], voice, workdir / f"vo_{i:02d}.mp3",
-                                      tries=SERIAL_TRIES, backoff=SERIAL_BACKOFF)
-        log(f"✓ vớt lại được {len(rot)} đoạn")
-
-    return list(ket_qua)
-
-
 def _gaps_for(durations: list[float], kinds: list[str], min_scene: float) -> list[float]:
     """Khoảng lặng sau mỗi cảnh.
 
@@ -197,6 +161,7 @@ def synthesize(script: dict, cfg: dict, workdir: Path) -> dict:
         log(f"lần {attempt}: tốc độ {voice['rate']} → {total:.1f}s")
         if lo <= total <= hi:
             break
+
         # Nhắm vào mép trong của khung chứ không phải tâm khung: lệch 1 giây mà
         # kéo tốc độ về giữa thì đọc nhanh/chậm hơn mức mong muốn một cách vô cớ.
         goal = (hi - 3) if total > hi else (lo + 3)
@@ -230,7 +195,7 @@ def synthesize(script: dict, cfg: dict, workdir: Path) -> dict:
     log(f"✓ {voice_path.name} · {total:.2f}s · {len(words)} chữ có mốc thời gian")
 
     # Ghi lại để lần sau khâu dựng kịch bản ước lượng sát hơn.
-    timing.record(voice["id"], voice["rate"],
+    timing.record(timing.khoa_giong(voice), voice["rate"],
                   sum(syllables(s["vo"]) for s in scenes), len(scenes),
                   speech=sum(durations), duration=total)
 

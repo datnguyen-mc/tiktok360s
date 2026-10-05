@@ -32,6 +32,7 @@ class CreateVideoController extends Controller
             'date'            => ['nullable', 'date_format:Y-m-d'],
             'items'           => ['nullable', 'integer', 'min:1', 'max:30'],
             'voice'           => ['nullable', 'string', 'max:60'],
+            'ai_provider'     => ['nullable', 'in:gemini,openai'],
 
             // Lưu prompt vừa gõ thành preset để lần sau gọi lại
             'save_as'         => ['nullable', 'string', 'max:120'],
@@ -87,6 +88,7 @@ class CreateVideoController extends Controller
             'date'            => $data['date']  ?? null,
             'items'           => $data['items'] ?? null,
             'voice'           => $data['voice'] ?? null,
+            'ai_provider'     => $data['ai_provider'] ?? null,
             'prompt'          => $engine->is_ai ? $prompt : null,
             'negative_prompt' => $engine->is_ai ? $negative : null,
         ], fn ($v) => $v !== null && $v !== '');

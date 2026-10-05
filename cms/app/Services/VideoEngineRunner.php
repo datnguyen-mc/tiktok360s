@@ -61,6 +61,10 @@ class VideoEngineRunner
         if (! empty($options['date']))  { $args[] = '--date '.escapeshellarg($options['date']); }
         if (! empty($options['items'])) { $args[] = '--items '.(int) $options['items']; }
         if (! empty($options['voice'])) { $args[] = '--voice '.escapeshellarg($options['voice']); }
+        // Chỉ nhận đúng hai giá trị: chuỗi này đi thẳng vào dòng lệnh.
+        if (in_array($options['ai_provider'] ?? null, ['gemini', 'openai'], true)) {
+            $args[] = '--ai '.$options['ai_provider'];
+        }
         // escapeshellarg lo phần dấu nháy và ký tự lạ trong prompt
         if (! empty($options['prompt'])) {
             $args[] = '--prompt '.escapeshellarg($options['prompt']);
