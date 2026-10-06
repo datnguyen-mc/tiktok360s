@@ -47,9 +47,32 @@ const tabDoi = computed(() => {
   return doi
 })
 
+// Danh sách model của cả hai bên, hỏi thẳng API nhà cung cấp.
+const models = ref({ gemini: [], openai: [] })
+const nguon = ref({ gemini: '', openai: '' })
+
+async function taiModels() {
+  for (const p of ['gemini', 'openai']) {
+    try {
+      const r = (await http.get(`ai-models/${p}`)).data
+      models.value[p] = r.models || []
+      nguon.value[p] = r.source || ''
+    } catch { /* hỏng thì để trống, ô vẫn giữ giá trị đang có */ }
+  }
+}
+
+/** Giá trị đang lưu luôn phải có trong danh sách, không thì mở trang là mất. */
+function tuyChon(p) {
+  const dang = form.value[`${p}.model`]
+  const ds = [...(models.value[p] || [])]
+  if (dang && !ds.includes(dang)) ds.unshift(dang)
+  return ds
+}
+
 async function load() {
   data.value = (await http.get('settings')).data
   form.value = { ...data.value.values }
+  taiModels()
 }
 
 onMounted(load)
@@ -216,10 +239,14 @@ async function copy(text) {
         </div>
         <div class="space-y-1.5">
           <label class="label">Model</label>
-          <input v-model="form['gemini.model']" class="input font-mono !text-xs"
-                 placeholder="gemini-3.6-flash" />
+          <select v-model="form['gemini.model']" class="input font-mono !text-xs">
+            <option value="">— mặc định (gemini-flash-latest) —</option>
+            <option v-for="m in tuyChon('gemini')" :key="m" :value="m">{{ m }}</option>
+          </select>
           <p class="text-[11px] leading-relaxed text-ink-muted">
             Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>.
+            <template v-if="nguon.gemini === 'api'">{{ models.gemini.length }} model lấy từ API.</template>
+            <template v-else-if="nguon.gemini">Chưa có khoá — danh sách dự phòng.</template>
           </p>
         </div>
       </div>
@@ -247,11 +274,14 @@ async function copy(text) {
         </div>
         <div class="space-y-1.5">
           <label class="label">Model</label>
-          <input v-model="form['openai.model']" class="input font-mono !text-xs"
-                 placeholder="gpt-4o-mini" />
+          <select v-model="form['openai.model']" class="input font-mono !text-xs">
+            <option value="">— mặc định (gpt-4o-mini) —</option>
+            <option v-for="m in tuyChon('openai')" :key="m" :value="m">{{ m }}</option>
+          </select>
           <p class="text-[11px] leading-relaxed text-ink-muted">
-            Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>,
-            không khai nữa thì lấy <code>gpt-4o-mini</code>.
+            Bỏ trống thì dùng model khai trong <code>topics/&lt;kênh&gt;.json</code>.
+            <template v-if="nguon.openai === 'api'">{{ models.openai.length }} model lấy từ API.</template>
+            <template v-else-if="nguon.openai">Chưa có khoá — lưu khoá rồi tải lại trang để thấy danh sách thật.</template>
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@ import SeriesProgress from '../components/SeriesProgress.vue'
  * Danh sách từ khoá dùng ô nhập nhiều dòng (mỗi dòng một từ) thay vì chip:
  * bóng đá có hơn 50 từ khoá bắt buộc, dạng chip sẽ không đọc nổi.
  */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import http, { errorMessage } from '../api'
 import EmptyState from '../components/EmptyState.vue'
 import StatusPill from '../components/StatusPill.vue'
@@ -44,7 +44,7 @@ async function edit(slug) {
   busy.value = true
   try {
     const d = (await http.get(`topics/${slug}`)).data
-    const data = ensureVoice(d.data)
+    const data = ensureSeries(ensureVoice(d.data))
     editing.value = {
       slug,
       data,
@@ -91,6 +91,14 @@ async function save() {
     d.hashtags = toArr(k.hashtags)
     if (k.khong_pha_tro.trim()) d.khong_pha_tro = toArr(k.khong_pha_tro)
 
+    // ensureSeries() thêm hai ô rỗng để v-model chạy được; đừng ghi chúng xuống
+    // file. Kênh tin mà có khối `series` thì đọc file sẽ tưởng nó là kênh series.
+    if (d.series) {
+      if (!d.series.provider) delete d.series.provider
+      if (!d.series.model) delete d.series.model
+      if (!Object.keys(d.series).length) delete d.series
+    }
+
     await http.put(`topics/${editing.value.slug}`, { data: d })
     editing.value = null
     await load()
@@ -131,9 +139,52 @@ async function remove(t) {
 const TABS = [
   ['nhan-dien', 'Nhận diện'],
   ['giong-doc', 'Giọng đọc'],
+  ['viet-kich-ban', 'Viết kịch bản'],
   ['nguon-tin', 'Nguồn tin'],
   ['tu-khoa', 'Từ khoá'],
   ['giong-van', 'Giọng văn'],
+]
+
+// Chỉ kênh `mode: series` mới gọi mô hình ngôn ngữ để viết kịch bản. Kênh tin
+// ghép kịch bản từ tin đã lấy về, không qua AI — nên tab đó nói rõ thay vì hiện
+// một ô chọn không có tác dụng.
+const laSeries = computed(() => editing.value?.data?.mode === 'series')
+
+// Danh sách model hỏi thẳng API nhà cung cấp (xem AiModelController). Viết cứng
+// trong giao diện thì vài tháng là lạc hậu.
+const models = ref([])
+const modelsNguon = ref('')
+
+async function taiModels(provider) {
+  models.value = []
+  modelsNguon.value = ''
+  if (!provider) return
+  try {
+    const r = (await http.get(`ai-models/${provider}`)).data
+    models.value = r.models || []
+    modelsNguon.value = r.source || ''
+  } catch { /* hỏng thì để trống, ô vẫn chọn được giá trị đang có */ }
+}
+
+watch(
+  () => editing.value?.data?.series?.provider,
+  (v) => taiModels(v),
+)
+
+// Giá trị đang lưu có thể không còn trong danh sách (model bị gỡ, hoặc tên tự gõ
+// từ trước). Vẫn phải hiện ra, nếu không mở trang lên là ô tự nhảy sang rỗng và
+// lưu đè mất thiết lập cũ.
+const modelOptions = computed(() => {
+  const dang = editing.value?.data?.series?.model
+  const ds = [...models.value]
+  if (dang && !ds.includes(dang)) ds.unshift(dang)
+  return ds
+})
+
+const AI_PROVIDERS = [
+  { id: '',       label: 'Mặc định',  hint: 'theo config.json' },
+  { id: 'gemini', label: 'Gemini',    hint: 'Google AI Studio' },
+  { id: 'openai', label: 'OpenAI',    hint: 'platform.openai.com' },
 ]
 
 // Hai giọng tiếng Việt duy nhất của edge-tts
@@ -148,6 +199,14 @@ function ensureVoice(d) {
   d.voice.rate ??= '+25%'
   d.voice.pitch ??= '+0Hz'
   d.voice.volume ??= '+0%'
+  return d
+}
+
+/** Bảo đảm có khối series để ràng buộc v-model không lỗi. */
+function ensureSeries(d) {
+  d.series ??= {}
+  d.series.provider ??= ''
+  d.series.model ??= ''
   return d
 }
 
@@ -364,6 +423,57 @@ const hz  = (n) => `${n >= 0 ? '+' : ''}${n}Hz`
           </div>
 
           <!-- Nguồn tin -->
+          <div v-show="tab === 'viet-kich-ban'" class="mt-5 space-y-4">
+            <template v-if="laSeries">
+              <div class="space-y-1.5">
+                <label class="label">AI viết kịch bản</label>
+                <div class="grid gap-2 sm:grid-cols-3">
+                  <label v-for="o in AI_PROVIDERS" :key="o.id"
+                         class="cursor-pointer rounded-xl border p-3 text-center transition"
+                         :style="{ borderColor: editing.data.series.provider === o.id ? 'var(--color-accent)' : 'var(--color-line)',
+                                   background: editing.data.series.provider === o.id ? 'var(--color-accent-soft)' : 'transparent' }">
+                    <input v-model="editing.data.series.provider" type="radio" :value="o.id" class="sr-only" />
+                    <span class="block text-[13px] font-semibold">{{ o.label }}</span>
+                    <span class="mt-0.5 block text-[10px] text-ink-muted">{{ o.hint }}</span>
+                  </label>
+                </div>
+                <p class="text-[11px] leading-relaxed text-ink-muted">
+                  Khoá API khai ở
+                  <RouterLink to="/settings" class="text-ink-2 underline decoration-dotted">Cài đặt</RouterLink>.
+                  Lúc bấm tạo video vẫn đổi được cho riêng lần chạy đó.
+                </p>
+              </div>
+
+              <div v-if="editing.data.series.provider" class="space-y-1.5">
+                <label class="label">Model</label>
+                <select v-model="editing.data.series.model" class="input font-mono !text-xs">
+                  <option value="">— mặc định —</option>
+                  <option v-for="m in modelOptions" :key="m" :value="m">{{ m }}</option>
+                </select>
+                <p class="text-[11px] leading-relaxed text-ink-muted">
+                  <template v-if="modelsNguon === 'api'">
+                    {{ models.length }} model lấy trực tiếp từ nhà cung cấp.
+                    Bản <code>-latest</code> tự bám model mới nhất; chọn số hiệu cụ thể
+                    thì kết quả không đổi theo thời gian.
+                  </template>
+                  <template v-else-if="modelsNguon">
+                    Chưa khai khoá API nên đây là danh sách dự phòng — khai khoá ở
+                    <RouterLink to="/settings" class="text-ink-2 underline decoration-dotted">Cài đặt</RouterLink>
+                    rồi mở lại để thấy danh sách thật.
+                  </template>
+                  <template v-else>Đang tải danh sách…</template>
+                </p>
+              </div>
+            </template>
+
+            <p v-else class="rounded-xl px-4 py-3 text-[12px] leading-relaxed"
+               style="background: rgba(250,178,25,.1); color:#f8cf72">
+              Kênh này ghép kịch bản từ tin đã lấy về, <strong>không gọi AI</strong> ở khâu viết —
+              nên không có gì để chọn ở đây. Chỉ kênh dạng series (mỗi tập một chủ thể, viết nối
+              tiếp nhau) mới dùng mô hình ngôn ngữ.
+            </p>
+          </div>
+
           <div v-show="tab === 'nguon-tin'" class="mt-5 space-y-3">
             <div v-for="(src, i) in editing.data.sources" :key="i"
                  class="grid grid-cols-[1fr_2fr_auto_auto] items-center gap-2">

@@ -8,6 +8,7 @@ use App\Models\Run;
 use App\Services\TopicRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class TopicController extends Controller
@@ -63,7 +64,13 @@ class TopicController extends Controller
             'data.brand.name'       => ['required', 'string', 'max:60'],
             'data.brand.handle'     => ['required', 'string', 'max:60'],
             'data.brand.accent'     => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-            'data.sources'          => ['required', 'array', 'min:1'],
+            // Kênh series (mỗi tập một chủ thể, AI viết) không lấy tin từ RSS nên
+            // danh sách nguồn rỗng là đúng — bắt buộc thì không lưu nổi kênh nào
+            // dạng đó. Kênh tin thì vẫn phải có ít nhất một nguồn.
+            'data.sources'          => [
+                Rule::requiredIf(fn () => $request->input('data.mode') !== 'series'),
+                'array',
+            ],
             'data.sources.*.name'   => ['required', 'string', 'max:40'],
             'data.sources.*.url'    => ['required', 'url', 'max:500'],
             'data.sources.*.weight' => ['nullable', 'numeric', 'min:0', 'max:5'],
@@ -73,6 +80,10 @@ class TopicController extends Controller
             'data.voice.rate'       => ['nullable', 'regex:/^[+-]\d{1,3}%$/'],
             'data.voice.pitch'      => ['nullable', 'regex:/^[+-]\d{1,3}Hz$/'],
             'data.voice.volume'     => ['nullable', 'regex:/^[+-]\d{1,3}%$/'],
+            'data.series'            => ['nullable', 'array'],
+            // Chuỗi này đi thẳng vào dòng lệnh `--ai`, nên chỉ nhận đúng hai giá trị.
+            'data.series.provider'   => ['nullable', 'in:gemini,openai'],
+            'data.series.model'      => ['nullable', 'string', 'max:80'],
             'data.ranking'          => ['required', 'array'],
             'data.hashtags'         => ['required', 'array'],
         ]);

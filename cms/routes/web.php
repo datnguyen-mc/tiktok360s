@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AiModelController;
 use App\Http\Controllers\Api\CreateVideoController;
 use App\Http\Controllers\Api\GenerationCostController;
 use App\Http\Controllers\Api\RegenerateVideoController;
@@ -84,6 +85,7 @@ Route::prefix('api')->group(function () {
 
         // Bấm "Tạo video" ở trang Video
         Route::post('videos/create', CreateVideoController::class);
+        Route::get('ai-models/{provider}', AiModelController::class);
 
         // Điều khiển tiến trình dựng video đang chạy
         Route::get('pipeline-jobs', [PipelineJobController::class, 'index']);
